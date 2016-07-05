@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="tv-freewheel-sdk-5.16">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../tv/libs/tv-freewheel-sdk-5.16.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

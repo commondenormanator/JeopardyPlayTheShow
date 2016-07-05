@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="tp-adk-android">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../tv/libs/tp-adk-android.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
