@@ -9,6 +9,7 @@ import com.theplatform.adk.Player;
 import com.theplatform.adk.player.event.api.data.MediaEndEvent;
 import com.theplatform.adk.player.event.api.data.MediaPlayingEvent;
 import com.theplatform.adk.player.event.api.data.PlayerEventListener;
+import com.theplatform.adk.player.event.api.data.ReleaseStartEvent;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -31,14 +32,15 @@ public class MpxMediaManager implements GameState.MediaManager {
         this.mPlayer = player;
         this.mDetails = details;
 
+        mPlayer.asEventDispatcher().addEventListener(MediaEndEvent.getType(), new MediaEndEventListener());
+        mPlayer.asEventDispatcher().addEventListener(MediaPlayingEvent.getType(), new MediaPlayingEventListener());
+
         try {
             mPlayer.loadReleaseUrl(new URL("http://link.theplatform.com/s/spe/media/MXha0q_JklY_"));
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
 
-        mPlayer.asEventDispatcher().addEventListener(MediaEndEvent.getType(), new MediaEndEventListener());
-        mPlayer.asEventDispatcher().addEventListener(MediaPlayingEvent.getType(), new MediaPlayingEventListener());
     }
 
     @Override
@@ -56,6 +58,8 @@ public class MpxMediaManager implements GameState.MediaManager {
     public void pause() {
         mPlayer.asMediaPlayerControl().pause();
     }
+
+
 
     private boolean handleEpisodeEvent(int eventIndex){
         EpisodeEvent event = mDetails.events.get(eventIndex);
@@ -77,6 +81,8 @@ public class MpxMediaManager implements GameState.MediaManager {
             case Categories:
                 break;
             case QuestAsked:
+                mPlayer.asMediaPlayerControl().pause();
+                mPlayer.asMediaPlayerControl().seekTo(event.timestamp);
                 mListener.onQuestionAsked();
                 break;
             case AnswerRead:
@@ -87,13 +93,12 @@ public class MpxMediaManager implements GameState.MediaManager {
         return true;
     }
 
-
     private class MediaEndEventListener implements PlayerEventListener<MediaEndEvent>
     {
         @Override
         public void onPlayerEvent(MediaEndEvent event)
         {
-            mPlayer.asMediaPlayerControl().start();
+//            mPlayer.asMediaPlayerControl().start();
         }
     }
     private class MediaPlayingEventListener implements PlayerEventListener<MediaPlayingEvent>

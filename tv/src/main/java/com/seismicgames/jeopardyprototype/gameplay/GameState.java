@@ -112,7 +112,6 @@ public class GameState {
     @MainThread
     private void waitForBuzzIn(){
         mState = State.WAIT_FOR_BUZZ_IN;
-        mMediaManager.pause();
 
         handler.sendMessageDelayed(handler.obtainMessage(HandlerMessageType.BUZZ_IN_TIMEOUT.ordinal()), 10000);
     }
