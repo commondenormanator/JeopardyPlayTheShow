@@ -34,6 +34,7 @@ import com.theplatform.adk.Player;
 import com.theplatform.adk.player.event.api.data.MediaEndEvent;
 import com.theplatform.adk.player.event.api.data.MediaStartEvent;
 import com.theplatform.adk.player.event.api.data.PlayerEventListener;
+import com.theplatform.adk.videokernel.impl.android.exoplayer.ExoPlayerImplementation;
 
 import org.java_websocket.WebSocket;
 
@@ -75,7 +76,6 @@ public class GameActivity extends Activity {
 
 
         gameState = new GameState();
-
 
 
         controllerServer = new ControllerServer(){
@@ -121,6 +121,7 @@ public class GameActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        player.getLifecycle().onResume();
         gameState.onResume(this);
         gameState.startGame(episodeDetails);
     }
@@ -128,10 +129,13 @@ public class GameActivity extends Activity {
     @Override
     protected void onPause() {
         gameState.onPause(this);
+        player.getLifecycle().onPause();
         super.onPause();
     }
 
-
-
-
+    @Override
+    protected void onDestroy() {
+        player.getLifecycle().destroy();
+        super.onDestroy();
+    }
 }
