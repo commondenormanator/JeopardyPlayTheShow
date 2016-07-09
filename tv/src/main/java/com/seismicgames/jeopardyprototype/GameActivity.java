@@ -19,34 +19,22 @@ import android.content.Context;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import com.seismicgames.jeopardyprototype.controller.ControllerServer;
+import com.seismicgames.jeopardyprototype.buzzer.BuzzerServer;
 import com.seismicgames.jeopardyprototype.episode.EpisodeDetails;
 import com.seismicgames.jeopardyprototype.gameplay.GameState;
-import com.seismicgames.jeopardyprototype.gameplay.engine.GameEngine;
-import com.seismicgames.jeopardyprototype.gameplay.events.EpisodeGameObject;
+import com.seismicgames.jeopardyprototype.ui.GameUiManager;
 import com.seismicgames.jeopardyprototype.video.MpxMediaManager;
-import com.seismicgames.jeopardyprototype.video.MpxVideoPlayer;
 import com.theplatform.adk.Player;
-import com.theplatform.adk.player.event.api.data.MediaEndEvent;
-import com.theplatform.adk.player.event.api.data.MediaStartEvent;
-import com.theplatform.adk.player.event.api.data.PlayerEventListener;
-import com.theplatform.adk.videokernel.impl.android.exoplayer.ExoPlayerImplementation;
-
-import org.java_websocket.WebSocket;
 
 import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 /*
- * MainActivity class that loads MainFragment
+ * GameActivity class that loads MainFragment
  */
 public class GameActivity extends Activity {
     /**
@@ -57,7 +45,6 @@ public class GameActivity extends Activity {
     private Player player;
 
     private GameState gameState;
-    private ControllerServer controllerServer;
 
     private EpisodeDetails episodeDetails = new EpisodeDetails();
 
@@ -78,26 +65,11 @@ public class GameActivity extends Activity {
         gameState = new GameState();
 
 
-        controllerServer = new ControllerServer(){
+        BuzzerServer server = new BuzzerServer();
 
-            @Override
-            public void onMessage(WebSocket conn, final String message) {
-                super.onMessage(conn, message);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
+        gameState.init(server, new MpxMediaManager(player, episodeDetails), new GameUiManager(this));
 
-                        Toast.makeText(GameActivity.this, message, Toast.LENGTH_SHORT).show();
-
-
-                    }
-                });
-
-            }
-        };
-
-        gameState.init(controllerServer, new MpxMediaManager(player, episodeDetails));
-
+        server.start();
 
 
         WifiManager wm = (WifiManager) getSystemService(Context.WIFI_SERVICE);
@@ -111,10 +83,6 @@ public class GameActivity extends Activity {
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
-
-        controllerServer.start();
-
-
 
     }
 

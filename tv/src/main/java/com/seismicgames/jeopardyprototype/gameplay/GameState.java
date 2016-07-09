@@ -9,8 +9,12 @@ import android.support.annotation.WorkerThread;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.seismicgames.jeopardyprototype.buzzer.message.AnswerRequest;
 import com.seismicgames.jeopardyprototype.episode.EpisodeDetails;
-import com.seismicgames.jeopardyprototype.video.VideoPlayer;
+import com.seismicgames.jeopardyprototype.episode.QuestionInfo;
+import com.seismicgames.jeopardyprototype.gameplay.score.AnswerJudge;
+import com.seismicgames.jeopardyprototype.gameplay.score.ScoreChangeListener;
+import com.seismicgames.jeopardyprototype.ui.GameUiManager;
 
 /**
  * Created by jduffy on 6/30/16.
@@ -23,13 +27,21 @@ public class GameState {
     }
 
     private enum HandlerMessageType{
-        BUZZER_CONN_CHANGE, QUESTION_ASKED, BUZZ_IN_TIMEOUT, USER_ANSWER_TIMEOUT, ANSWER_READ
+        BUZZER_CONN_CHANGE, QUESTION_ASKED,
+
+        BUZZ_IN_TIMEOUT,
+        BUZZ_IN_REQUEST,
+
+        USER_ANSWER_TIMEOUT,
+        USER_ANSWER_REQUEST,
+
+        ANSWER_READ
     }
 
 
     public interface MediaEventListener{
         void onQuestionAsked();
-        void onAnswerRead();
+        void onAnswerRead(QuestionInfo info);
     }
 
     public interface MediaManager{
@@ -41,19 +53,24 @@ public class GameState {
     public interface BuzzerManager{
         void registerListener(BuzzerEventListener listener);
         boolean isBuzzerConnected();
+
+        void sendBuzzInResponse(boolean isValidBuzz);
     }
 
     public interface BuzzerEventListener{
         void onBuzzerConnectivityChange(boolean isConnected);
 
         void onUserBuzzIn();
-        void onUserAnswer();
+        void onUserAnswer(AnswerRequest request);
     }
 
     private State mState;
 
     private BuzzerManager mBuzzerManager;
     private MediaManager mMediaManager;
+    private GameUiManager mGameUiManager;
+
+    private AnswerJudge judge = new AnswerJudge();
 
     private BuzzerHandler mBuzzerHandler = new BuzzerHandler();
     private MediaHandler mMediaHandler = new MediaHandler();
@@ -77,12 +94,16 @@ public class GameState {
         activity = null;
     }
 
-    public void init(BuzzerManager b, MediaManager m){
+    public void init(BuzzerManager b, MediaManager m, GameUiManager ui){
         mBuzzerManager = b;
         mBuzzerManager.registerListener(mBuzzerHandler);
 
         mMediaManager = m;
         mMediaManager.registerListener(mMediaHandler);
+
+        mGameUiManager = ui;
+
+        judge.setListener(mGameUiManager);
     }
 
     public void startGame(EpisodeDetails details){
@@ -113,13 +134,53 @@ public class GameState {
     private void waitForBuzzIn(){
         mState = State.WAIT_FOR_BUZZ_IN;
 
-        handler.sendMessageDelayed(handler.obtainMessage(HandlerMessageType.BUZZ_IN_TIMEOUT.ordinal()), 10000);
+        mGameUiManager.showBuzzTimer(Constants.BuzzInTimeout);
+        handler.sendMessageDelayed(handler.obtainMessage(HandlerMessageType.BUZZ_IN_TIMEOUT.ordinal()), Constants.BuzzInTimeout);
     }
 
     @MainThread
-    private void onBuzzTimeout(){
+    private void onQuestionTimeout(){
         mState = State.WAIT_FOR_MEDIA_EVENT;
         mMediaManager.play();
+
+        mGameUiManager.hideBuzzTimer();
+        mGameUiManager.hideAnswerTimer();
+    }
+
+    @MainThread
+    private void onUserAnswerRequest(AnswerRequest request){
+        if(mState == State.WAIT_FOR_USER_RESPONSE){
+            judge.setUserAnswers(request.answers);
+        }
+    }
+
+    @MainThread
+    private void onAnswerRead(QuestionInfo questionInfo){
+//        if(judge.didBuzzIn()) {
+//            boolean wasCorrect = judge.scoreAnswer(questionInfo);
+//            Toast.makeText(activity, String.format("answer was %s", wasCorrect), Toast.LENGTH_SHORT).show();
+//        }
+        judge.scoreAnswer(questionInfo);
+    }
+
+    @MainThread
+    private void onBuzzIn(){
+        if(mState != State.WAIT_FOR_BUZZ_IN){
+            mBuzzerManager.sendBuzzInResponse(false);
+            return;
+        }
+        mBuzzerManager.sendBuzzInResponse(true);
+        mState = State.WAIT_FOR_USER_RESPONSE;
+
+        handler.removeMessages(HandlerMessageType.BUZZ_IN_TIMEOUT.ordinal());
+        mGameUiManager.hideBuzzTimer();
+
+        mGameUiManager.showAnswerTimer(Constants.BuzzInTimeout);
+        handler.sendMessageDelayed(handler.obtainMessage(HandlerMessageType.USER_ANSWER_TIMEOUT.ordinal()), Constants.BuzzInTimeout);
+        judge.setUserBuzzedIn();
+
+
+
     }
 
 
@@ -155,8 +216,20 @@ public class GameState {
             case QUESTION_ASKED:
                 waitForBuzzIn();
                 break;
+            case ANSWER_READ:
+                onAnswerRead((QuestionInfo) message.obj);
+                break;
             case BUZZ_IN_TIMEOUT:
-                onBuzzTimeout();
+                onQuestionTimeout();
+                break;
+            case BUZZ_IN_REQUEST:
+                onBuzzIn();
+                break;
+            case USER_ANSWER_TIMEOUT:
+                onQuestionTimeout();
+                break;
+            case USER_ANSWER_REQUEST:
+                onUserAnswerRequest((AnswerRequest) message.obj);
                 break;
             default:
                 Log.w("GAME_EVENT_HANDLER", type.name() + " was not handled.");
@@ -176,8 +249,8 @@ public class GameState {
         }
 
         @Override
-        public void onAnswerRead() {
-            handler.sendMessage(handler.obtainMessage(HandlerMessageType.ANSWER_READ.ordinal()));
+        public void onAnswerRead(QuestionInfo info) {
+            handler.sendMessage(handler.obtainMessage(HandlerMessageType.ANSWER_READ.ordinal(), info));
         }
     }
 
@@ -192,12 +265,12 @@ public class GameState {
 
         @Override
         public void onUserBuzzIn() {
-
+            handler.sendEmptyMessage(HandlerMessageType.BUZZ_IN_REQUEST.ordinal());
         }
 
         @Override
-        public void onUserAnswer() {
-
+        public void onUserAnswer(AnswerRequest request) {
+            handler.sendMessage(handler.obtainMessage(HandlerMessageType.USER_ANSWER_REQUEST.ordinal(), request));
         }
     }
 }

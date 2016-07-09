@@ -1,5 +1,7 @@
 package com.seismicgames.jeopardyprototype.gameplay.events;
 
+import com.seismicgames.jeopardyprototype.gameplay.Constants;
+
 /**
  * Created by jduffy on 6/29/16.
  */
@@ -11,7 +13,7 @@ public class EpisodeEvent {
     public Type type;
 
     public EpisodeEvent(int timestamp, Type type) {
-        this.timestamp = timestamp;
+        this.timestamp = timestamp + Constants.EventTimestampOffset;
         this.type = type;
     }
 }
