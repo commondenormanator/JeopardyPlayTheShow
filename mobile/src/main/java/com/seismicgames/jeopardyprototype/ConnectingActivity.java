@@ -2,6 +2,7 @@ package com.seismicgames.jeopardyprototype;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.speech.RecognitionListener;
@@ -11,9 +12,14 @@ import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.seismicgames.jeopardyprototype.buzzer.BuzzerClient;
+import com.seismicgames.jeopardyprototype.buzzer.message.AnswerRequest;
+import com.seismicgames.jeopardyprototype.buzzer.message.BuzzInResponse;
+import com.seismicgames.jeopardyprototype.buzzer.message.BuzzerMessageClientListener;
 import com.seismicgames.jeopardyprototype.controller.ControllerClient;
-import com.seismicgames.jeopardyprototype.controller.HostScanner;
+import com.seismicgames.jeopardyprototype.buzzer.HostScanner;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -35,12 +41,22 @@ public class ConnectingActivity extends Activity {
     private Handler mHandler = new Handler();
     private final CheckConnectivityRunnable CheckConnectivityRunnable = new CheckConnectivityRunnable();
 
-    private ControllerClient client;
+    private final Runnable stopSpeechRunnable = new Runnable() {
+        @Override
+        public void run() {
+            speechRecognizer.cancel();
+        }
+    };
+
+    private BuzzerClient client;
 
 
     private SpeechRecognizer speechRecognizer;
 
     private RecognitionListener recognitionListener = new RecognitionListener() {
+
+        List<String> lastResults = new ArrayList<>();
+
         @Override
         public void onReadyForSpeech(Bundle bundle) {
             Log.d(TAG, "onReadyForSpeech");
@@ -49,6 +65,7 @@ public class ConnectingActivity extends Activity {
         @Override
         public void onBeginningOfSpeech() {
             Log.d(TAG, "onBeginningOfSpeech");
+            lastResults.clear();
         }
 
         @Override
@@ -80,7 +97,16 @@ public class ConnectingActivity extends Activity {
                 for(String s : results) {
                     Log.d(TAG, s);
                 }
+
+                //check if answers are new
+                List<String> resCopy = new ArrayList<String>(results);
+                resCopy.removeAll(lastResults);
+                if(resCopy.size() > 0){
+                    client.sendAnswerRequest(results);
+                    lastResults = results;
+                }
             }
+
         }
 
         @Override
@@ -91,6 +117,14 @@ public class ConnectingActivity extends Activity {
                 textView.setText(results.get(0));
                 for(String s : results) {
                     Log.d(TAG, s);
+                }
+
+                //check if answers are new
+                List<String> resCopy = new ArrayList<String>(results);
+                resCopy.removeAll(lastResults);
+                if(resCopy.size() > 0){
+                    client.sendAnswerRequest(results);
+                    lastResults = results;
                 }
             }
         }
@@ -110,17 +144,7 @@ public class ConnectingActivity extends Activity {
 
     @OnClick(R.id.dummy_button)
     protected void onButtonClick(){
-//        if(client!= null){
-//            if(client.getConnection().isOpen()) {
-//                client.send("click@" + System.currentTimeMillis());
-//            }else {
-//                scanForHost();
-//            }
-//        }
-
-        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        intent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
-        speechRecognizer.startListening(intent);
+        client.sendBuzzInRequest();
     }
 
 
@@ -144,6 +168,8 @@ public class ConnectingActivity extends Activity {
             speechRecognizer = null;
         }
 
+        hostScanner.stop();
+
         if(client != null){
             client.close();
             client = null;
@@ -157,6 +183,30 @@ public class ConnectingActivity extends Activity {
         mHandler.post(CheckConnectivityRunnable);
     }
 
+    private void setClientConnection(BuzzerClient client){
+        this.client = client;
+        textView.setText("connected");
+        this.client.setMessageListener(new BuzzerMessageClientListener() {
+            @Override
+            public void onBuzzInResponse(BuzzInResponse response) {
+                if(response.buzzInValid) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mHandler.removeCallbacks(stopSpeechRunnable);
+                            Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+                            intent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                intent.putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, true);
+                            }
+                            speechRecognizer.startListening(intent);
+                            mHandler.postDelayed(stopSpeechRunnable, 9000);
+                        }
+                    });
+                }
+            }
+        });
+    }
 
     private class CheckConnectivityRunnable implements Runnable {
 
@@ -167,9 +217,8 @@ public class ConnectingActivity extends Activity {
                 client = null;
                 scanForHost();
                 return;
-            } else if(hostScanner.client != null && hostScanner.client.getConnection().isOpen()){
-                client = hostScanner.client;
-                textView.setText("connected");
+            } else if(client == null && hostScanner.client != null && hostScanner.client.getConnection().isOpen()){
+                setClientConnection(hostScanner.client);
             }
             mHandler.postDelayed(this, 1000);
         }

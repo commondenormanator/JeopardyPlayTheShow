@@ -4,10 +4,13 @@ import android.util.Log;
 
 import com.seismicgames.jeopardyprototype.episode.EpisodeDetails;
 import com.seismicgames.jeopardyprototype.gameplay.GameState;
+import com.seismicgames.jeopardyprototype.gameplay.events.AnswerReadEvent;
 import com.seismicgames.jeopardyprototype.gameplay.events.EpisodeEvent;
 import com.theplatform.adk.Player;
+import com.theplatform.adk.playback.normalizer.api.SeekSuccessEvent;
 import com.theplatform.adk.player.event.api.data.MediaEndEvent;
 import com.theplatform.adk.player.event.api.data.MediaPlayingEvent;
+import com.theplatform.adk.player.event.api.data.MediaSeekCompleteEvent;
 import com.theplatform.adk.player.event.api.data.PlayerEventListener;
 import com.theplatform.adk.player.event.api.data.ReleaseStartEvent;
 
@@ -28,12 +31,38 @@ public class MpxMediaManager implements GameState.MediaManager {
 
     private int mEpisodeEventIndex;
 
+    private MediaSeekCompleteEventListener mediaSeekCompleteEventListener = new MediaSeekCompleteEventListener();
+
+
+    private Thread thread =  new Thread(){
+        @Override
+        public void run() {
+            while(true){
+
+                checkForEvent();
+
+
+                try {
+                    Thread.sleep(16);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    };
+    private volatile boolean shouldPlay;
+
+
     public MpxMediaManager(Player player, EpisodeDetails details) {
         this.mPlayer = player;
         this.mDetails = details;
 
         mPlayer.asEventDispatcher().addEventListener(MediaEndEvent.getType(), new MediaEndEventListener());
-        mPlayer.asEventDispatcher().addEventListener(MediaPlayingEvent.getType(), new MediaPlayingEventListener());
+        mPlayer.asEventDispatcher().addEventListener(MediaSeekCompleteEvent.getType(), mediaSeekCompleteEventListener);
+        //mPlayer.asEventDispatcher().addEventListener(MediaPlayingEvent.getType(), new MediaPlayingEventListener());
+
+        thread.start();
+
 
         try {
             mPlayer.loadReleaseUrl(new URL("http://link.theplatform.com/s/spe/media/MXha0q_JklY_"));
@@ -51,15 +80,24 @@ public class MpxMediaManager implements GameState.MediaManager {
 
     @Override
     public void play() {
+        shouldPlay = true;
         mPlayer.asMediaPlayerControl().start();
+
     }
 
     @Override
     public void pause() {
         mPlayer.asMediaPlayerControl().pause();
+
     }
 
 
+    public void checkForEvent(){
+        if(mPlayer.asMediaPlayerControl().getCurrentPosition() >= mDetails.events.get(mEpisodeEventIndex).timestamp){
+            handleEpisodeEvent(mEpisodeEventIndex);
+            mEpisodeEventIndex++;
+        }
+    }
 
     private boolean handleEpisodeEvent(int eventIndex){
         EpisodeEvent event = mDetails.events.get(eventIndex);
@@ -81,12 +119,15 @@ public class MpxMediaManager implements GameState.MediaManager {
             case Categories:
                 break;
             case QuestAsked:
+                Log.w(TAG, "should pause at " + event.timestamp);
+                Log.w(TAG, "paused at " + mPlayer.asMediaPlayerControl().getCurrentPosition());
                 mPlayer.asMediaPlayerControl().pause();
+                mediaSeekCompleteEventListener.lastSeek = event.timestamp;
                 mPlayer.asMediaPlayerControl().seekTo(event.timestamp);
                 mListener.onQuestionAsked();
                 break;
             case AnswerRead:
-                mListener.onAnswerRead();
+                mListener.onAnswerRead(((AnswerReadEvent)event).questionInfo);
                 break;
         }
 
@@ -101,12 +142,26 @@ public class MpxMediaManager implements GameState.MediaManager {
 //            mPlayer.asMediaPlayerControl().start();
         }
     }
+    private class MediaSeekCompleteEventListener implements PlayerEventListener<MediaSeekCompleteEvent>
+    {
+        private int lastSeek;
+
+        @Override
+        public void onPlayerEvent(MediaSeekCompleteEvent event)
+        {
+            Log.w(TAG, String.format("Desired : %d Seek: %d -> %d.  Actual %d",
+                    lastSeek,
+                    event.getSeekInfo().getStart().getCurrentTime(),
+                    event.getSeekInfo().getEnd().getCurrentTime(),
+                    mPlayer.asMediaPlayerControl().getCurrentPosition()));
+        }
+    }
     private class MediaPlayingEventListener implements PlayerEventListener<MediaPlayingEvent>
     {
         @Override
         public void onPlayerEvent(MediaPlayingEvent event)
         {
-            if(event.getTimeInfo().getCurrentTime() + 500 >= mDetails.events.get(mEpisodeEventIndex).timestamp){
+            if(event.getTimeInfo().getCurrentTime() >= mDetails.events.get(mEpisodeEventIndex).timestamp){
                 handleEpisodeEvent(mEpisodeEventIndex);
                 mEpisodeEventIndex++;
             }
