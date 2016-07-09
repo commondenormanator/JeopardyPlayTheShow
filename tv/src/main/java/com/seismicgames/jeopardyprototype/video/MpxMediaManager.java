@@ -93,6 +93,7 @@ public class MpxMediaManager implements GameState.MediaManager {
 
 
     public void checkForEvent(){
+        if(mDetails.events.size() <= mEpisodeEventIndex) return;
         if(mPlayer.asMediaPlayerControl().getCurrentPosition() >= mDetails.events.get(mEpisodeEventIndex).timestamp){
             handleEpisodeEvent(mEpisodeEventIndex);
             mEpisodeEventIndex++;
