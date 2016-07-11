@@ -140,11 +140,10 @@ public class GameState {
 
     @MainThread
     private void onQuestionTimeout(){
-        mState = State.WAIT_FOR_MEDIA_EVENT;
-        mMediaManager.play();
-
         mGameUiManager.hideBuzzTimer();
         mGameUiManager.hideAnswerTimer();
+
+        resumeGame();
     }
 
     @MainThread
@@ -156,10 +155,6 @@ public class GameState {
 
     @MainThread
     private void onAnswerRead(QuestionInfo questionInfo){
-//        if(judge.didBuzzIn()) {
-//            boolean wasCorrect = judge.scoreAnswer(questionInfo);
-//            Toast.makeText(activity, String.format("answer was %s", wasCorrect), Toast.LENGTH_SHORT).show();
-//        }
         judge.scoreAnswer(questionInfo);
     }
 
@@ -207,7 +202,7 @@ public class GameState {
     @MainThread
     private boolean handleMessage(Message message){
         HandlerMessageType type = HandlerMessageType.values()[message.what];
-        Toast.makeText(activity, type.toString(), Toast.LENGTH_SHORT).show();
+        //Toast.makeText(activity, type.toString(), Toast.LENGTH_SHORT).show();
         switch (type){
 
             case BUZZER_CONN_CHANGE:
