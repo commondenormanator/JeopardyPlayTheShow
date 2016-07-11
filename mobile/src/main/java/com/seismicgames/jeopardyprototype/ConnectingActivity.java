@@ -12,6 +12,7 @@ import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,7 +36,10 @@ public class ConnectingActivity extends Activity {
     private static final String TAG = ConnectingActivity.class.getName();
 
     @BindView(R.id.fullscreen_content)
+
     protected TextView textView;
+    @BindView(R.id.dummy_button)
+    protected Button buzzerButton;
 
     private ControllerClient.HostScanTask task;
 
@@ -146,8 +150,10 @@ public class ConnectingActivity extends Activity {
     }
 
     @OnClick(R.id.dummy_button)
-    protected void onButtonClick(){
-        client.sendBuzzInRequest();
+    protected void onButtonClick() {
+        if (client != null && client.getConnection().isOpen()) {
+            client.sendBuzzInRequest();
+        }
     }
 
 
@@ -188,10 +194,12 @@ public class ConnectingActivity extends Activity {
     private void scanForHost(){
         textView.setText("searching");
         hostScanner.scanForHost(this);
+        buzzerButton.setEnabled(false);
         mHandler.post(CheckConnectivityRunnable);
     }
 
     private void setClientConnection(BuzzerClient client){
+        buzzerButton.setEnabled(true);
         this.client = client;
         textView.setText("connected");
         this.client.setMessageListener(new BuzzerMessageClientListener() {
