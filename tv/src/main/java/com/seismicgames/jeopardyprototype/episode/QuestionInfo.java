@@ -27,18 +27,18 @@ public class QuestionInfo {
     }
 
 
-    private int parseTimestamp(String ts){
+    private int parseTimestamp(String ts) {
         int millis = 116000;
-        millis += Integer.parseInt(ts.substring(3, 5)) * 60 *  1000;
-        millis += Integer.parseInt(ts.substring(6, 8)) *  1000;
-        millis += Integer.parseInt(ts.substring(9, 11)) * 1000d/ 29.97d;
+        millis += Integer.parseInt(ts.substring(3, 5)) * 60 * 1000;
+        millis += Integer.parseInt(ts.substring(6, 8)) * 1000;
+        millis += Integer.parseInt(ts.substring(9, 11)) * 1000d / 29.97d;
         return millis;
     }
 
 
-    private static String[] parseAnswer(String answerString){
+    private static String[] parseAnswer(String answerString) {
         String[] splitAnswer = answerString.toLowerCase().split("\\|");
-        Set<String> answers = new HashSet<String>();
+        Set<String> answers = new HashSet<>();
 
         answers.addAll(Arrays.asList(splitAnswer));
 
@@ -83,10 +83,10 @@ public class QuestionInfo {
 
         List<List<ReplacementAlgorithm>> replacementStrategies = permutation(replaceList);
 
-        for(String answer : new ArrayList<>(answers)){
-            for(List<ReplacementAlgorithm>  algorithm : replacementStrategies){
+        for (String answer : new ArrayList<>(answers)) {
+            for (List<ReplacementAlgorithm> algorithm : replacementStrategies) {
                 String s = answer;
-                for(ReplacementAlgorithm algPart : algorithm){
+                for (ReplacementAlgorithm algPart : algorithm) {
                     s = algPart.replace(s);
                 }
                 answers.add(s.replaceAll("\\s+", " "));
@@ -97,6 +97,34 @@ public class QuestionInfo {
 
     }
 
+
+    private static String removePossessiveS(String s) {
+        return s.replace("'s", "");
+    }
+
+    private static String removePeriods(String s) {
+        return s.replace(".", "");
+    }
+
+    private static String removeApostrophe(String s) {
+        return s.replace("'", "");
+    }
+
+    private static String removeDash(String s) {
+        return s.replace("-", "");
+    }
+
+    private static String replaceDash(String s) {
+        return s.replace("-", " ");
+    }
+
+    private static String replaceAmpersand(String s) {
+        return s.replace("&", " and ");
+    }
+
+    interface ReplacementAlgorithm {
+        String replace(String s);
+    }
 
 
     public static <T> List<List<T>> permutation(List<T> s) {
@@ -121,7 +149,7 @@ public class QuestionInfo {
     /**
      * @param list a result of permutation, e.g. {"ab", "ba"}
      * @param c    the last character
-     * @return     a merged new list, e.g. {"cab", "acb" ... }
+     * @return a merged new list, e.g. {"cab", "acb" ... }
      */
     public static <T> List<List<T>> merge(List<List<T>> list, T c) {
         ArrayList<List<T>> res = new ArrayList<List<T>>();
@@ -138,34 +166,5 @@ public class QuestionInfo {
         }
         return res;
     }
-
-
-
-    private static String removePossessiveS(String s){
-        return s.replace("'s", "");
-    }
-
-    private static String removePeriods(String s){
-        return s.replace(".", "");
-    }
-    private static String removeApostrophe(String s){
-        return s.replace("'", "");
-    }
-
-    private static String removeDash(String s){
-        return s.replace("-", "");
-    }
-    private static String replaceDash(String s){
-        return s.replace("-", " ");
-    }
-
-    private static String replaceAmpersand(String s){
-        return s.replace("&", " and ");
-    }
-
-    interface ReplacementAlgorithm {
-        String replace(String s);
-    }
-
 
 }
