@@ -38,10 +38,12 @@ public class AnswerJudge {
             boolean wasCorrect = false;
             for (String userAnswer : userAnswers) {
                 for (String correctAnswer : info.answers) {
-                    if (userAnswer.toLowerCase().contains(correctAnswer.toLowerCase())) {
+                    if (compareAnswer(userAnswer, correctAnswer)) {
                         wasCorrect = true;
+                        break;
                     }
                 }
+                if(wasCorrect) break;
             }
             int change = info.value * (wasCorrect ? 1 : -1);
             userScore +=  change;
@@ -51,6 +53,13 @@ public class AnswerJudge {
         didBuzzIn = false;
     }
 
+
+    private boolean compareAnswer(String guess, String answer){
+        guess = guess.toLowerCase();
+        answer = answer.toLowerCase();
+
+        return guess.contains(answer);
+    }
 
 
 }
