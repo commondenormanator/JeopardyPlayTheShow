@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.widget.ProgressBar xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="72dp"
+    android:layout_height="match_parent"
+    android:background="@color/black"
+    android:indeterminate="false"
+    android:indeterminateOnly="false"
+    android:progress="60"
+    android:progressDrawable="@drawable/center_pivot_progress" />

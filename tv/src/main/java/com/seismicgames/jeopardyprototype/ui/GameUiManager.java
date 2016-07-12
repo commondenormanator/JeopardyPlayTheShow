@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.seismicgames.jeopardyprototype.R;
 import com.seismicgames.jeopardyprototype.gameplay.score.ScoreChangeListener;
+import com.seismicgames.jeopardyprototype.view.AnswerTimer;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -23,22 +24,33 @@ import butterknife.ButterKnife;
  * Created by jduffy on 7/6/16.
  */
 public class GameUiManager implements ScoreChangeListener{
-    @BindView(R.id.buzzerTimer)
-    public ProgressBar buzzerTimer;
-
-    @BindView(R.id.answerTimer)
-    public ProgressBar answerTimer;
+    @BindView(R.id.buzzerTimerLeft)
+    public ProgressBar buzzerTimerLeft;
+    @BindView(R.id.buzzerTimerRight)
+    public ProgressBar buzzerTimerRight;
 
     @BindView(R.id.userScore)
     public TextView userScore;
 
+    @BindView(R.id.podiumTimer)
+    public AnswerTimer answerTimer;
+
     public GameUiManager(Activity view) {
         ButterKnife.bind(this, view);
-        buzzerTimer.setVisibility(View.INVISIBLE);
-        answerTimer.setVisibility(View.INVISIBLE);
+        buzzerTimerLeft.setVisibility(View.INVISIBLE);
+        buzzerTimerRight.setVisibility(View.INVISIBLE);
     }
 
     public void showBuzzTimer(int duration) {
+        showBuzzTimer(buzzerTimerLeft, duration);
+        showBuzzTimer(buzzerTimerRight, duration);
+    }
+    public void hideBuzzTimer(){
+       hideBuzzTimer(buzzerTimerLeft);
+        hideBuzzTimer(buzzerTimerRight);
+    }
+
+    private void showBuzzTimer(final ProgressBar buzzerTimer, int duration) {
         stopAnim(buzzerTimer);
 
         buzzerTimer.setVisibility(View.VISIBLE);
@@ -51,44 +63,27 @@ public class GameUiManager implements ScoreChangeListener{
             @Override
             public void onAnimationEnd(Animator animation) {
                 buzzerTimer.setVisibility(View.INVISIBLE);
-//                buzzerTimer.setProgress(0);
                 stopAnim(buzzerTimer);
             }
         });
         storeAnim(buzzerTimer, anim);
         anim.start();
     }
-    public void hideBuzzTimer(){
+    private void hideBuzzTimer(ProgressBar buzzerTimer){
         stopAnim(buzzerTimer);
 
         buzzerTimer.setVisibility(View.INVISIBLE);
-//        buzzerTimer.setProgress(0);
     }
 
+
+
+
     public void showAnswerTimer(int duration) {
-        stopAnim(answerTimer);
-
-        answerTimer.setVisibility(View.VISIBLE);
-        ObjectAnimator anim = ObjectAnimator.ofInt(answerTimer, "progress", 100, 0);
-        anim.setDuration(duration);
-        anim.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                answerTimer.setVisibility(View.INVISIBLE);
-//                answerTimer.setProgress(0);
-
-                stopAnim(answerTimer);
-            }
-        });
-        anim.start();
-        storeAnim(answerTimer, anim);
+        answerTimer.start(duration);
     }
 
     public void hideAnswerTimer(){
-        stopAnim(answerTimer);
-
-        answerTimer.setVisibility(View.INVISIBLE);
-//        answerTimer.setProgress(0);
+        answerTimer.cancel();
     }
 
     @Override
@@ -106,12 +101,12 @@ public class GameUiManager implements ScoreChangeListener{
     }
 
     private void storeAnim(View v, ValueAnimator animation){
-        v.setTag(R.id.buzzerTimer, animation);
+        v.setTag(R.id.anim_tag, animation);
     }
 
     private void stopAnim(View v){
-        ValueAnimator anim = ((ValueAnimator)v.getTag(R.id.buzzerTimer));
-        v.setTag(R.id.buzzerTimer, null);
+        ValueAnimator anim = ((ValueAnimator)v.getTag(R.id.anim_tag));
+        v.setTag(R.id.anim_tag, null);
 
         if(anim != null && anim.isRunning()){
             anim.end();

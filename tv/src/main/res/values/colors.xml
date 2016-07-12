@@ -15,4 +15,9 @@
     <color name="orange">#FADCA7</color>
     <color name="yellow">#EEFF41</color>
     <color name="default_background">#3d3d3d</color>
+
+
+    <color name="answer_timer_on">#FF0000</color>
+    <color name="answer_timer_off">#660000</color>
+
 </resources>
