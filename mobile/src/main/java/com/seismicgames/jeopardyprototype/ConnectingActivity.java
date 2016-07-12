@@ -1,6 +1,9 @@
 package com.seismicgames.jeopardyprototype;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorInflater;
+import android.animation.AnimatorSet;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -12,7 +15,11 @@ import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,6 +47,10 @@ public class ConnectingActivity extends Activity {
     protected TextView textView;
     @BindView(R.id.dummy_button)
     protected Button buzzerButton;
+
+    @BindView(R.id.buzzer_outline)
+    protected ImageView pulseImage;
+    protected AnimatorSet pulseAnim;
 
     private ControllerClient.HostScanTask task;
 
@@ -194,12 +205,12 @@ public class ConnectingActivity extends Activity {
     private void scanForHost(){
         textView.setText("searching");
         hostScanner.scanForHost(this);
-        buzzerButton.setEnabled(false);
+        setButtonEnabled(false);
         mHandler.post(CheckConnectivityRunnable);
     }
 
     private void setClientConnection(BuzzerClient client){
-        buzzerButton.setEnabled(true);
+        setButtonEnabled(true);
         this.client = client;
         textView.setText("connected");
         this.client.setMessageListener(new BuzzerMessageClientListener() {
@@ -222,6 +233,25 @@ public class ConnectingActivity extends Activity {
                 }
             }
         });
+    }
+
+    private void setButtonEnabled(boolean isEnabled){
+        if (isEnabled) {
+            buzzerButton.setEnabled(true);
+            pulseImage.setVisibility(View.VISIBLE);
+            if(pulseAnim == null) {
+                pulseAnim = (AnimatorSet) AnimatorInflater.loadAnimator(this, R.animator.pulse);
+                pulseAnim.setTarget(pulseImage);
+            }
+            pulseAnim.start();
+        }
+        else {
+            if (pulseAnim != null){
+                pulseAnim.end();
+            }
+            buzzerButton.setEnabled(false);
+            pulseImage.setVisibility(View.INVISIBLE);
+        }
     }
 
     private class CheckConnectivityRunnable implements Runnable {
