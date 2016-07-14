@@ -59,8 +59,8 @@ public class GameActivity extends Activity {
 
         BuzzerServer server = new BuzzerServer();
 
-//        gameState.init(server, MpxMediaManager.getInstance(videoContainer, episodeDetails), new GameUiManager(this));
-        gameState.init(server, ResourceMediaManager.getInstance(this, videoContainer, episodeDetails), new GameUiManager(this));
+        gameState.init(server, MpxMediaManager.getInstance(videoContainer, episodeDetails), new GameUiManager(this));
+//        gameState.init(server, ResourceMediaManager.getInstance(this, videoContainer, episodeDetails), new GameUiManager(this));
 
         server.start();
 

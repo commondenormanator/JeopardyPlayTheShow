@@ -19,16 +19,17 @@ public class ResourceMediaManager extends MediaPlayerControlMediaManager {
     private VideoView videoView;
 
     public static ResourceMediaManager getInstance(Context activity, ViewGroup videoContainer, EpisodeDetails episodeDetails) {
-        VideoView videoView = new VideoView(activity);
-        videoView.setZOrderOnTop(false);
-        videoContainer.addView(videoView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        videoView.setMediaController(new MediaController(activity));
-        Uri video = Uri.parse("android.resource://" + activity.getPackageName() + "/"
-                + R.raw.video); //do not add any extension
+//        VideoView videoView = new VideoView(activity);
+//        videoView.setZOrderOnTop(false);
+//        videoContainer.addView(videoView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+//        videoView.setMediaController(new MediaController(activity));
+//        Uri video = Uri.parse("android.resource://" + activity.getPackageName() + "/"
+//                + R.raw.video); //do not add any extension
+//
+//        videoView.setVideoURI(video);
 
-        videoView.setVideoURI(video);
-
-        return new ResourceMediaManager(videoView, episodeDetails);
+//        return new ResourceMediaManager(videoView, episodeDetails);
+        return null;
     }
 
     private ResourceMediaManager(VideoView videoView, EpisodeDetails episodeDetails) {
