@@ -62,6 +62,7 @@ public class ConnectingActivity extends Activity {
     private final Runnable stopSpeechRunnable = new Runnable() {
         @Override
         public void run() {
+            speechRecognizer.stopListening();
             speechRecognizer.cancel();
         }
     };
@@ -78,6 +79,7 @@ public class ConnectingActivity extends Activity {
         @Override
         public void onReadyForSpeech(Bundle bundle) {
             Log.d(TAG, "onReadyForSpeech");
+            setButtonPulseAnimate(true);
         }
 
         @Override
@@ -99,6 +101,7 @@ public class ConnectingActivity extends Activity {
         @Override
         public void onEndOfSpeech() {
             Log.d(TAG, "onEndOfSpeech");
+            setButtonPulseAnimate(false);
         }
 
         @Override
@@ -239,18 +242,25 @@ public class ConnectingActivity extends Activity {
         if (isEnabled) {
             buzzerButton.setEnabled(true);
             pulseImage.setVisibility(View.VISIBLE);
-            if(pulseAnim == null) {
+        }
+        else {
+            setButtonPulseAnimate(false);
+            buzzerButton.setEnabled(false);
+            pulseImage.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    private void setButtonPulseAnimate(boolean animate){
+        if(animate) {
+            if (pulseAnim == null) {
                 pulseAnim = (AnimatorSet) AnimatorInflater.loadAnimator(this, R.animator.pulse);
                 pulseAnim.setTarget(pulseImage);
             }
             pulseAnim.start();
-        }
-        else {
+        } else {
             if (pulseAnim != null){
                 pulseAnim.end();
             }
-            buzzerButton.setEnabled(false);
-            pulseImage.setVisibility(View.INVISIBLE);
         }
     }
 
