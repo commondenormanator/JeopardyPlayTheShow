@@ -25,8 +25,8 @@ import com.seismicgames.jeopardyprototype.buzzer.BuzzerServer;
 import com.seismicgames.jeopardyprototype.episode.EpisodeDetails;
 import com.seismicgames.jeopardyprototype.gameplay.GameState;
 import com.seismicgames.jeopardyprototype.ui.GameUiManager;
-import com.seismicgames.jeopardyprototype.video.MpxMediaManager;
-import com.theplatform.adk.Player;
+import com.seismicgames.jeopardyprototype.video.local.ResourceMediaManager;
+import com.seismicgames.jeopardyprototype.video.mpx.MpxMediaManager;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -41,9 +41,6 @@ public class GameActivity extends Activity {
      * Called when the activity is first created.
      */
 
-
-    private Player player;
-
     private GameState gameState;
 
     private EpisodeDetails episodeDetails = new EpisodeDetails();
@@ -56,18 +53,14 @@ public class GameActivity extends Activity {
 
 
         final ViewGroup videoContainer = (ViewGroup) this.findViewById(R.id.videoContainer);
-        player = new Player(
-                // inject player container view into ADK Player
-                videoContainer
-        );
-
 
         gameState = new GameState();
 
 
         BuzzerServer server = new BuzzerServer();
 
-        gameState.init(server, new MpxMediaManager(player, episodeDetails), new GameUiManager(this));
+//        gameState.init(server, MpxMediaManager.getInstance(videoContainer, episodeDetails), new GameUiManager(this));
+        gameState.init(server, ResourceMediaManager.getInstance(this, videoContainer, episodeDetails), new GameUiManager(this));
 
         server.start();
 
@@ -89,7 +82,6 @@ public class GameActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        player.getLifecycle().onResume();
         gameState.onResume(this);
         gameState.startGame(episodeDetails);
     }
@@ -97,13 +89,12 @@ public class GameActivity extends Activity {
     @Override
     protected void onPause() {
         gameState.onPause(this);
-        player.getLifecycle().onPause();
         super.onPause();
     }
 
     @Override
     protected void onDestroy() {
-        player.getLifecycle().destroy();
+        gameState.onDestroy(this);
         super.onDestroy();
     }
 }

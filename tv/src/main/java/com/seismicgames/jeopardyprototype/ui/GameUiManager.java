@@ -35,10 +35,26 @@ public class GameUiManager implements ScoreChangeListener{
     @BindView(R.id.podiumTimer)
     public AnswerTimer answerTimer;
 
+    @BindView(R.id.disconnectedWarning)
+    public View disconnectWarning;
+
+    @BindView(R.id.videoContainer)
+    public View videoContainer;
+
     public GameUiManager(Activity view) {
         ButterKnife.bind(this, view);
         buzzerTimerLeft.setVisibility(View.INVISIBLE);
         buzzerTimerRight.setVisibility(View.INVISIBLE);
+    }
+
+    public void showDisconnectWarning(boolean show){
+        if(show) {
+            disconnectWarning.setVisibility(View.VISIBLE);
+            disconnectWarning.getParent().requestTransparentRegion(disconnectWarning);
+        }else {
+            disconnectWarning.setVisibility(View.INVISIBLE);
+        }
+
     }
 
     public void showBuzzTimer(int duration) {

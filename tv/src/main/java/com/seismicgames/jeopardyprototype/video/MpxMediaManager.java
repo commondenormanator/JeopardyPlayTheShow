@@ -1,5 +1,6 @@
 package com.seismicgames.jeopardyprototype.video;
 
+import android.app.Activity;
 import android.util.Log;
 
 import com.seismicgames.jeopardyprototype.episode.EpisodeDetails;
@@ -20,6 +21,7 @@ import java.net.URL;
 /**
  * Created by jduffy on 7/1/16.
  */
+@Deprecated
 public class MpxMediaManager implements GameState.MediaManager {
 
     private static final String TAG = MpxMediaManager.class.getName();
@@ -88,6 +90,21 @@ public class MpxMediaManager implements GameState.MediaManager {
     @Override
     public void pause() {
         mPlayer.asMediaPlayerControl().pause();
+
+    }
+
+    @Override
+    public void onActivityResume(Activity a) {
+
+    }
+
+    @Override
+    public void onActivityPause(Activity a) {
+
+    }
+
+    @Override
+    public void onActivityDestroy(Activity a) {
 
     }
 

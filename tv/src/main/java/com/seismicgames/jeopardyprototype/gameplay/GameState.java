@@ -48,6 +48,9 @@ public class GameState {
         void registerListener(MediaEventListener listener);
         void play();
         void pause();
+        void onActivityResume(Activity a);
+        void onActivityPause(Activity a);
+        void onActivityDestroy(Activity a);
     }
 
     public interface BuzzerManager{
@@ -87,11 +90,16 @@ public class GameState {
     public void onResume(Activity a){
         activity = a;
         handler = new Handler(Looper.getMainLooper(), callback);
-
+        mMediaManager.onActivityResume(a);
     }
 
     public void onPause(Activity a){
+        mMediaManager.onActivityPause(a);
         activity = null;
+    }
+
+    public void onDestroy(Activity a){
+        mMediaManager.onActivityDestroy(a);
     }
 
     public void init(BuzzerManager b, MediaManager m, GameUiManager ui){
@@ -115,7 +123,11 @@ public class GameState {
     @MainThread
     private void onBuzzerConnChange(boolean isConnected){
         if(isConnected){
-            Toast.makeText(activity, "connected", Toast.LENGTH_LONG).show();
+            mGameUiManager.showDisconnectWarning(false);
+
+            if(activity != null) {
+                Toast.makeText(activity, "connected", Toast.LENGTH_LONG).show();
+            }
 
             resumeGame();
         } else {
@@ -124,6 +136,10 @@ public class GameState {
     }
     @MainThread
     private void waitForBuzzerConnect(){
+        if(mState==State.WAIT_FOR_MEDIA_EVENT){
+            mGameUiManager.showDisconnectWarning(true);
+        }
+
         mState = State.WAIT_FOR_CONNECTION;
         pauseGame();
 
@@ -185,6 +201,9 @@ public class GameState {
             mState = State.WAIT_FOR_MEDIA_EVENT;
             mMediaManager.play();
         } else {
+
+            mGameUiManager.showDisconnectWarning(true);
+
             //wait for connection
             waitForBuzzerConnect();
         }
