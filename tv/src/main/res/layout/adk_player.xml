@@ -42,18 +42,35 @@
         android:id="@+id/podiumTimer"
         class="com.seismicgames.jeopardyprototype.view.AnswerTimer"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="@dimen/podium_timer_height"
         android:layout_alignParentBottom="true"
         android:visibility="invisible" />
+
+    <android.widget.TextView
+        android:id="@+id/userAnswer"
+        android:layout_width="500dp"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/podiumTimer"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="8dp"
+        android:ellipsize="start"
+        android:gravity="center_horizontal"
+        android:lines="1"
+        android:shadowColor="@color/black_opaque"
+        android:shadowRadius="5.0"
+        android:shadowDx="5"
+        android:shadowDy="5"
+        android:textColor="@color/white"
+        android:textSize="40sp" />
 
 
     <ImageView
         android:id="@+id/disconnectedWarning"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-
         android:scaleType="centerCrop"
-        android:src="@drawable/jeopardy_syncing" />
+        android:src="@drawable/jeopardy_syncing"
+        android:visibility="invisible" />
 
 
 </RelativeLayout>

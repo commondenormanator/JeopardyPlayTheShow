@@ -166,12 +166,16 @@ public class GameState {
     private void onUserAnswerRequest(AnswerRequest request){
         if(mState == State.WAIT_FOR_USER_RESPONSE){
             judge.setUserAnswers(request.answers);
+            if(request.answers.size() > 0) {
+                mGameUiManager.setUserAnswer(request.answers.get(0));
+            }
         }
     }
 
     @MainThread
     private void onAnswerRead(QuestionInfo questionInfo){
         judge.scoreAnswer(questionInfo);
+        mGameUiManager.clearUserAnswer();
     }
 
     @MainThread

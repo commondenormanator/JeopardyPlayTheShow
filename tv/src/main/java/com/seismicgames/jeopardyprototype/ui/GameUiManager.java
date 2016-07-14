@@ -41,6 +41,9 @@ public class GameUiManager implements ScoreChangeListener{
     @BindView(R.id.videoContainer)
     public View videoContainer;
 
+    @BindView(R.id.userAnswer)
+    public TextView userAnswer;
+
     public GameUiManager(Activity view) {
         ButterKnife.bind(this, view);
         buzzerTimerLeft.setVisibility(View.INVISIBLE);
@@ -128,4 +131,15 @@ public class GameUiManager implements ScoreChangeListener{
             anim.end();
         }
     }
+
+
+    public void setUserAnswer(String s){
+        userAnswer.setText(s);
+    }
+
+    public void clearUserAnswer(){
+        userAnswer.setText("");
+    }
+
+
 }
