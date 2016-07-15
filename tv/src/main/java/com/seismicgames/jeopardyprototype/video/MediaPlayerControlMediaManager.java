@@ -75,6 +75,13 @@ public class MediaPlayerControlMediaManager implements GameState.MediaManager {
     }
 
     @Override
+    public void reset() {
+        mPlayer.pause();
+        mPlayer.seekTo(0);
+        mEpisodeEventIndex = 0;
+    }
+
+    @Override
     public void onActivityResume(Activity a) {
 
     }

@@ -61,5 +61,9 @@ public class AnswerJudge {
         return guess.contains(answer);
     }
 
+    public void reset(){
+        userScore = 0;
+        didBuzzIn = false;
+    }
 
 }

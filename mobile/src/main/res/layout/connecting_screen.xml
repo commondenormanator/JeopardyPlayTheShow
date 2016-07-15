@@ -14,9 +14,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:layout_margin="16dp"
             android:layout_centerHorizontal="true"
+            android:layout_margin="16dp"
             android:src="@drawable/jeopardy_logo" />
+
+        <ImageView
+            android:id="@+id/restartButton"
+            style="?metaButtonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:clickable="true"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:enabled="false"
+            android:src="@android:drawable/ic_menu_revert" />
+
 
         <Button
             android:id="@+id/dummy_button"
@@ -31,9 +43,9 @@
             android:id="@+id/buzzer_outline"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/btn_buzzer_outerlines"
             android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true" />
+            android:layout_centerVertical="true"
+            android:src="@drawable/btn_buzzer_outerlines" />
 
         <TextView
             android:id="@+id/fullscreen_content"

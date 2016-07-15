@@ -141,5 +141,10 @@ public class GameUiManager implements ScoreChangeListener{
         userAnswer.setText("");
     }
 
+    public void reset(){
+        hideAnswerTimer();
+        hideBuzzTimer();
+        userScore.setText("");
+    }
 
 }

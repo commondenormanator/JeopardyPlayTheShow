@@ -1,6 +1,6 @@
 package com.seismicgames.jeopardyprototype.gameplay.events;
 
-import com.seismicgames.jeopardyprototype.gameplay.Constants;
+import com.seismicgames.jeopardyprototype.Constants;
 
 /**
  * Created by jduffy on 6/29/16.

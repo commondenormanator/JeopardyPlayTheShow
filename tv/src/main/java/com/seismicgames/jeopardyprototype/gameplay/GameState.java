@@ -9,11 +9,11 @@ import android.support.annotation.WorkerThread;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.seismicgames.jeopardyprototype.Constants;
 import com.seismicgames.jeopardyprototype.buzzer.message.AnswerRequest;
 import com.seismicgames.jeopardyprototype.episode.EpisodeDetails;
 import com.seismicgames.jeopardyprototype.episode.QuestionInfo;
 import com.seismicgames.jeopardyprototype.gameplay.score.AnswerJudge;
-import com.seismicgames.jeopardyprototype.gameplay.score.ScoreChangeListener;
 import com.seismicgames.jeopardyprototype.ui.GameUiManager;
 
 /**
@@ -35,7 +35,10 @@ public class GameState {
         USER_ANSWER_TIMEOUT,
         USER_ANSWER_REQUEST,
 
-        ANSWER_READ
+        ANSWER_READ,
+
+        USER_RESTART
+
     }
 
 
@@ -48,6 +51,7 @@ public class GameState {
         void registerListener(MediaEventListener listener);
         void play();
         void pause();
+        void reset();
         void onActivityResume(Activity a);
         void onActivityPause(Activity a);
         void onActivityDestroy(Activity a);
@@ -64,6 +68,7 @@ public class GameState {
         void onBuzzerConnectivityChange(boolean isConnected);
 
         void onUserBuzzIn();
+        void onUserRestart();
         void onUserAnswer(AnswerRequest request);
     }
 
@@ -190,8 +195,8 @@ public class GameState {
         handler.removeMessages(HandlerMessageType.BUZZ_IN_TIMEOUT.ordinal());
         mGameUiManager.hideBuzzTimer();
 
-        mGameUiManager.showAnswerTimer(Constants.BuzzInTimeout);
-        handler.sendMessageDelayed(handler.obtainMessage(HandlerMessageType.USER_ANSWER_TIMEOUT.ordinal()), Constants.BuzzInTimeout);
+        mGameUiManager.showAnswerTimer(Constants.AnswerTimeout);
+        handler.sendMessageDelayed(handler.obtainMessage(HandlerMessageType.USER_ANSWER_TIMEOUT.ordinal()), Constants.AnswerTimeout);
         judge.setUserBuzzedIn();
 
 
@@ -220,6 +225,12 @@ public class GameState {
 
     ///Game methods end
 
+    public void restartGame(){
+        mMediaManager.reset();
+        judge.reset();
+        mGameUiManager.reset();
+        resumeGame();
+    }
 
 
     @MainThread
@@ -248,6 +259,9 @@ public class GameState {
                 break;
             case USER_ANSWER_REQUEST:
                 onUserAnswerRequest((AnswerRequest) message.obj);
+                break;
+            case USER_RESTART:
+                restartGame();
                 break;
             default:
                 Log.w("GAME_EVENT_HANDLER", type.name() + " was not handled.");
@@ -289,6 +303,10 @@ public class GameState {
         @Override
         public void onUserAnswer(AnswerRequest request) {
             handler.sendMessage(handler.obtainMessage(HandlerMessageType.USER_ANSWER_REQUEST.ordinal(), request));
+        }
+        @Override
+        public void onUserRestart() {
+            handler.sendMessage(handler.obtainMessage(HandlerMessageType.USER_RESTART.ordinal()));
         }
     }
 }

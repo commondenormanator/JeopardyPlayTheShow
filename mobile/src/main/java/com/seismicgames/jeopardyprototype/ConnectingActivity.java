@@ -4,6 +4,7 @@ import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -22,6 +23,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ViewAnimator;
 
 import com.seismicgames.jeopardyprototype.buzzer.BuzzerClient;
 import com.seismicgames.jeopardyprototype.buzzer.message.AnswerRequest;
@@ -107,6 +109,7 @@ public class ConnectingActivity extends Activity {
         @Override
         public void onError(int i) {
             Log.d(TAG, "onError" + i);
+            setButtonPulseAnimate(false);
         }
 
         @Override
@@ -170,6 +173,13 @@ public class ConnectingActivity extends Activity {
         }
     }
 
+    @OnClick(R.id.restartButton)
+    protected void onRestartClick() {
+        if (client != null && client.getConnection().isOpen()) {
+            client.sendRestartRequest();
+        }
+    }
+
 
     @Override
     protected void onStart() {
@@ -230,7 +240,7 @@ public class ConnectingActivity extends Activity {
                                 intent.putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, true);
                             }
                             speechRecognizer.startListening(intent);
-                            mHandler.postDelayed(stopSpeechRunnable, 9000);
+                            mHandler.postDelayed(stopSpeechRunnable, Constants.AnswerTimeout - 1000);
                         }
                     });
                 }
@@ -256,9 +266,9 @@ public class ConnectingActivity extends Activity {
                 pulseAnim = (AnimatorSet) AnimatorInflater.loadAnimator(this, R.animator.pulse);
                 pulseAnim.setTarget(pulseImage);
             }
-            pulseAnim.start();
+            if(!pulseAnim.isRunning()) pulseAnim.start();
         } else {
-            if (pulseAnim != null){
+            if (pulseAnim != null && pulseAnim.isRunning()){
                 pulseAnim.end();
             }
         }

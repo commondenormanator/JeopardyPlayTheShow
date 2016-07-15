@@ -11,6 +11,7 @@ import com.google.gson.JsonObject;
 import com.seismicgames.jeopardyprototype.buzzer.message.AnswerRequest;
 import com.seismicgames.jeopardyprototype.buzzer.message.BuzzInResponse;
 import com.seismicgames.jeopardyprototype.buzzer.message.BuzzerMessage;
+import com.seismicgames.jeopardyprototype.buzzer.message.RestartRequest;
 import com.seismicgames.jeopardyprototype.buzzer.transport.PingingWebSockServer;
 import com.seismicgames.jeopardyprototype.gameplay.GameState;
 
@@ -80,6 +81,9 @@ public class BuzzerServer extends PingingWebSockServer implements GameState.Buzz
                 break;
             case "AnswerRequest":
                 listener.onUserAnswer(gson.fromJson(json, AnswerRequest.class));
+                break;
+            case "RestartRequest":
+                listener.onUserRestart();
                 break;
             default:
                 Log.e(TAG, "Unhandled message: " + message);
