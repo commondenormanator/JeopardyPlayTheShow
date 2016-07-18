@@ -1,6 +1,8 @@
 package com.seismicgames.jeopardyprototype.view;
 
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,12 +46,17 @@ public class AnswerTimer extends LinearLayout {
     }
 
     public AnswerTimer(Context context, AttributeSet attrs, int defStyleAttr) {
-        this(context, attrs, defStyleAttr, 0);
+        super(context, attrs, defStyleAttr);
+        init(context);
     }
 
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public AnswerTimer(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-
+        init(context);
+    }
+    private void init(Context context){
         LayoutInflater.from(context).inflate(R.layout.answer_timer, this, true);
         ButterKnife.bind(this);
         lights.add(light0);

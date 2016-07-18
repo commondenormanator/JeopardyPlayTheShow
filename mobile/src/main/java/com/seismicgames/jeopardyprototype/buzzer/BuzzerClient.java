@@ -14,6 +14,7 @@ import com.seismicgames.jeopardyprototype.buzzer.message.BuzzInRequest;
 import com.seismicgames.jeopardyprototype.buzzer.message.BuzzInResponse;
 import com.seismicgames.jeopardyprototype.buzzer.message.BuzzerMessageClientListener;
 import com.seismicgames.jeopardyprototype.buzzer.message.RestartRequest;
+import com.seismicgames.jeopardyprototype.buzzer.message.VoiceCaptureState;
 import com.seismicgames.jeopardyprototype.buzzer.transport.PingingWebSockClient;
 
 import org.java_websocket.WebSocket;
@@ -96,6 +97,11 @@ public class BuzzerClient extends PingingWebSockClient {
 
     public void sendRestartRequest(){
         send(gson.toJson(new RestartRequest()));
+    }
+
+
+    public void sendVoiceState(VoiceCaptureState.State state){
+        send(gson.toJson(new VoiceCaptureState(state)));
     }
 
 }

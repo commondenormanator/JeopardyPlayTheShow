@@ -12,6 +12,7 @@ import com.seismicgames.jeopardyprototype.buzzer.message.AnswerRequest;
 import com.seismicgames.jeopardyprototype.buzzer.message.BuzzInResponse;
 import com.seismicgames.jeopardyprototype.buzzer.message.BuzzerMessage;
 import com.seismicgames.jeopardyprototype.buzzer.message.RestartRequest;
+import com.seismicgames.jeopardyprototype.buzzer.message.VoiceCaptureState;
 import com.seismicgames.jeopardyprototype.buzzer.transport.PingingWebSockServer;
 import com.seismicgames.jeopardyprototype.gameplay.GameState;
 
@@ -84,6 +85,9 @@ public class BuzzerServer extends PingingWebSockServer implements GameState.Buzz
                 break;
             case "RestartRequest":
                 listener.onUserRestart();
+                break;
+            case "VoiceCaptureState":
+                listener.onVoiceCaptureState(gson.fromJson(json, VoiceCaptureState.class));
                 break;
             default:
                 Log.e(TAG, "Unhandled message: " + message);

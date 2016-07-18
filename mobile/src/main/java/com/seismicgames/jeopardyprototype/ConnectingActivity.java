@@ -29,6 +29,7 @@ import com.seismicgames.jeopardyprototype.buzzer.BuzzerClient;
 import com.seismicgames.jeopardyprototype.buzzer.message.AnswerRequest;
 import com.seismicgames.jeopardyprototype.buzzer.message.BuzzInResponse;
 import com.seismicgames.jeopardyprototype.buzzer.message.BuzzerMessageClientListener;
+import com.seismicgames.jeopardyprototype.buzzer.message.VoiceCaptureState;
 import com.seismicgames.jeopardyprototype.controller.ControllerClient;
 import com.seismicgames.jeopardyprototype.buzzer.HostScanner;
 
@@ -82,12 +83,14 @@ public class ConnectingActivity extends Activity {
         public void onReadyForSpeech(Bundle bundle) {
             Log.d(TAG, "onReadyForSpeech");
             setButtonPulseAnimate(true);
+            client.sendVoiceState(VoiceCaptureState.State.LISTENING);
         }
 
         @Override
         public void onBeginningOfSpeech() {
             Log.d(TAG, "onBeginningOfSpeech");
             lastResults.clear();
+            client.sendVoiceState(VoiceCaptureState.State.SPEECH_BEGIN);
         }
 
         @Override
@@ -104,6 +107,7 @@ public class ConnectingActivity extends Activity {
         public void onEndOfSpeech() {
             Log.d(TAG, "onEndOfSpeech");
             setButtonPulseAnimate(false);
+            client.sendVoiceState(VoiceCaptureState.State.SPEECH_END);
         }
 
         @Override
@@ -131,6 +135,7 @@ public class ConnectingActivity extends Activity {
                 }
             }
 
+            client.sendVoiceState(VoiceCaptureState.State.RECOGNITION_COMPLETE);
         }
 
         @Override

@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.seismicgames.jeopardyprototype.Constants;
 import com.seismicgames.jeopardyprototype.buzzer.message.AnswerRequest;
+import com.seismicgames.jeopardyprototype.buzzer.message.VoiceCaptureState;
 import com.seismicgames.jeopardyprototype.episode.EpisodeDetails;
 import com.seismicgames.jeopardyprototype.episode.QuestionInfo;
 import com.seismicgames.jeopardyprototype.gameplay.score.AnswerJudge;
@@ -36,6 +37,8 @@ public class GameState {
         USER_ANSWER_REQUEST,
 
         ANSWER_READ,
+
+        VOICE_CAPTURE_STATE,
 
         USER_RESTART
 
@@ -70,6 +73,7 @@ public class GameState {
         void onUserBuzzIn();
         void onUserRestart();
         void onUserAnswer(AnswerRequest request);
+        void onVoiceCaptureState(VoiceCaptureState request);
     }
 
     private State mState;
@@ -178,6 +182,11 @@ public class GameState {
     }
 
     @MainThread
+    private void onVoiceCaptureState(VoiceCaptureState request){
+        mGameUiManager.onVoiceCaptureState(request.state);
+    }
+
+    @MainThread
     private void onAnswerRead(QuestionInfo questionInfo){
         judge.scoreAnswer(questionInfo);
         mGameUiManager.clearUserAnswer();
@@ -260,6 +269,9 @@ public class GameState {
             case USER_ANSWER_REQUEST:
                 onUserAnswerRequest((AnswerRequest) message.obj);
                 break;
+            case VOICE_CAPTURE_STATE:
+                onVoiceCaptureState((VoiceCaptureState) message.obj);
+                break;
             case USER_RESTART:
                 restartGame();
                 break;
@@ -304,6 +316,12 @@ public class GameState {
         public void onUserAnswer(AnswerRequest request) {
             handler.sendMessage(handler.obtainMessage(HandlerMessageType.USER_ANSWER_REQUEST.ordinal(), request));
         }
+
+        @Override
+        public void onVoiceCaptureState(VoiceCaptureState request) {
+            handler.sendMessage(handler.obtainMessage(HandlerMessageType.VOICE_CAPTURE_STATE.ordinal(), request));
+        }
+
         @Override
         public void onUserRestart() {
             handler.sendMessage(handler.obtainMessage(HandlerMessageType.USER_RESTART.ordinal()));

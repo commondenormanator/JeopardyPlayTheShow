@@ -9,10 +9,12 @@ import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.seismicgames.jeopardyprototype.R;
+import com.seismicgames.jeopardyprototype.buzzer.message.VoiceCaptureState;
 import com.seismicgames.jeopardyprototype.gameplay.score.ScoreChangeListener;
 import com.seismicgames.jeopardyprototype.view.AnswerTimer;
 
@@ -43,6 +45,9 @@ public class GameUiManager implements ScoreChangeListener{
 
     @BindView(R.id.userAnswer)
     public TextView userAnswer;
+
+    @BindView(R.id.micIcon)
+    public ImageView micIcon;
 
     public GameUiManager(Activity view) {
         ButterKnife.bind(this, view);
@@ -139,7 +144,30 @@ public class GameUiManager implements ScoreChangeListener{
 
     public void clearUserAnswer(){
         userAnswer.setText("");
+        micIcon.setVisibility(View.GONE);
     }
+
+
+    public void onVoiceCaptureState(VoiceCaptureState.State state){
+        switch (state){
+
+            case LISTENING:
+                micIcon.setVisibility(View.VISIBLE);
+                micIcon.setImageResource(R.drawable.lb_ic_search_mic_out);
+                break;
+            case SPEECH_BEGIN:
+                micIcon.setVisibility(View.VISIBLE);
+                micIcon.setImageResource(R.drawable.lb_ic_search_mic);
+                break;
+            case SPEECH_END:
+                micIcon.setVisibility(View.GONE);
+                break;
+            case RECOGNITION_COMPLETE:
+                micIcon.setVisibility(View.GONE);
+                break;
+        }
+    }
+
 
     public void reset(){
         hideAnswerTimer();
