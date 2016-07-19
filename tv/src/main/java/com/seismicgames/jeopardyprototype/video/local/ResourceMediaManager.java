@@ -23,7 +23,6 @@ public class ResourceMediaManager extends MediaPlayerControlMediaManager {
         VideoView videoView = new VideoView(activity);
         videoView.setZOrderOnTop(false);
         videoContainer.addView(videoView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        videoView.setMediaController(new MediaController(activity));
 //        Uri video = Uri.parse("android.resource://" + activity.getPackageName() + "/"
 //                + R.raw.video); //do not add any extension
 
