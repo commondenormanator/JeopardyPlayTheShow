@@ -9,11 +9,14 @@ import org.java_websocket.client.WebSocketClient;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -34,14 +37,18 @@ public class HostScanner {
         return byteCounter++;
     }
 
-    public void scanForHost(Context context) {
-        WifiManager wm = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-        int ip = wm.getConnectionInfo().getIpAddress();
+    public boolean scanForHost(Context context) {
 
-        ByteBuffer buffer = ByteBuffer.allocate((4));
-        buffer.order(ByteOrder.LITTLE_ENDIAN);
-        buffer.putInt(ip);
-        byte[] localHost = buffer.array();
+        byte[] localHost = null;
+        try {
+            localHost = getWifiIp();
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+
+        if(localHost == null){
+            return false;
+        }
 
         poolExecutor = Executors.newFixedThreadPool(POOL_SIZE);
 
@@ -51,7 +58,40 @@ public class HostScanner {
             list.add(runnable);
             poolExecutor.submit(runnable);
         }
+
+        return true;
     }
+
+    private byte[] getWifiIp() throws SocketException {
+        for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces();
+             en.hasMoreElements(); ) {
+            NetworkInterface intf = en.nextElement();
+            if (intf.isLoopback()) {
+                continue;
+            }
+            if (intf.isVirtual()) {
+                continue;
+            }
+            if (!intf.isUp()) {
+                continue;
+            }
+            if (intf.isPointToPoint()) {
+                continue;
+            }
+            if (intf.getHardwareAddress() == null) {
+                continue;
+            }
+            for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses();
+                 enumIpAddr.hasMoreElements(); ) {
+                InetAddress inetAddress = enumIpAddr.nextElement();
+                if (inetAddress.getAddress().length == 4) {
+                    return inetAddress.getAddress();
+                }
+            }
+        }
+        return null;
+    }
+
 
     public void stop(){
         finishScan(this.client);

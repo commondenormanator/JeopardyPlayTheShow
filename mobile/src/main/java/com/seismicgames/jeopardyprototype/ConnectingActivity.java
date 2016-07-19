@@ -221,10 +221,13 @@ public class ConnectingActivity extends Activity {
     }
 
     private void scanForHost(){
-        textView.setText("searching");
-        hostScanner.scanForHost(this);
-        setButtonEnabled(false);
-        mHandler.post(CheckConnectivityRunnable);
+        if(hostScanner.scanForHost(this)){
+            textView.setText("searching");
+            setButtonEnabled(false);
+            mHandler.post(CheckConnectivityRunnable);
+        } else {
+            textView.setText("unable to connect");
+        }
     }
 
     private void setClientConnection(BuzzerClient client){
