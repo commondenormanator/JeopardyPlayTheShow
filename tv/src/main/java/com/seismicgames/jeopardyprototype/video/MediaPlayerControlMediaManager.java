@@ -22,7 +22,7 @@ public class MediaPlayerControlMediaManager implements GameState.MediaManager {
     private MediaController.MediaPlayerControl mPlayer;
     private EpisodeDetails mDetails;
 
-    private GameState.MediaEventListener mListener;
+    protected GameState.MediaEventListener mListener;
 
     private int mEpisodeEventIndex;
 

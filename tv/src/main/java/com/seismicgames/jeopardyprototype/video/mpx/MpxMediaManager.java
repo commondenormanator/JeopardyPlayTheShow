@@ -6,6 +6,8 @@ import android.view.ViewGroup;
 import com.seismicgames.jeopardyprototype.episode.EpisodeDetails;
 import com.seismicgames.jeopardyprototype.video.MediaPlayerControlMediaManager;
 import com.theplatform.adk.Player;
+import com.theplatform.adk.player.event.api.data.MediaEndEvent;
+import com.theplatform.adk.player.event.api.data.PlayerEventListener;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -31,6 +33,8 @@ public class MpxMediaManager extends MediaPlayerControlMediaManager {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
+
+        mPlayer.asEventDispatcher().addEventListener(MediaEndEvent.getType(), new MediaCompleteListener());
     }
 
     @Override
@@ -50,4 +54,12 @@ public class MpxMediaManager extends MediaPlayerControlMediaManager {
         super.onActivityDestroy(a);
         mPlayer.getLifecycle().destroy();
     }
+
+    private class MediaCompleteListener implements PlayerEventListener<MediaEndEvent> {
+        @Override
+        public void onPlayerEvent(MediaEndEvent mediaEndEvent) {
+            if (mListener != null) mListener.onMediaComplete();
+        }
+    }
+
 }

@@ -1,6 +1,7 @@
 package com.seismicgames.jeopardyprototype.gameplay;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -9,6 +10,7 @@ import android.support.annotation.WorkerThread;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.seismicgames.jeopardyprototype.AfterActionReportActivity;
 import com.seismicgames.jeopardyprototype.Constants;
 import com.seismicgames.jeopardyprototype.buzzer.message.AnswerRequest;
 import com.seismicgames.jeopardyprototype.buzzer.message.VoiceCaptureState;
@@ -40,7 +42,9 @@ public class GameState {
 
         VOICE_CAPTURE_STATE,
 
-        USER_RESTART
+        USER_RESTART,
+
+        MEDIA_COMPLETE
 
     }
 
@@ -48,6 +52,7 @@ public class GameState {
     public interface MediaEventListener{
         void onQuestionAsked();
         void onAnswerRead(QuestionInfo info);
+        void onMediaComplete();
     }
 
     public interface MediaManager{
@@ -241,6 +246,11 @@ public class GameState {
         resumeGame();
     }
 
+    private void onMediaComplete(){
+        activity.startActivity(new Intent(activity, AfterActionReportActivity.class));
+        activity.finish();
+    }
+
 
     @MainThread
     private boolean handleMessage(Message message){
@@ -275,6 +285,10 @@ public class GameState {
             case USER_RESTART:
                 restartGame();
                 break;
+            case MEDIA_COMPLETE:
+                onMediaComplete();
+                break;
+
             default:
                 Log.w("GAME_EVENT_HANDLER", type.name() + " was not handled.");
         }
@@ -295,6 +309,11 @@ public class GameState {
         @Override
         public void onAnswerRead(QuestionInfo info) {
             handler.sendMessage(handler.obtainMessage(HandlerMessageType.ANSWER_READ.ordinal(), info));
+        }
+
+        @Override
+        public void onMediaComplete(){
+            handler.sendMessage(handler.obtainMessage(HandlerMessageType.MEDIA_COMPLETE.ordinal()));
         }
     }
 
