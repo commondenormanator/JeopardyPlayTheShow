@@ -55,8 +55,8 @@ public class AnswerJudge {
 
 
     private boolean compareAnswer(String guess, String answer){
-        guess = guess.toLowerCase();
-        answer = answer.toLowerCase();
+        guess = AnswerUtil.normalizeAnswer(guess.toLowerCase());
+        answer = AnswerUtil.normalizeAnswer(answer.toLowerCase());
 
         return guess.contains(answer);
     }
