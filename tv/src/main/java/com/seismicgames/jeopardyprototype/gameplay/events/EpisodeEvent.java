@@ -7,7 +7,7 @@ import com.seismicgames.jeopardyprototype.Constants;
  */
 public class EpisodeEvent {
     public enum Type{
-        Skipped, EpisodeStart, Categories, QuestAsked, AnswerRead
+        Skipped, FrameZero, EpisodeStart, Categories, QuestAsked, AnswerRead
     }
     public int timestamp;
     public Type type;

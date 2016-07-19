@@ -1,5 +1,7 @@
 package com.seismicgames.jeopardyprototype.episode;
 
+import com.seismicgames.jeopardyprototype.util.TimeCode;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -22,18 +24,12 @@ public class QuestionInfo {
         this.clue = clue;
         this.answers = parseAnswer(answerString);
         this.value = value;
-        this.readTimestamp = parseTimestamp(read_timestamp);
-        this.answerTimestamp = parseTimestamp(answer_timestamp);
+        this.readTimestamp = TimeCode.parse(read_timestamp);
+        this.answerTimestamp = TimeCode.parse(answer_timestamp);
     }
 
 
-    private int parseTimestamp(String ts) {
-        int millis = 116000;
-        millis += Integer.parseInt(ts.substring(3, 5)) * 60 * 1000;
-        millis += Integer.parseInt(ts.substring(6, 8)) * 1000;
-        millis += Integer.parseInt(ts.substring(9, 11)) * 1000d / 29.97d;
-        return millis;
-    }
+
 
 
     private static String[] parseAnswer(String answerString) {
