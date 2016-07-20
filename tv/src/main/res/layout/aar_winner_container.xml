@@ -14,13 +14,6 @@
         android:textColor="#FFF200"/>
 
     <ImageView
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_toRightOf="@id/winner_container_tag"
-        android:layout_margin="6dp"
-        android:src="@drawable/jennings_portrait"/>
-
-    <ImageView
         android:id="@+id/winner_container_tag"
         android:layout_width="60dp"
         android:layout_height="60dp"
@@ -29,6 +22,13 @@
         android:layout_marginLeft="-4dp"
         android:layout_marginTop="-4dp"
         android:layout_alignParentLeft="true"/>
+
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_toRightOf="@id/winner_container_tag"
+        android:layout_margin="6dp"
+        android:src="@drawable/jennings_portrait"/>
 
 </RelativeLayout>
 
