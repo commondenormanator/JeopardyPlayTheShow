@@ -3,10 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.seismicgames.jeopardyprototype.AfterActionReportActivity">
 
     <TextView
@@ -14,5 +10,29 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:text="You did it!" />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/main_bg"/>
+
+    <ImageView
+        android:id="@+id/aar_logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="24dp"
+        android:src="@drawable/jeopardy_logo" />
+
+    <include
+        android:id="@+id/winner1"
+        layout="@layout/aar_winner_container"
+        android:layout_below="@id/aar_logo"
+        android:layout_height="wrap_content"
+        android:layout_width="500dp"
+        android:layout_centerHorizontal="true"
+        android:marginTop="16dp"/>
 
 </RelativeLayout>

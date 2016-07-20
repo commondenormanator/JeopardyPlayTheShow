@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:clipToPadding="false" android:layout_height="100dp" android:background="@drawable/leaderboard_winner_container_patched">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="$99,999"
+        android:layout_centerInParent="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="32dp"
+        android:textSize="32dp"
+        android:textStyle="bold"
+        android:textColor="#FFF200"/>
+
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_toRightOf="@id/winner_container_tag"
+        android:layout_margin="6dp"
+        android:src="@drawable/portrait_buzzed"/>
+
+    <ImageView
+        android:id="@+id/winner_container_tag"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/leaderboard_winner_tag"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="-4dp"
+        android:layout_marginTop="-4dp"
+        android:layout_alignParentLeft="true"/>
+
+</RelativeLayout>
+
