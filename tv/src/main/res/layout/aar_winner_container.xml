@@ -18,7 +18,7 @@
         android:layout_height="80dp"
         android:layout_toRightOf="@id/winner_container_tag"
         android:layout_margin="6dp"
-        android:src="@drawable/portrait_buzzed"/>
+        android:src="@drawable/jennings_portrait"/>
 
     <ImageView
         android:id="@+id/winner_container_tag"
