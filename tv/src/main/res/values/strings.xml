@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">JeopardyPrototype</string>
+    <string name="app_name">Jeopardy Prototype</string>
     <string name="browse_title"><![CDATA[Videos by Seismic]]></string>
     <string name="related_movies">Related Videos</string>
     <string name="vertical_grid_title"><![CDATA[Vertical Video Grid]]></string>
