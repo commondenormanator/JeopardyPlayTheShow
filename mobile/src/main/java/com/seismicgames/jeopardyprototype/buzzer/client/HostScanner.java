@@ -1,16 +1,15 @@
-package com.seismicgames.jeopardyprototype.controller;
+package com.seismicgames.jeopardyprototype.buzzer.client;
 
-import android.content.Context;
-import android.net.wifi.WifiManager;
 import android.support.annotation.WorkerThread;
 import android.util.Log;
 
+import com.seismicgames.jeopardyprototype.InetAddressUtil;
+
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -26,20 +25,36 @@ public class HostScanner {
     private volatile byte byteCounter = 0;
     private List<ScanRunnable> list = new ArrayList<>();
 
-    public ControllerClient client;
+    //public BuzzerClient client;
+
+    private Listener mListener;
+
+
+    public interface Listener {
+        void onHostFound(BuzzerClient client);
+    }
+
+    private boolean isScanning = false;
+
 
     private synchronized byte getNextByte() {
         return byteCounter++;
     }
 
-    public void scanForHost(Context context) {
-        WifiManager wm = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-        int ip = wm.getConnectionInfo().getIpAddress();
+    public boolean scanForHost(Listener listener) {
+        finishScan();
+        isScanning = true;
+        mListener = listener;
+        byte[] localHost = null;
+        try {
+            localHost = InetAddressUtil.getWifiIp();
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
 
-        ByteBuffer buffer = ByteBuffer.allocate((4));
-        buffer.order(ByteOrder.LITTLE_ENDIAN);
-        buffer.putInt(ip);
-        byte[] localHost = buffer.array();
+        if (localHost == null) {
+            return false;
+        }
 
         poolExecutor = Executors.newFixedThreadPool(POOL_SIZE);
 
@@ -49,18 +64,27 @@ public class HostScanner {
             list.add(runnable);
             poolExecutor.submit(runnable);
         }
+
+        return true;
     }
 
+    public void stop() {
+        finishScan();
+    }
+
+    public boolean isScanning() {
+        return isScanning;
+    }
 
     @WorkerThread
-    static ControllerClient attemptConnect(byte[] address) {
+    static BuzzerClient attemptConnect(byte[] address) {
         try {
             InetAddress possibleHost = InetAddress.getByAddress(address);
             Log.e(TAG, String.format("Attempting: %s", possibleHost.getHostAddress()));
             if (possibleHost.isReachable(1000)) {
                 Log.d(TAG, String.format("%s is reachable", possibleHost.getHostAddress()));
 
-                ControllerClient client = new ControllerClient(new URI("ws", "", possibleHost.getHostAddress(), ControllerClient.SERVER_PORT, "", "", ""));
+                BuzzerClient client = new BuzzerClient(new URI("ws", "", possibleHost.getHostAddress(), BuzzerClient.SERVER_PORT, "", "", ""));
                 try {
                     client.connectBlocking();
                 } catch (InterruptedException e) {
@@ -79,21 +103,24 @@ public class HostScanner {
         return null;
     }
 
-    private void finishScan(ControllerClient client) {
+    private void finishScan() {
+        isScanning = false;
         for (ScanRunnable r : list) {
             r.canceled = true;
         }
+        list.clear();
 
-        poolExecutor.shutdown();
-        poolExecutor = null;
-        this.client = client;
+        if (poolExecutor != null) {
+            poolExecutor.shutdown();
+            poolExecutor = null;
+        }
     }
 
     private static class ScanRunnable implements Runnable {
         private final HostScanner hostScanner;
         private final byte[] subnet;
         public volatile boolean canceled = false;
-        public ControllerClient client;
+        public BuzzerClient client;
 
         private ScanRunnable(HostScanner hostScanner, byte[] subnet) {
             this.hostScanner = hostScanner;
@@ -103,14 +130,21 @@ public class HostScanner {
         @Override
         public void run() {
             while (!canceled) {
+                byte lastIpField = hostScanner.getNextByte();
                 client = HostScanner.attemptConnect(new byte[]{
                         subnet[0],
                         subnet[1],
                         subnet[2],
-                        hostScanner.getNextByte()
+                        lastIpField
                 });
                 if (client != null) {
-                    hostScanner.finishScan(client);
+                    //set byte counter to right ip.  Aids reconnect speed.
+                    hostScanner.byteCounter = lastIpField;
+                    try {
+                        hostScanner.mListener.onHostFound(client);
+                    } finally {
+                        hostScanner.finishScan();
+                    }
                 }
             }
         }

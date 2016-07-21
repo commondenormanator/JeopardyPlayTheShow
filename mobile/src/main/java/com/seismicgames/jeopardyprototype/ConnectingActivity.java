@@ -1,10 +1,8 @@
 package com.seismicgames.jeopardyprototype;
 
 import android.Manifest;
-import android.animation.Animator;
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
-import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -17,22 +15,15 @@ import android.speech.SpeechRecognizer;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.ViewAnimator;
 
-import com.seismicgames.jeopardyprototype.buzzer.BuzzerClient;
-import com.seismicgames.jeopardyprototype.buzzer.OnConnectionChangeListener;
-import com.seismicgames.jeopardyprototype.buzzer.message.AnswerRequest;
+import com.seismicgames.jeopardyprototype.buzzer.client.BuzzerConnectionManager;
+import com.seismicgames.jeopardyprototype.buzzer.client.listeners.ConnectionEventListener;
+import com.seismicgames.jeopardyprototype.buzzer.client.listeners.GameplayEventListener;
 import com.seismicgames.jeopardyprototype.buzzer.message.BuzzInResponse;
-import com.seismicgames.jeopardyprototype.buzzer.message.BuzzerMessageClientListener;
 import com.seismicgames.jeopardyprototype.buzzer.message.VoiceCaptureState;
-import com.seismicgames.jeopardyprototype.controller.ControllerClient;
-import com.seismicgames.jeopardyprototype.buzzer.HostScanner;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,12 +47,7 @@ public class ConnectingActivity extends Activity {
     protected ImageView pulseImage;
     protected AnimatorSet pulseAnim;
 
-    private ControllerClient.HostScanTask task;
-
-    private HostScanner hostScanner;
-
     private Handler mHandler = new Handler();
-    private final CheckConnectivityRunnable CheckConnectivityRunnable = new CheckConnectivityRunnable();
 
     private final Runnable stopSpeechRunnable = new Runnable() {
         @Override
@@ -71,7 +57,7 @@ public class ConnectingActivity extends Activity {
         }
     };
 
-    private BuzzerClient client;
+    private BuzzerConnectionManager mConnection;
 
 
     private SpeechRecognizer speechRecognizer;
@@ -84,14 +70,14 @@ public class ConnectingActivity extends Activity {
         public void onReadyForSpeech(Bundle bundle) {
             Log.d(TAG, "onReadyForSpeech");
             setButtonPulseAnimate(true);
-            client.sendVoiceState(VoiceCaptureState.State.LISTENING);
+            mConnection.gameplaySender().sendVoiceState(VoiceCaptureState.State.LISTENING);
         }
 
         @Override
         public void onBeginningOfSpeech() {
             Log.d(TAG, "onBeginningOfSpeech");
             lastResults.clear();
-            client.sendVoiceState(VoiceCaptureState.State.SPEECH_BEGIN);
+            mConnection.gameplaySender().sendVoiceState(VoiceCaptureState.State.SPEECH_BEGIN);
         }
 
         @Override
@@ -108,7 +94,7 @@ public class ConnectingActivity extends Activity {
         public void onEndOfSpeech() {
             Log.d(TAG, "onEndOfSpeech");
             setButtonPulseAnimate(false);
-            client.sendVoiceState(VoiceCaptureState.State.SPEECH_END);
+            mConnection.gameplaySender().sendVoiceState(VoiceCaptureState.State.SPEECH_END);
         }
 
         @Override
@@ -131,12 +117,12 @@ public class ConnectingActivity extends Activity {
                 List<String> resCopy = new ArrayList<String>(results);
                 resCopy.removeAll(lastResults);
                 if(resCopy.size() > 0){
-                    client.sendAnswerRequest(results);
+                    mConnection.gameplaySender().sendAnswerRequest(results);
                     lastResults = results;
                 }
             }
 
-            client.sendVoiceState(VoiceCaptureState.State.RECOGNITION_COMPLETE);
+            mConnection.gameplaySender().sendVoiceState(VoiceCaptureState.State.RECOGNITION_COMPLETE);
         }
 
         @Override
@@ -153,7 +139,7 @@ public class ConnectingActivity extends Activity {
                 List<String> resCopy = new ArrayList<String>(results);
                 resCopy.removeAll(lastResults);
                 if(resCopy.size() > 0){
-                    client.sendAnswerRequest(results);
+                    mConnection.gameplaySender().sendAnswerRequest(results);
                     lastResults = results;
                 }
             }
@@ -170,85 +156,32 @@ public class ConnectingActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.connecting_screen);
         ButterKnife.bind(this);
-    }
+        mConnection = BuzzerConnectionManager.getInstance(getApplication());
 
-    @OnClick(R.id.dummy_button)
-    protected void onButtonClick() {
-        if (client != null && client.getConnection().isOpen()) {
-            client.sendBuzzInRequest();
-        }
-    }
-
-    @OnClick(R.id.restartButton)
-    protected void onRestartClick() {
-        if (client != null && client.getConnection().isOpen()) {
-            client.sendRestartRequest();
-        }
-    }
-
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) !=  PackageManager.PERMISSION_GRANTED){
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, 0);
-            }
-        }
-
-
-        hostScanner = new HostScanner();
-        scanForHost();
-
-        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
-        speechRecognizer.setRecognitionListener(this.recognitionListener);
-    }
-
-    @Override
-    protected void onStop() {
-        if(speechRecognizer != null) {
-            speechRecognizer.destroy();
-            speechRecognizer = null;
-        }
-
-        hostScanner.stop();
-        mHandler.removeCallbacks(CheckConnectivityRunnable);
-
-        if(client != null){
-            client.setConnectionListener(null);
-            client.close();
-            client = null;
-        }
-        super.onStop();
-    }
-
-    private void scanForHost(){
-        if(hostScanner.scanForHost(this)){
-            textView.setText("searching");
-            setButtonEnabled(false);
-            mHandler.post(CheckConnectivityRunnable);
-        } else {
-            textView.setText("unable to connect");
-        }
-    }
-
-    private void setClientConnection(BuzzerClient client){
-        setButtonEnabled(true);
-        this.client = client;
-        this.client.setConnectionListener(new OnConnectionChangeListener() {
+        mConnection.addListener(new ConnectionEventListener() {
             @Override
-            public void OnConnectionClosed() {
+            public void onBuzzerConnectivityChange(final boolean isConnected) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        scanForHost();
+                        if (isConnected) {
+                            showConnectedUI();
+                        } else {
+                            showScanUI();
+                        }
                     }
                 });
             }
         });
-        textView.setText("connected");
-        this.client.setMessageListener(new BuzzerMessageClientListener() {
+
+        if (mConnection.isBuzzerConnected()) {
+            showConnectedUI();
+        } else {
+            showScanUI();
+        }
+
+
+        mConnection.addListener(new GameplayEventListener() {
             @Override
             public void onBuzzInResponse(BuzzInResponse response) {
                 if(response.buzzInValid) {
@@ -268,6 +201,57 @@ public class ConnectingActivity extends Activity {
                 }
             }
         });
+    }
+
+    @OnClick(R.id.dummy_button)
+    protected void onButtonClick() {
+        mConnection.gameplaySender().sendBuzzInRequest();
+    }
+
+    @OnClick(R.id.restartButton)
+    protected void onRestartClick() {
+        mConnection.gameplaySender().sendBuzzInRequest();
+    }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) !=  PackageManager.PERMISSION_GRANTED){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, 0);
+            }
+        }
+
+        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+        speechRecognizer.setRecognitionListener(this.recognitionListener);
+    }
+
+    @Override
+    protected void onStop() {
+        if(speechRecognizer != null) {
+            speechRecognizer.destroy();
+            speechRecognizer = null;
+        }
+
+        super.onStop();
+    }
+
+    private void showScanUI(){
+//        if(hostScanner.scanForHost(this)){
+            textView.setText("searching");
+            setButtonEnabled(false);
+//        } else {
+//            textView.setText("unable to connect");
+//        }
+    }
+
+    private void showConnectedUI(){
+        setButtonEnabled(true);
+
+        textView.setText("connected");
+
     }
 
     private void setButtonEnabled(boolean isEnabled){
@@ -293,23 +277,6 @@ public class ConnectingActivity extends Activity {
             if (pulseAnim != null && pulseAnim.isRunning()){
                 pulseAnim.end();
             }
-        }
-    }
-
-    private class CheckConnectivityRunnable implements Runnable {
-
-        @Override
-        public void run() {
-            if(client != null && !client.getConnection().isOpen()){
-                client.close();
-                client = null;
-                scanForHost();
-                return;
-            } else if(client == null && hostScanner.client != null && hostScanner.client.getConnection().isOpen()){
-                setClientConnection(hostScanner.client);
-                return;
-            }
-            mHandler.postDelayed(this, 1000);
         }
     }
 
