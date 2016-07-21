@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/JeopardyPlayTheShow.iml" filepath="$PROJECT_DIR$/JeopardyPlayTheShow.iml" />
       <module fileurl="file://$PROJECT_DIR$/buzzerprotocol/buzzerprotocol.iml" filepath="$PROJECT_DIR$/buzzerprotocol/buzzerprotocol.iml" />
       <module fileurl="file://$PROJECT_DIR$/jeopardy.iml" filepath="$PROJECT_DIR$/jeopardy.iml" />
       <module fileurl="file://$PROJECT_DIR$/mobile/mobile.iml" filepath="$PROJECT_DIR$/mobile/mobile.iml" />

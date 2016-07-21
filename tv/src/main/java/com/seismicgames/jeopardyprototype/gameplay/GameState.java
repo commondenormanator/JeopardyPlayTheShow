@@ -242,7 +242,7 @@ public class GameState {
     }
 
     private void onMediaComplete(){
-        activity.startActivity(new Intent(activity, AfterActionReportActivity.class));
+        AfterActionReportActivity.ShowPostMatch(activity, judge.userScore);
         activity.finish();
     }
 
