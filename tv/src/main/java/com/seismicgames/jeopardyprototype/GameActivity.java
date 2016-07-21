@@ -22,6 +22,7 @@ import android.util.Log;
 import android.view.ViewGroup;
 
 import com.seismicgames.jeopardyprototype.buzzer.BuzzerConnectionManager;
+import com.seismicgames.jeopardyprototype.buzzer.BuzzerScene;
 import com.seismicgames.jeopardyprototype.buzzer.BuzzerServer;
 import com.seismicgames.jeopardyprototype.episode.EpisodeDetails;
 import com.seismicgames.jeopardyprototype.gameplay.GameState;
@@ -37,6 +38,7 @@ import java.nio.ByteOrder;
 /*
  * GameActivity class that loads MainFragment
  */
+@BuzzerScene(BuzzerScene.Scene.BUZZER)
 public class GameActivity extends BuzzerActivity {
     /**
      * Called when the activity is first created.

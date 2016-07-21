@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.seismicgames.jeopardyprototype.buzzer.BuzzerScene;
 import com.seismicgames.jeopardyprototype.buzzer.client.BuzzerConnectionManager;
 import com.seismicgames.jeopardyprototype.buzzer.client.listeners.ConnectionEventListener;
 import com.seismicgames.jeopardyprototype.buzzer.client.listeners.GameplayEventListener;
@@ -32,10 +33,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+@BuzzerScene(BuzzerScene.Scene.BUZZER)
+public class GameBuzzerActivity extends ConnectedActivity {
 
-public class ConnectingActivity extends Activity {
-
-    private static final String TAG = ConnectingActivity.class.getName();
+    private static final String TAG = GameBuzzerActivity.class.getName();
 
     @BindView(R.id.fullscreen_content)
 
@@ -114,7 +115,7 @@ public class ConnectingActivity extends Activity {
                 }
 
                 //check if answers are new
-                List<String> resCopy = new ArrayList<String>(results);
+                List<String> resCopy = new ArrayList<>(results);
                 resCopy.removeAll(lastResults);
                 if(resCopy.size() > 0){
                     mConnection.gameplaySender().sendAnswerRequest(results);

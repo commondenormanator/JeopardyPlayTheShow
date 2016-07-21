@@ -7,13 +7,16 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.seismicgames.jeopardyprototype.buzzer.BuzzerScene;
 import com.seismicgames.jeopardyprototype.buzzer.client.listeners.ConnectionEventListener;
 import com.seismicgames.jeopardyprototype.buzzer.client.listeners.GameplayEventListener;
+import com.seismicgames.jeopardyprototype.buzzer.client.listeners.SceneEventListener;
 import com.seismicgames.jeopardyprototype.buzzer.client.senders.GameplayMessageSender;
 import com.seismicgames.jeopardyprototype.buzzer.message.AnswerRequest;
 import com.seismicgames.jeopardyprototype.buzzer.message.BuzzInRequest;
 import com.seismicgames.jeopardyprototype.buzzer.message.BuzzInResponse;
 import com.seismicgames.jeopardyprototype.buzzer.message.RestartRequest;
+import com.seismicgames.jeopardyprototype.buzzer.message.SceneInfoMessage;
 import com.seismicgames.jeopardyprototype.buzzer.message.VoiceCaptureState;
 
 import java.util.HashSet;
@@ -44,6 +47,8 @@ public class BuzzerConnectionManager {
 
     private final Gson gson = new Gson();
 
+    private SceneInfoMessage scene = null;
+
     private final BuzzerClientListener mClientListener = new BuzzerClientListener() {
         @Override
         public void onConnectionClosed() {
@@ -58,6 +63,9 @@ public class BuzzerConnectionManager {
             switch ( json.get("type").getAsString()){
                 case "BuzzInResponse":
                     mListener.onBuzzInResponse(gson.fromJson(json, BuzzInResponse.class));
+                    break;
+                case "SceneInfoMessage":
+                    mListener.onSceneInfo(gson.fromJson(json, SceneInfoMessage.class));
                     break;
                 default:
                     Log.e(TAG, "Unhandled message: " + message);
@@ -91,10 +99,20 @@ public class BuzzerConnectionManager {
         mListener.gameListeners.remove(listener);
     }
 
+    public void addListener(SceneEventListener listener){
+        mListener.sceneListeners.add(listener);
+    }
+    public void removeListener(SceneEventListener listener){
+        mListener.sceneListeners.remove(listener);
+    }
+
     public boolean isBuzzerConnected() {
         return mClient != null && mClient.getConnection().isOpen();
     }
 
+    public SceneInfoMessage getScene(){
+        return scene;
+    }
 
     private class LifecycleCallbacks implements Application.ActivityLifecycleCallbacks {
 
@@ -156,10 +174,11 @@ public class BuzzerConnectionManager {
     }
 
 
-    private class InternalListener implements ConnectionEventListener, GameplayEventListener {
+    private class InternalListener implements ConnectionEventListener, GameplayEventListener, SceneEventListener{
 
         public final Set<ConnectionEventListener> connListeners = new HashSet<>();
         public final Set<GameplayEventListener> gameListeners = new HashSet<>();
+        public final Set<SceneEventListener> sceneListeners = new HashSet<>();
 
         @Override
         public void onBuzzerConnectivityChange(boolean isConnected) {
@@ -173,6 +192,14 @@ public class BuzzerConnectionManager {
         public void onBuzzInResponse(BuzzInResponse response) {
             for (GameplayEventListener l : gameListeners) {
                 l.onBuzzInResponse(response);
+            }
+        }
+
+        @Override
+        public void onSceneInfo(SceneInfoMessage message) {
+            scene = message;
+            for (SceneEventListener l : sceneListeners) {
+                l.onSceneInfo(message);
             }
         }
     }

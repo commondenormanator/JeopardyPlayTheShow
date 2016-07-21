@@ -12,8 +12,10 @@ import com.seismicgames.jeopardyprototype.buzzer.listeners.GameplayEventListener
 import com.seismicgames.jeopardyprototype.buzzer.listeners.RemoteEventListener;
 import com.seismicgames.jeopardyprototype.buzzer.message.AnswerRequest;
 import com.seismicgames.jeopardyprototype.buzzer.message.BuzzInResponse;
+import com.seismicgames.jeopardyprototype.buzzer.message.SceneInfoMessage;
 import com.seismicgames.jeopardyprototype.buzzer.message.VoiceCaptureState;
 import com.seismicgames.jeopardyprototype.buzzer.sender.GameplayMessageSender;
+import com.seismicgames.jeopardyprototype.buzzer.sender.SceneMessageSender;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -67,7 +69,7 @@ public class BuzzerConnectionManager {
         }
     };
 
-    private final GameplayMessageSender mGameplaySender = new InternalSender();
+    private final InternalSender mSender = new InternalSender();
 
     private BuzzerConnectionManager(Application app) {
         Application.ActivityLifecycleCallbacks lifecycleCallbacks = new LifecycleCallbacks();
@@ -75,7 +77,10 @@ public class BuzzerConnectionManager {
     }
 
     public GameplayMessageSender GameplaySender(){
-        return mGameplaySender;
+        return mSender;
+    }
+    public SceneMessageSender sceneSender(){
+        return mSender;
     }
 
     public void addListener(ConnectionEventListener listener){
@@ -200,13 +205,22 @@ public class BuzzerConnectionManager {
     }
 
 
-    private class InternalSender implements GameplayMessageSender {
+    private class InternalSender implements GameplayMessageSender, SceneMessageSender {
+
+        private void sendMessage(String message){
+            if (mServer != null) {
+                mServer.sendMessage(message);
+            }
+        }
 
         @Override
         public void sendBuzzInResponse(boolean isValidBuzz) {
-            if (mServer != null) {
-                mServer.sendMessage(gson.toJson(new BuzzInResponse(isValidBuzz)));
-            }
+            sendMessage(gson.toJson(new BuzzInResponse(isValidBuzz)));
+        }
+
+        @Override
+        public void sendSceneInfo(String scene) {
+            sendMessage(gson.toJson(new SceneInfoMessage(scene)));
         }
     }
 

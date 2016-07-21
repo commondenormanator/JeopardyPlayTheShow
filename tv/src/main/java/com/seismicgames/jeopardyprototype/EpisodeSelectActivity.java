@@ -7,6 +7,9 @@ import android.os.Bundle;
 
 import com.seismicgames.jeopardyprototype.buzzer.BuzzerConnectionManager;
 
+import com.seismicgames.jeopardyprototype.buzzer.BuzzerScene;
+
+@BuzzerScene(BuzzerScene.Scene.REMOTE)
 public class EpisodeSelectActivity extends BuzzerActivity {
 
     private AlertDialog dialog;
