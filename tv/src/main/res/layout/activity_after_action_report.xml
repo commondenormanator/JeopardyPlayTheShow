@@ -22,7 +22,7 @@
 
     <include
         android:id="@+id/winner1"
-        layout="@layout/aar_winner_container"
+        android:layout="@layout/aar_winner_container"
         android:layout_below="@id/aar_logo"
         android:layout_height="wrap_content"
         android:layout_width="500dp"
