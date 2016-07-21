@@ -53,6 +53,9 @@ public class AnswerJudge {
         didBuzzIn = false;
     }
 
+    public int getUserScore(){
+        return userScore;
+    }
 
     private boolean compareAnswer(String guess, String answer){
         guess = AnswerUtil.normalizeAnswer(guess.toLowerCase());
