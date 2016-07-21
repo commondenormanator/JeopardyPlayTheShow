@@ -26,7 +26,8 @@ public class ResourceMediaManager extends MediaPlayerControlMediaManager {
 //        Uri video = Uri.parse("android.resource://" + activity.getPackageName() + "/"
 //                + R.raw.video); //do not add any extension
 
-        videoView.setVideoURI(Uri.withAppendedPath(Uri.fromFile(activity.getExternalFilesDir(null)), "JEOP6974_720p.mp4"));
+//        videoView.setVideoURI(Uri.withAppendedPath(Uri.fromFile(activity.getExternalFilesDir(null)), "JEOP6974_720p.mp4"));
+        videoView.setVideoURI(Uri.withAppendedPath(Uri.fromFile(activity.getExternalFilesDir(null)), "JEOP6974_RIP.mp4"));
 
 
         return new ResourceMediaManager(videoView, episodeDetails);

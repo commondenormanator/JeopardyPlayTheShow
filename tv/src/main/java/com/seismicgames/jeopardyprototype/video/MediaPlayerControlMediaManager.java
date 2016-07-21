@@ -28,6 +28,8 @@ public class MediaPlayerControlMediaManager implements GameState.MediaManager {
 
     private boolean disposed;
 
+    private int seekOnResume = 0;
+
     private Thread thread =  new Thread(){
         @Override
         public void run() {
@@ -65,13 +67,11 @@ public class MediaPlayerControlMediaManager implements GameState.MediaManager {
     public void play() {
         shouldPlay = true;
         mPlayer.start();
-
     }
 
     @Override
     public void pause() {
         mPlayer.pause();
-
     }
 
     @Override
@@ -83,12 +83,12 @@ public class MediaPlayerControlMediaManager implements GameState.MediaManager {
 
     @Override
     public void onActivityResume(Activity a) {
-
+        mPlayer.seekTo(seekOnResume);
     }
 
     @Override
     public void onActivityPause(Activity a) {
-
+        seekOnResume = mPlayer.getCurrentPosition();
     }
 
     @Override
@@ -98,6 +98,7 @@ public class MediaPlayerControlMediaManager implements GameState.MediaManager {
 
 
     public void checkForEvent(){
+        if(!mPlayer.isPlaying()) return;
         if(mDetails.events.size() <= mEpisodeEventIndex) return;
         if(mPlayer.getCurrentPosition() >= mDetails.events.get(mEpisodeEventIndex).timestamp){
             handleEpisodeEvent(mEpisodeEventIndex);

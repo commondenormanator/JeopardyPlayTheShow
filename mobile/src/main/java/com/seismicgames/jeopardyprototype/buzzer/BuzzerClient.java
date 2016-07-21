@@ -50,6 +50,10 @@ public class BuzzerClient extends PingingWebSockClient {
     public void setMessageListener(BuzzerMessageClientListener mListener) {
         this.mListener = mListener;
     }
+    private OnConnectionChangeListener mConnListener;
+    public void setConnectionListener(OnConnectionChangeListener connListener) {
+        this.mConnListener = connListener;
+    }
 
     @Override
     public void onOpen(ServerHandshake handshakedata) {
@@ -74,6 +78,7 @@ public class BuzzerClient extends PingingWebSockClient {
     @Override
     public void onClose(int code, String reason, boolean remote) {
         super.onClose(code, reason, remote);
+        if(mConnListener != null) mConnListener.OnConnectionClosed();
     }
 
     @Override

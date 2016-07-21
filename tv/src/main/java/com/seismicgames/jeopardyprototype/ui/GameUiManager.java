@@ -55,16 +55,6 @@ public class GameUiManager implements ScoreChangeListener{
         buzzerTimerRight.setVisibility(View.INVISIBLE);
     }
 
-    public void showDisconnectWarning(boolean show){
-        if(show) {
-            disconnectWarning.setVisibility(View.VISIBLE);
-            disconnectWarning.getParent().requestTransparentRegion(disconnectWarning);
-        }else {
-            disconnectWarning.setVisibility(View.INVISIBLE);
-        }
-
-    }
-
     public void showBuzzTimer(int duration) {
         showBuzzTimer(buzzerTimerLeft, duration);
         showBuzzTimer(buzzerTimerRight, duration);

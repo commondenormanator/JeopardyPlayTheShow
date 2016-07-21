@@ -12,6 +12,9 @@ import android.widget.Toast;
 
 import com.seismicgames.jeopardyprototype.AfterActionReportActivity;
 import com.seismicgames.jeopardyprototype.Constants;
+import com.seismicgames.jeopardyprototype.buzzer.BuzzerConnectionManager;
+import com.seismicgames.jeopardyprototype.buzzer.listeners.ConnectionEventListener;
+import com.seismicgames.jeopardyprototype.buzzer.listeners.GameplayEventListener;
 import com.seismicgames.jeopardyprototype.buzzer.message.AnswerRequest;
 import com.seismicgames.jeopardyprototype.buzzer.message.VoiceCaptureState;
 import com.seismicgames.jeopardyprototype.episode.EpisodeDetails;
@@ -30,7 +33,8 @@ public class GameState {
     }
 
     private enum HandlerMessageType{
-        BUZZER_CONN_CHANGE, QUESTION_ASKED,
+        BUZZER_CONN_CHANGE,
+        QUESTION_ASKED,
 
         BUZZ_IN_TIMEOUT,
         BUZZ_IN_REQUEST,
@@ -65,25 +69,10 @@ public class GameState {
         void onActivityDestroy(Activity a);
     }
 
-    public interface BuzzerManager{
-        void registerListener(BuzzerEventListener listener);
-        boolean isBuzzerConnected();
-
-        void sendBuzzInResponse(boolean isValidBuzz);
-    }
-
-    public interface BuzzerEventListener{
-        void onBuzzerConnectivityChange(boolean isConnected);
-
-        void onUserBuzzIn();
-        void onUserRestart();
-        void onUserAnswer(AnswerRequest request);
-        void onVoiceCaptureState(VoiceCaptureState request);
-    }
 
     private State mState;
 
-    private BuzzerManager mBuzzerManager;
+    private BuzzerConnectionManager mBuzzerManager;
     private MediaManager mMediaManager;
     private GameUiManager mGameUiManager;
 
@@ -103,7 +92,9 @@ public class GameState {
 
     public void onResume(Activity a){
         activity = a;
-        handler = new Handler(Looper.getMainLooper(), callback);
+        if(handler == null) {
+            handler = new Handler(Looper.getMainLooper(), callback);
+        }
         mMediaManager.onActivityResume(a);
     }
 
@@ -113,12 +104,15 @@ public class GameState {
     }
 
     public void onDestroy(Activity a){
+        mBuzzerManager.removeListener((ConnectionEventListener) mBuzzerHandler);
+        mBuzzerManager.removeListener((GameplayEventListener) mBuzzerHandler);
         mMediaManager.onActivityDestroy(a);
     }
 
-    public void init(BuzzerManager b, MediaManager m, GameUiManager ui){
+    public void init(BuzzerConnectionManager b, MediaManager m, GameUiManager ui){
         mBuzzerManager = b;
-        mBuzzerManager.registerListener(mBuzzerHandler);
+        mBuzzerManager.addListener((ConnectionEventListener) mBuzzerHandler);
+        mBuzzerManager.addListener((GameplayEventListener) mBuzzerHandler);
 
         mMediaManager = m;
         mMediaManager.registerListener(mMediaHandler);
@@ -137,7 +131,7 @@ public class GameState {
     @MainThread
     private void onBuzzerConnChange(boolean isConnected){
         if(isConnected){
-            mGameUiManager.showDisconnectWarning(false);
+//            mGameUiManager.showDisconnectWarning(false);
 
             if(activity != null) {
                 Toast.makeText(activity, "connected", Toast.LENGTH_LONG).show();
@@ -150,14 +144,15 @@ public class GameState {
     }
     @MainThread
     private void waitForBuzzerConnect(){
-        if(mState==State.WAIT_FOR_MEDIA_EVENT){
-            mGameUiManager.showDisconnectWarning(true);
-        }
+//        if(mState==State.WAIT_FOR_MEDIA_EVENT){
+//            mGameUiManager.showDisconnectWarning(true);
+//        }
 
         mState = State.WAIT_FOR_CONNECTION;
         pauseGame();
 
-        Toast.makeText(activity, "please connect", Toast.LENGTH_LONG).show();
+        if(activity != null)
+            Toast.makeText(activity, "please connect", Toast.LENGTH_LONG).show();
     }
 
     @MainThread
@@ -200,10 +195,10 @@ public class GameState {
     @MainThread
     private void onBuzzIn(){
         if(mState != State.WAIT_FOR_BUZZ_IN){
-            mBuzzerManager.sendBuzzInResponse(false);
+            mBuzzerManager.GameplaySender().sendBuzzInResponse(false);
             return;
         }
-        mBuzzerManager.sendBuzzInResponse(true);
+        mBuzzerManager.GameplaySender().sendBuzzInResponse(true);
         mState = State.WAIT_FOR_USER_RESPONSE;
 
         handler.removeMessages(HandlerMessageType.BUZZ_IN_TIMEOUT.ordinal());
@@ -225,7 +220,7 @@ public class GameState {
             mMediaManager.play();
         } else {
 
-            mGameUiManager.showDisconnectWarning(true);
+//            mGameUiManager.showDisconnectWarning(true);
 
             //wait for connection
             waitForBuzzerConnect();
@@ -318,7 +313,7 @@ public class GameState {
     }
 
     @WorkerThread
-    private class BuzzerHandler implements BuzzerEventListener
+    private class BuzzerHandler implements GameplayEventListener, ConnectionEventListener
     {
 
         @Override

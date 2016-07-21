@@ -6,6 +6,6 @@ package com.seismicgames.jeopardyprototype;
 public class Constants {
     public static final int BuzzInTimeout = 10000;
     public static final int AnswerTimeout = 7000;
-    public static final int EventTimestampOffset = -300;
+    public static final int EventTimestampOffset = 0;
 
 }

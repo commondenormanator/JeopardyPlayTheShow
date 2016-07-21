@@ -82,7 +82,8 @@ public class EpisodeDetails {
         events.add(new EpisodeEvent(3000, EpisodeEvent.Type.Skipped));
         FrameZeroEvent fZero = new FrameZeroEvent("00:58:04;09");
         events.add(fZero);
-        //events.add(new EpisodeEvent(/*116000*/200000, EpisodeEvent.Type.EpisodeStart));
+        //events.add(new EpisodeEvent(fZero.timestamp + 100, EpisodeEvent.Type.Skipped));
+        events.add(new EpisodeEvent(questions.get(0).readTimestamp + fZero.timestamp - 10000, EpisodeEvent.Type.EpisodeStart));
 
         for (QuestionInfo q : questions) {
             events.add(new EpisodeEvent(q.readTimestamp + fZero.timestamp, EpisodeEvent.Type.QuestAsked));

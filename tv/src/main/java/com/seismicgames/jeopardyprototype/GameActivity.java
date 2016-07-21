@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.ViewGroup;
 
+import com.seismicgames.jeopardyprototype.buzzer.BuzzerConnectionManager;
 import com.seismicgames.jeopardyprototype.buzzer.BuzzerServer;
 import com.seismicgames.jeopardyprototype.episode.EpisodeDetails;
 import com.seismicgames.jeopardyprototype.gameplay.GameState;
@@ -36,7 +37,7 @@ import java.nio.ByteOrder;
 /*
  * GameActivity class that loads MainFragment
  */
-public class GameActivity extends Activity {
+public class GameActivity extends BuzzerActivity {
     /**
      * Called when the activity is first created.
      */
@@ -49,33 +50,19 @@ public class GameActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.adk_player);
+    }
 
-
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
 
         final ViewGroup videoContainer = (ViewGroup) this.findViewById(R.id.videoContainer);
 
         gameState = new GameState();
 
+//        gameState.init(BuzzerConnectionManager.getInstance(getApplication()), MpxMediaManager.getInstance(videoContainer, episodeDetails), new GameUiManager(this));
+        gameState.init(BuzzerConnectionManager.getInstance(getApplication()), ResourceMediaManager.getInstance(this, videoContainer, episodeDetails), new GameUiManager(this));
 
-        BuzzerServer server = new BuzzerServer();
-
-//        gameState.init(server, MpxMediaManager.getInstance(videoContainer, episodeDetails), new GameUiManager(this));
-        gameState.init(server, ResourceMediaManager.getInstance(this, videoContainer, episodeDetails), new GameUiManager(this));
-
-        server.start();
-
-
-        WifiManager wm = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-        int ip = wm.getConnectionInfo().getIpAddress();
-
-        ByteBuffer buffer = ByteBuffer.allocate((4));
-        buffer.order(ByteOrder.LITTLE_ENDIAN);
-        buffer.putInt(ip);
-        try {
-            Log.e("ADDRESS", "listening on ip: " + InetAddress.getByAddress(buffer.array()).getHostAddress());
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
 
     }
 

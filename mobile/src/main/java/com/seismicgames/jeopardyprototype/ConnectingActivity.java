@@ -26,6 +26,7 @@ import android.widget.Toast;
 import android.widget.ViewAnimator;
 
 import com.seismicgames.jeopardyprototype.buzzer.BuzzerClient;
+import com.seismicgames.jeopardyprototype.buzzer.OnConnectionChangeListener;
 import com.seismicgames.jeopardyprototype.buzzer.message.AnswerRequest;
 import com.seismicgames.jeopardyprototype.buzzer.message.BuzzInResponse;
 import com.seismicgames.jeopardyprototype.buzzer.message.BuzzerMessageClientListener;
@@ -212,8 +213,10 @@ public class ConnectingActivity extends Activity {
         }
 
         hostScanner.stop();
+        mHandler.removeCallbacks(CheckConnectivityRunnable);
 
         if(client != null){
+            client.setConnectionListener(null);
             client.close();
             client = null;
         }
@@ -233,6 +236,17 @@ public class ConnectingActivity extends Activity {
     private void setClientConnection(BuzzerClient client){
         setButtonEnabled(true);
         this.client = client;
+        this.client.setConnectionListener(new OnConnectionChangeListener() {
+            @Override
+            public void OnConnectionClosed() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        scanForHost();
+                    }
+                });
+            }
+        });
         textView.setText("connected");
         this.client.setMessageListener(new BuzzerMessageClientListener() {
             @Override
@@ -293,6 +307,7 @@ public class ConnectingActivity extends Activity {
                 return;
             } else if(client == null && hostScanner.client != null && hostScanner.client.getConnection().isOpen()){
                 setClientConnection(hostScanner.client);
+                return;
             }
             mHandler.postDelayed(this, 1000);
         }

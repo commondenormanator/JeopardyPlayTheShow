@@ -5,6 +5,8 @@ import android.net.wifi.WifiManager;
 import android.support.annotation.WorkerThread;
 import android.util.Log;
 
+import com.seismicgames.jeopardyprototype.InetAddressUtil;
+
 import org.java_websocket.client.WebSocketClient;
 
 import java.io.IOException;
@@ -41,7 +43,7 @@ public class HostScanner {
 
         byte[] localHost = null;
         try {
-            localHost = getWifiIp();
+            localHost = InetAddressUtil.getWifiIp();
         } catch (SocketException e) {
             e.printStackTrace();
         }
@@ -61,37 +63,6 @@ public class HostScanner {
 
         return true;
     }
-
-    private byte[] getWifiIp() throws SocketException {
-        for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces();
-             en.hasMoreElements(); ) {
-            NetworkInterface intf = en.nextElement();
-            if (intf.isLoopback()) {
-                continue;
-            }
-            if (intf.isVirtual()) {
-                continue;
-            }
-            if (!intf.isUp()) {
-                continue;
-            }
-            if (intf.isPointToPoint()) {
-                continue;
-            }
-            if (intf.getHardwareAddress() == null) {
-                continue;
-            }
-            for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses();
-                 enumIpAddr.hasMoreElements(); ) {
-                InetAddress inetAddress = enumIpAddr.nextElement();
-                if (inetAddress.getAddress().length == 4) {
-                    return inetAddress.getAddress();
-                }
-            }
-        }
-        return null;
-    }
-
 
     public void stop(){
         finishScan(this.client);

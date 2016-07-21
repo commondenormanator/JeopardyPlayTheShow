@@ -18,11 +18,6 @@ public class PingRunnable implements Runnable {
             FramedataImpl1 fd = new FramedataImpl1(Framedata.Opcode.PING);
             fd.setFin(true);
             conn.sendFrame(fd);
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
         }
 
     }
