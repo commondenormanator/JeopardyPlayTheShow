@@ -12,9 +12,11 @@ import com.seismicgames.jeopardyprototype.buzzer.client.listeners.ConnectionEven
 import com.seismicgames.jeopardyprototype.buzzer.client.listeners.GameplayEventListener;
 import com.seismicgames.jeopardyprototype.buzzer.client.listeners.SceneEventListener;
 import com.seismicgames.jeopardyprototype.buzzer.client.senders.GameplayMessageSender;
+import com.seismicgames.jeopardyprototype.buzzer.client.senders.RemoteMessageSender;
 import com.seismicgames.jeopardyprototype.buzzer.message.AnswerRequest;
 import com.seismicgames.jeopardyprototype.buzzer.message.BuzzInRequest;
 import com.seismicgames.jeopardyprototype.buzzer.message.BuzzInResponse;
+import com.seismicgames.jeopardyprototype.buzzer.message.RemoteKeyMessage;
 import com.seismicgames.jeopardyprototype.buzzer.message.RestartRequest;
 import com.seismicgames.jeopardyprototype.buzzer.message.SceneInfoMessage;
 import com.seismicgames.jeopardyprototype.buzzer.message.VoiceCaptureState;
@@ -79,10 +81,13 @@ public class BuzzerConnectionManager {
         app.registerActivityLifecycleCallbacks(lifecycleCallbacks);
     }
 
-    private final GameplayMessageSender mGameplaySender = new InternalSender();
+    private final InternalSender mSender = new InternalSender();
 
     public GameplayMessageSender gameplaySender(){
-        return mGameplaySender;
+        return mSender;
+    }
+    public RemoteMessageSender remoteSender(){
+        return mSender;
     }
 
     public void addListener(ConnectionEventListener listener){
@@ -205,7 +210,7 @@ public class BuzzerConnectionManager {
     }
 
 
-    private class InternalSender implements GameplayMessageSender {
+    private class InternalSender implements GameplayMessageSender, RemoteMessageSender {
 
         private void send(String message) {
             if (mClient != null) mClient.send(message);
@@ -225,6 +230,11 @@ public class BuzzerConnectionManager {
 
         public void sendVoiceState(VoiceCaptureState.State state) {
             send(gson.toJson(new VoiceCaptureState(state)));
+        }
+
+        @Override
+        public void sendKeyEvent(int keyCode) {
+            send(gson.toJson(new RemoteKeyMessage(keyCode)));
         }
     }
 

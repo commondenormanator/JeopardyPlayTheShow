@@ -12,6 +12,7 @@ import com.seismicgames.jeopardyprototype.buzzer.listeners.GameplayEventListener
 import com.seismicgames.jeopardyprototype.buzzer.listeners.RemoteEventListener;
 import com.seismicgames.jeopardyprototype.buzzer.message.AnswerRequest;
 import com.seismicgames.jeopardyprototype.buzzer.message.BuzzInResponse;
+import com.seismicgames.jeopardyprototype.buzzer.message.RemoteKeyMessage;
 import com.seismicgames.jeopardyprototype.buzzer.message.SceneInfoMessage;
 import com.seismicgames.jeopardyprototype.buzzer.message.VoiceCaptureState;
 import com.seismicgames.jeopardyprototype.buzzer.sender.GameplayMessageSender;
@@ -48,23 +49,30 @@ public class BuzzerConnectionManager {
 
         @Override
         public void onMessage(String message) {
-            JsonObject json = gson.fromJson(message, JsonObject.class);
+            try {
+                JsonObject json = gson.fromJson(message, JsonObject.class);
 
-            switch ( json.get("type").getAsString()){
-                case "BuzzInRequest":
-                    mListener.onUserBuzzIn();
-                    break;
-                case "AnswerRequest":
-                    mListener.onUserAnswer(gson.fromJson(json, AnswerRequest.class));
-                    break;
-                case "RestartRequest":
-                    mListener.onUserRestart();
-                    break;
-                case "VoiceCaptureState":
-                    mListener.onVoiceCaptureState(gson.fromJson(json, VoiceCaptureState.class));
-                    break;
-                default:
-                    Log.e(TAG, "Unhandled message: " + message);
+                switch (json.get("type").getAsString()) {
+                    case "BuzzInRequest":
+                        mListener.onUserBuzzIn();
+                        break;
+                    case "AnswerRequest":
+                        mListener.onUserAnswer(gson.fromJson(json, AnswerRequest.class));
+                        break;
+                    case "RestartRequest":
+                        mListener.onUserRestart();
+                        break;
+                    case "VoiceCaptureState":
+                        mListener.onVoiceCaptureState(gson.fromJson(json, VoiceCaptureState.class));
+                        break;
+                    case "RemoteKeyMessage":
+                        mListener.onKeyEvent(gson.fromJson(json, RemoteKeyMessage.class));
+                        break;
+                    default:
+                        Log.e(TAG, "Unhandled message: " + message);
+                }
+            } catch (Exception e){
+                e.printStackTrace();
             }
         }
     };
@@ -95,6 +103,13 @@ public class BuzzerConnectionManager {
     }
     public void removeListener(GameplayEventListener listener){
         mListener.gameListeners.remove(listener);
+    }
+
+    public void addListener(RemoteEventListener listener){
+        mListener.remoteListeners.add(listener);
+    }
+    public void removeListener(RemoteEventListener listener){
+        mListener.remoteListeners.remove(listener);
     }
 
     public boolean isBuzzerConnected() {
@@ -162,6 +177,7 @@ public class BuzzerConnectionManager {
 
         public final Set<ConnectionEventListener> connListeners = new HashSet<>();
         public final Set<GameplayEventListener> gameListeners = new HashSet<>();
+        public final Set<RemoteEventListener> remoteListeners = new HashSet<>();
 
         @Override
         public void onBuzzerConnectivityChange(boolean isConnected) {
@@ -199,8 +215,10 @@ public class BuzzerConnectionManager {
         }
 
         @Override
-        public void onKeyEvent(int keyCode) {
-            //TODO
+        public void onKeyEvent(RemoteKeyMessage message) {
+            for (RemoteEventListener l : remoteListeners) {
+                l.onKeyEvent(message);
+            }
         }
     }
 

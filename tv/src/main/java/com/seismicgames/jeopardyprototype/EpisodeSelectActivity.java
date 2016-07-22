@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.KeyEvent;
 
 import com.seismicgames.jeopardyprototype.buzzer.BuzzerConnectionManager;
 
@@ -34,6 +35,12 @@ public class EpisodeSelectActivity extends BuzzerActivity {
                 .setPositiveButton(R.string.ok, onEpisodeStart())
                 .setCancelable(false)
                 .setOnCancelListener(onCancel())
+                .setOnKeyListener(new DialogInterface.OnKeyListener() {
+                    @Override
+                    public boolean onKey(DialogInterface dialogInterface, int i, KeyEvent keyEvent) {
+                        return false;
+                    }
+                })
                 .show();
     }
 
@@ -44,6 +51,14 @@ public class EpisodeSelectActivity extends BuzzerActivity {
             dialog = null;
         }
         super.onPause();
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if(dialog != null && dialog.isShowing()){
+            return dialog.dispatchKeyEvent(event);
+        }
+        return super.dispatchKeyEvent(event);
     }
 
     private DialogInterface.OnClickListener onEpisodeStart() {

@@ -81,7 +81,7 @@ public class BuzzerServer extends PingingWebSockServer {
 
     @Override
     public void onError(WebSocket conn, Exception ex) {
-
+        ex.printStackTrace();
     }
 
 

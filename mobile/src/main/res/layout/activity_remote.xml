@@ -10,6 +10,7 @@
     tools:context="com.seismicgames.jeopardyprototype.RemoteActivity">
 
     <Button
+        android:id="@+id/okButton"
         android:layout_width="wrap_content"
         android:layout_centerInParent="true"
         android:text="@android:string/ok"
