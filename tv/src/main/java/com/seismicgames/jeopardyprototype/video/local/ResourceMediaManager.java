@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.view.ViewGroup;
 import android.widget.MediaController;
 import android.widget.VideoView;
@@ -11,6 +12,8 @@ import android.widget.VideoView;
 import com.seismicgames.jeopardyprototype.R;
 import com.seismicgames.jeopardyprototype.episode.EpisodeDetails;
 import com.seismicgames.jeopardyprototype.video.MediaPlayerControlMediaManager;
+
+import java.io.File;
 
 /**
  * Created by jduffy on 7/12/16.
@@ -23,13 +26,22 @@ public class ResourceMediaManager extends MediaPlayerControlMediaManager {
         VideoView videoView = new VideoView(activity);
         videoView.setZOrderOnTop(false);
         videoContainer.addView(videoView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-//        Uri video = Uri.parse("android.resource://" + activity.getPackageName() + "/"
-//                + R.raw.video); //do not add any extension
+//        Uri video = Uri.parse("android.resource://" + activity.getPackageName() + "/" + R.raw.video); //do not add any extension
 
-//        videoView.setVideoURI(Uri.withAppendedPath(Uri.fromFile(activity.getExternalFilesDir(null)), "JEOP6974_720p.mp4"));
-        videoView.setVideoURI(Uri.withAppendedPath(Uri.fromFile(activity.getExternalFilesDir(null)), "JEOP6974_RIP.mp4"));
+//        Uri video = Uri.withAppendedPath(Uri.fromFile(activity.getExternalFilesDir(null)), "JEOP6974_720p.mp4");
+//       Uri video = Uri.withAppendedPath(Uri.fromFile(activity.getExternalFilesDir(null)), "JEOP6974_RIP.mp4");
 
+        File video = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            for(File externalDir : activity.getExternalFilesDirs(null)){
+                video = new File(externalDir, "video.mp4");
+                if(video.exists())break;
+            }
+        }else{
+            video = new File(activity.getExternalFilesDir(null), "video.mp4");
+        }
 
+        videoView.setVideoURI(Uri.fromFile(video));
         return new ResourceMediaManager(videoView, episodeDetails);
     }
 
