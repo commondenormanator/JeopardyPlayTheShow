@@ -83,7 +83,7 @@ public class GameBuzzerActivity extends ConnectedActivity {
 
         @Override
         public void onRmsChanged(float v) {
-            Log.d(TAG, "onRmsChanged");
+
         }
 
         @Override
@@ -189,14 +189,17 @@ public class GameBuzzerActivity extends ConnectedActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            mHandler.removeCallbacks(stopSpeechRunnable);
-                            Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-                            intent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                intent.putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, true);
+                            if(speechRecognizer != null) {
+
+                                mHandler.removeCallbacks(stopSpeechRunnable);
+                                Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+                                intent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                    intent.putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, true);
+                                }
+                                speechRecognizer.startListening(intent);
+                                mHandler.postDelayed(stopSpeechRunnable, Constants.AnswerTimeout);
                             }
-                            speechRecognizer.startListening(intent);
-                            mHandler.postDelayed(stopSpeechRunnable, Constants.AnswerTimeout - 1000);
                         }
                     });
                 }
@@ -235,6 +238,7 @@ public class GameBuzzerActivity extends ConnectedActivity {
             speechRecognizer.destroy();
             speechRecognizer = null;
         }
+        mHandler.removeCallbacks(stopSpeechRunnable);
 
         super.onStop();
     }

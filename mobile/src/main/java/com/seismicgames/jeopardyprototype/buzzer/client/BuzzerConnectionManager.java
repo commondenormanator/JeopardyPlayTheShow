@@ -150,9 +150,11 @@ public class BuzzerConnectionManager {
                 Log.d(TAG, "stop server");
 
                 mHostScanner.stop();
-                mClient.setConnectionListener(null);
-                mClient.close();
-                mClient = null;
+                if(mClient != null) {
+                    mClient.setConnectionListener(null);
+                    mClient.close();
+                    mClient = null;
+                }
 
             }
         }
