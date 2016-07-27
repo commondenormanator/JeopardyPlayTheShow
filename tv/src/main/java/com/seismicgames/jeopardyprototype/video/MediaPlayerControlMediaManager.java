@@ -8,6 +8,7 @@ import com.seismicgames.jeopardyprototype.episode.EpisodeDetails;
 import com.seismicgames.jeopardyprototype.gameplay.GameState;
 import com.seismicgames.jeopardyprototype.gameplay.events.AnswerReadEvent;
 import com.seismicgames.jeopardyprototype.gameplay.events.EpisodeEvent;
+import com.seismicgames.jeopardyprototype.gameplay.events.QuestionAskedEvent;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -129,16 +130,14 @@ public class MediaPlayerControlMediaManager implements GameState.MediaManager {
                 Log.w(TAG, "should pause at " + event.timestamp);
                 Log.w(TAG, "paused at " + mPlayer.getCurrentPosition());
                 mPlayer.pause();
-                mPlayer.seekTo(event.timestamp);
-                Log.w(TAG, "seeked to " + mPlayer.getCurrentPosition());
-                mListener.onQuestionAsked();
+                Log.w(TAG, "lag was " + (mPlayer.getCurrentPosition() - event.timestamp));
+                mListener.onQuestionAsked((QuestionAskedEvent) event);
                 break;
             case AnswerRead:
-                mListener.onAnswerRead(((AnswerReadEvent)event).questionInfo);
+                mListener.onAnswerRead((AnswerReadEvent)event);
                 break;
             case Wager:
                 mPlayer.pause();
-                mPlayer.seekTo(event.timestamp);
                 mListener.onWager();
                 break;
         }

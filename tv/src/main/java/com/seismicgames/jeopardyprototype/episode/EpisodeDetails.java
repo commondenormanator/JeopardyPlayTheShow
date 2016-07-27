@@ -3,10 +3,13 @@ package com.seismicgames.jeopardyprototype.episode;
 import com.seismicgames.jeopardyprototype.gameplay.events.AnswerReadEvent;
 import com.seismicgames.jeopardyprototype.gameplay.events.EpisodeEvent;
 import com.seismicgames.jeopardyprototype.gameplay.events.FrameZeroEvent;
+import com.seismicgames.jeopardyprototype.gameplay.events.QuestionAskedEvent;
 import com.seismicgames.jeopardyprototype.gameplay.events.WagerEvent;
 import com.seismicgames.jeopardyprototype.util.TimeCode;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -81,18 +84,52 @@ public class EpisodeDetails {
         questions.add(new QuestionInfo("THE MUSEUM OF SOMETHING","IN BOZEMAN; MOR FOR SHORT","ROCKIES|MUSEUM OF THE ROCKIES",2000,"01:21:52;10", "01:21:56;01"));
 //        questions.add(new QuestionInfo("TELEVISION","SET TO THE SONG \"YOU'VE GOT TIME\", A MONTAGE OF REAL WOMEN WHO WERE INCARCERATED IS IN THE OPENING CREDITS OF THIS SERIES","ORANGE IS THE NEW BLACK",,));
 
+
+
         events.add(new EpisodeEvent(3000, EpisodeEvent.Type.Skipped));
         FrameZeroEvent fZero = new FrameZeroEvent("00:58:04;09");
         events.add(fZero);
         events.add(new EpisodeEvent(fZero.timestamp + 100, EpisodeEvent.Type.Skipped));
 
         //temp: quick skip to first question
-        events.add(new EpisodeEvent(questions.get(0).readTimestamp + fZero.timestamp - 10000, EpisodeEvent.Type.EpisodeStart));
+//        events.add(new EpisodeEvent(questions.get(0).readTimestamp + fZero.timestamp - 10000, EpisodeEvent.Type.EpisodeStart));
 
         for (QuestionInfo q : questions) {
-            events.add(new EpisodeEvent(q.readTimestamp + fZero.timestamp, EpisodeEvent.Type.QuestAsked));
+            events.add(new QuestionAskedEvent(q.readTimestamp + fZero.timestamp, q));
             events.add(new AnswerReadEvent(q.answerTimestamp + fZero.timestamp, q));
         }
+
+        QuestionInfo q;
+        q = new QuestionInfo("LITTLE, JOHN","BEGINNING WITH A WORD THAT MEANS IMMEASURABLY GREAT, IT MEANS EXCEEDINGLY SMALL","INFINITESIMAL",0,"01:11:41;04", "01:11:55;00");
+        events.add(new WagerEvent(TimeCode.parse("01:11:29;12") + fZero.timestamp));
+        events.add(new QuestionAskedEvent(q.readTimestamp + fZero.timestamp, q));
+        events.add(new AnswerReadEvent(q.answerTimestamp + fZero.timestamp, q));
+
+
+//        events.add(new EpisodeEvent(0, EpisodeEvent.Type.Skipped));
+
+
+        q = new QuestionInfo("EUROPEAN RULERS","THIS FRENCH KING'S ATTEMPT TO ESCAPE HIS FATE IS KNOWN AS THE FLIGHT TO VARENNES","LOUIS XVI|LOUIS THE SIXTEENTH",0,"01:17:32;01", "01:17:38;14");
+        events.add(new WagerEvent(TimeCode.parse("01:17:22;25") + fZero.timestamp));
+        events.add(new QuestionAskedEvent(q.readTimestamp + fZero.timestamp, q));
+        events.add(new AnswerReadEvent(q.answerTimestamp + fZero.timestamp, q));
+
+
+
+//        events.add(new EpisodeEvent(0, EpisodeEvent.Type.Skipped));
+
+        q = new QuestionInfo("SCIENCE","DISEASE-SPECIFIC GENES HAVE BEEN FOUND THAT COULD HELP TELL PSORIASIS FROM THIS SKIN AFFLICTION, AIDING IN TREATMENT","ECZEMA|DERMATITIS",0,"01:20:29;24", "01:20:41;00");
+        events.add(new WagerEvent(TimeCode.parse("01:20:15;08") + fZero.timestamp));
+        events.add(new QuestionAskedEvent(q.readTimestamp + fZero.timestamp, q));
+        events.add(new AnswerReadEvent(q.answerTimestamp + fZero.timestamp, q));
+
+
+//        events.add(new EpisodeEvent(fZero.timestamp + 100, EpisodeEvent.Type.Skipped));
+
+        q = new QuestionInfo("TELEVISION","SET TO THE SONG \"YOU'VE GOT TIME\", A MONTAGE OF REAL WOMEN WHO WERE INCARCERATED IS IN THE OPENING CREDITS OF THIS SERIES","ORANGE IS THE NEW BLACK",0,"01:25:59;07", "01:26:29;21");
+        events.add(new WagerEvent(TimeCode.parse("01:25:59;07") + fZero.timestamp));
+        events.add(new QuestionAskedEvent(q.readTimestamp + fZero.timestamp, q));
+        events.add(new AnswerReadEvent(q.answerTimestamp + fZero.timestamp, q));
 
 //        QuestionInfo q;
 //
@@ -115,7 +152,12 @@ public class EpisodeDetails {
 //        events.add(new AnswerReadEvent(q.answerTimestamp + fZero.timestamp, q));
 
 
-
+        Collections.sort(events, new Comparator<EpisodeEvent>() {
+            @Override
+            public int compare(EpisodeEvent lhs, EpisodeEvent rhs) {
+                return Double.compare(lhs.timestamp, rhs.timestamp);
+            }
+        });
     }
 
 

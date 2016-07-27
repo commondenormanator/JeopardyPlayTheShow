@@ -22,6 +22,8 @@ import com.seismicgames.jeopardyprototype.buzzer.message.VoiceCaptureState;
 import com.seismicgames.jeopardyprototype.buzzer.message.WagerRequest;
 import com.seismicgames.jeopardyprototype.episode.EpisodeDetails;
 import com.seismicgames.jeopardyprototype.episode.QuestionInfo;
+import com.seismicgames.jeopardyprototype.gameplay.events.AnswerReadEvent;
+import com.seismicgames.jeopardyprototype.gameplay.events.QuestionAskedEvent;
 import com.seismicgames.jeopardyprototype.gameplay.score.AnswerJudge;
 import com.seismicgames.jeopardyprototype.ui.GameUiManager;
 
@@ -66,8 +68,8 @@ public class GameState {
 
     public interface MediaEventListener{
         void onWager();
-        void onQuestionAsked();
-        void onAnswerRead(QuestionInfo info);
+        void onQuestionAsked(QuestionAskedEvent event);
+        void onAnswerRead(AnswerReadEvent event);
         void onMediaComplete();
     }
 
@@ -373,13 +375,13 @@ public class GameState {
         }
 
         @Override
-        public void onQuestionAsked() {
+        public void onQuestionAsked(QuestionAskedEvent event) {
             handler.sendMessage(handler.obtainMessage(HandlerMessageType.QUESTION_ASKED.ordinal()));
         }
 
         @Override
-        public void onAnswerRead(QuestionInfo info) {
-            handler.sendMessage(handler.obtainMessage(HandlerMessageType.ANSWER_READ.ordinal(), info));
+        public void onAnswerRead(AnswerReadEvent event) {
+            handler.sendMessage(handler.obtainMessage(HandlerMessageType.ANSWER_READ.ordinal(), event.questionInfo));
         }
 
         @Override
