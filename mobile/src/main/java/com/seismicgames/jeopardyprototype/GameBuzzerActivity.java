@@ -214,7 +214,7 @@ public class GameBuzzerActivity extends ConnectedActivity {
 
     @OnClick(R.id.restartButton)
     protected void onRestartClick() {
-        mConnection.gameplaySender().sendBuzzInRequest();
+        mConnection.gameplaySender().sendRestartRequest();
     }
 
 
