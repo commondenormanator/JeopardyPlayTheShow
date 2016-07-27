@@ -22,11 +22,11 @@
 
     <include
         android:id="@+id/winner1"
-        android:layout="@layout/aar_winner_container"
-        android:layout_below="@id/aar_logo"
-        android:layout_height="wrap_content"
+        layout="@layout/aar_winner_container"
         android:layout_width="500dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/aar_logo"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="16dp" />
 
 </RelativeLayout>
