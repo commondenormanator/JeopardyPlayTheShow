@@ -1,6 +1,9 @@
 package com.seismicgames.jeopardyprototype;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -220,12 +223,28 @@ public class NumberUtil {
 //    }
 
 
-    public static Integer parseNumber(String s){
-        s = s.trim();
-        s = s.replaceAll("^a ", "");
-        s = s.replace(" a ", " ");
-        s = s.replace(" and ", " ");
+    public static Integer parseNumber(String s) {
+        s=s.replace(",", "");
+        StringBuilder cleanString = new StringBuilder(s.length());
+        for (String token : s.split("(\\s+|\\$)")) {
+            boolean intLiteral = false;
+            try {
+                Integer.parseInt(token);
+                intLiteral = true;
+            }catch (Exception ignored){}
 
+            if(intLiteral ||
+                    ArrayUtils.contains(MAGNITUDES, token) ||
+                    ArrayUtils.contains(TENS, token) ||
+                    ArrayUtils.contains(TEENS, token) ||
+                    ArrayUtils.contains(DIGITS, token)) {
+                cleanString.append(token).append(" ");
+            }
+        }
+
+        return _parseNumber(cleanString.toString().trim());
+    }
+    private static Integer _parseNumber(String s){
 
         for (int m = MAGNITUDES.length -1; m > -1; m--){
             int pos = s.indexOf(MAGNITUDES[m]);
@@ -239,6 +258,8 @@ public class NumberUtil {
                 Integer rhs;
                 if(rhsString.isEmpty()) rhs = 0;
                 else rhs = parseNumber(rhsString);
+
+                int result;
 
                 return lhs == null || rhs == null ? null :  lhs * MAG_VALS[m] + rhs;
             }
