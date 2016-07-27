@@ -209,6 +209,19 @@ public class WagerActivity extends ConnectedActivity {
                     });
                 }
             }
+
+            @Override
+            public void onStopVoiceRec() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(speechRecognizer != null) {
+                            speechRecognizer.stopListening();
+                            speechRecognizer.cancel();
+                        }
+                    }
+                });
+            }
         });
     }
 

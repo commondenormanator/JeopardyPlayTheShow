@@ -54,7 +54,6 @@ public class GameBuzzerActivity extends ConnectedActivity {
         @Override
         public void run() {
             speechRecognizer.stopListening();
-            speechRecognizer.cancel();
         }
     };
 
@@ -197,12 +196,26 @@ public class GameBuzzerActivity extends ConnectedActivity {
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                                     intent.putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, true);
                                 }
+                                speechRecognizer.setRecognitionListener(recognitionListener);
                                 speechRecognizer.startListening(intent);
-                                mHandler.postDelayed(stopSpeechRunnable, Constants.AnswerTimeout);
+                                mHandler.postDelayed(stopSpeechRunnable, Constants.AnswerListenTimeout);
                             }
                         }
                     });
                 }
+            }
+
+            @Override
+            public void onStopVoiceRec() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(speechRecognizer != null) {
+                            speechRecognizer.cancel();
+                            speechRecognizer.setRecognitionListener(null); //maybe this resets it?
+                        }
+                    }
+                });
             }
         });
     }

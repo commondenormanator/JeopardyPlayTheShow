@@ -5,4 +5,5 @@ package com.seismicgames.jeopardyprototype.buzzer.sender;
  */
 public interface GameplayMessageSender {
     void sendBuzzInResponse(boolean isValidBuzz);
+    void sendStopVoiceRec();
 }

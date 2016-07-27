@@ -14,6 +14,7 @@ import com.seismicgames.jeopardyprototype.buzzer.message.AnswerRequest;
 import com.seismicgames.jeopardyprototype.buzzer.message.BuzzInResponse;
 import com.seismicgames.jeopardyprototype.buzzer.message.RemoteKeyMessage;
 import com.seismicgames.jeopardyprototype.buzzer.message.SceneInfoMessage;
+import com.seismicgames.jeopardyprototype.buzzer.message.StopVoiceRecRequest;
 import com.seismicgames.jeopardyprototype.buzzer.message.VoiceCaptureState;
 import com.seismicgames.jeopardyprototype.buzzer.message.WagerRequest;
 import com.seismicgames.jeopardyprototype.buzzer.sender.GameplayMessageSender;
@@ -88,7 +89,7 @@ public class BuzzerConnectionManager {
         app.registerActivityLifecycleCallbacks(lifecycleCallbacks);
     }
 
-    public GameplayMessageSender GameplaySender(){
+    public GameplayMessageSender gameplaySender(){
         return mSender;
     }
     public SceneMessageSender sceneSender(){
@@ -245,6 +246,11 @@ public class BuzzerConnectionManager {
         @Override
         public void sendBuzzInResponse(boolean isValidBuzz) {
             sendMessage(gson.toJson(new BuzzInResponse(isValidBuzz)));
+        }
+
+        @Override
+        public void sendStopVoiceRec() {
+            sendMessage(gson.toJson(new StopVoiceRecRequest()));
         }
 
         @Override

@@ -205,6 +205,7 @@ public class GameState {
 
     @MainThread
     private void onAnswerRead(QuestionInfo questionInfo){
+        mBuzzerManager.gameplaySender().sendStopVoiceRec();
         judge.scoreAnswer(questionInfo);
         mGameUiManager.clearUserAnswer();
     }
@@ -234,7 +235,7 @@ public class GameState {
 
 
         if(mState == State.WAIT_FOR_BUZZ_IN ){
-            mBuzzerManager.GameplaySender().sendBuzzInResponse(true);
+            mBuzzerManager.gameplaySender().sendBuzzInResponse(true);
             mState = State.WAIT_FOR_USER_ANSWER;
 
             handler.removeMessages(HandlerMessageType.BUZZ_IN_TIMEOUT.ordinal());
@@ -244,7 +245,7 @@ public class GameState {
             handler.sendMessageDelayed(handler.obtainMessage(HandlerMessageType.USER_ANSWER_TIMEOUT.ordinal()), Constants.AnswerTimeout);
             judge.setUserBuzzedIn();
         }else if(mState == State.WAIT_FOR_WAGER_BUZZ_IN){
-            mBuzzerManager.GameplaySender().sendBuzzInResponse(true);
+            mBuzzerManager.gameplaySender().sendBuzzInResponse(true);
             mState = State.WAIT_FOR_USER_WAGER;
 
             handler.removeMessages(HandlerMessageType.BUZZ_IN_TIMEOUT.ordinal());
@@ -256,7 +257,7 @@ public class GameState {
 
 
         }else {
-            mBuzzerManager.GameplaySender().sendBuzzInResponse(false);
+            mBuzzerManager.gameplaySender().sendBuzzInResponse(false);
 
         }
 

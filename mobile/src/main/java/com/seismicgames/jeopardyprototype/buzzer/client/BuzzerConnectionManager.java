@@ -70,6 +70,9 @@ public class BuzzerConnectionManager {
                 case "SceneInfoMessage":
                     mListener.onSceneInfo(gson.fromJson(json, SceneInfoMessage.class));
                     break;
+                case "StopVoiceRecRequest":
+                    mListener.onStopVoiceRec();
+                    break;
                 default:
                     Log.e(TAG, "Unhandled message: " + message);
             }
@@ -200,6 +203,13 @@ public class BuzzerConnectionManager {
         public void onBuzzInResponse(BuzzInResponse response) {
             for (GameplayEventListener l : gameListeners) {
                 l.onBuzzInResponse(response);
+            }
+        }
+
+        @Override
+        public void onStopVoiceRec() {
+            for (GameplayEventListener l : gameListeners) {
+                l.onStopVoiceRec();
             }
         }
 
