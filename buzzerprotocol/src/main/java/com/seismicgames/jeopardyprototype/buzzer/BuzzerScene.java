@@ -9,7 +9,7 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface BuzzerScene {
     enum Scene {
-        REMOTE, BUZZER;
+        REMOTE, BUZZER, WAGER;
 
         public static Scene parse(String str) {
             for (Scene s : values()) {

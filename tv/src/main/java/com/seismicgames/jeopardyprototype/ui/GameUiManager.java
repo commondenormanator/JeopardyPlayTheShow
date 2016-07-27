@@ -37,9 +37,6 @@ public class GameUiManager implements ScoreChangeListener{
     @BindView(R.id.podiumTimer)
     public AnswerTimer answerTimer;
 
-    @BindView(R.id.disconnectedWarning)
-    public View disconnectWarning;
-
     @BindView(R.id.videoContainer)
     public View videoContainer;
 
@@ -48,6 +45,13 @@ public class GameUiManager implements ScoreChangeListener{
 
     @BindView(R.id.micIcon)
     public ImageView micIcon;
+
+
+    @BindView(R.id.wager_layout)
+    public View wagerView;
+    @BindView(R.id.wagerValue)
+    public TextView wagerValue;
+
 
     public GameUiManager(Activity view) {
         ButterKnife.bind(this, view);
@@ -89,8 +93,19 @@ public class GameUiManager implements ScoreChangeListener{
         buzzerTimer.setVisibility(View.INVISIBLE);
     }
 
+    public void showWagerTimer(boolean show){
+        if(show) {
+            setWagerValue(0);
+            wagerView.setVisibility(View.VISIBLE);
+        } else {
+            wagerView.setVisibility(View.GONE);
 
+        }
+    }
 
+    public void setWagerValue(int value){
+        wagerValue.setText(String.format("$%5d", value));
+    }
 
     public void showAnswerTimer(int duration) {
         answerTimer.start(duration);

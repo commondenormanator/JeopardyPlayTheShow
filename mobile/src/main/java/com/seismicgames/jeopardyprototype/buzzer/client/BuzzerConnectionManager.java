@@ -20,6 +20,7 @@ import com.seismicgames.jeopardyprototype.buzzer.message.RemoteKeyMessage;
 import com.seismicgames.jeopardyprototype.buzzer.message.RestartRequest;
 import com.seismicgames.jeopardyprototype.buzzer.message.SceneInfoMessage;
 import com.seismicgames.jeopardyprototype.buzzer.message.VoiceCaptureState;
+import com.seismicgames.jeopardyprototype.buzzer.message.WagerRequest;
 
 import java.util.HashSet;
 import java.util.List;
@@ -237,6 +238,10 @@ public class BuzzerConnectionManager {
         @Override
         public void sendKeyEvent(int keyCode) {
             send(gson.toJson(new RemoteKeyMessage(keyCode)));
+        }
+
+        public void sendWagerRequest(int wager) {
+            send(gson.toJson(new WagerRequest(wager)));
         }
     }
 

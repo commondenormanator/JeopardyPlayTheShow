@@ -130,10 +130,16 @@ public class MediaPlayerControlMediaManager implements GameState.MediaManager {
                 Log.w(TAG, "paused at " + mPlayer.getCurrentPosition());
                 mPlayer.pause();
                 mPlayer.seekTo(event.timestamp);
+                Log.w(TAG, "seeked to " + mPlayer.getCurrentPosition());
                 mListener.onQuestionAsked();
                 break;
             case AnswerRead:
                 mListener.onAnswerRead(((AnswerReadEvent)event).questionInfo);
+                break;
+            case Wager:
+                mPlayer.pause();
+                mPlayer.seekTo(event.timestamp);
+                mListener.onWager();
                 break;
         }
 

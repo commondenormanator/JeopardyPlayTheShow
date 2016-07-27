@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/main_bg"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/wagerText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_margin="16dp"
+        android:text="WAGER NOW"
+        android:textColor="@android:color/white"
+        android:textSize="70sp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@id/wagerText"
+        android:background="@drawable/fade_in_stroke"
+        tools:ignore="RtlHardcoded" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@id/wagerText"
+        android:background="@drawable/fade_out_stroke"
+        tools:ignore="RtlHardcoded" />
+
+
+    <TextView
+        android:id="@+id/wagerValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/wagerText"
+        android:layout_centerInParent="true"
+        android:layout_margin="16dp"
+        android:text="$00,000"
+        android:textColor="@android:color/white"
+        android:textSize="60sp" />
+
+</RelativeLayout>

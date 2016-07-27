@@ -73,12 +73,11 @@
         android:layout_toLeftOf="@id/userAnswer" />
 
 
-    <ImageView
-        android:id="@+id/disconnectedWarning"
+    <include
+        layout="@layout/wager_layout"
+        android:id="@+id/wager_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="centerCrop"
-        android:src="@drawable/jeopardy_syncing"
         android:visibility="invisible" />
 
 

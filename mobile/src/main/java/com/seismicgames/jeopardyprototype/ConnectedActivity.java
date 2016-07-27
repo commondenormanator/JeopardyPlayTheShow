@@ -60,6 +60,9 @@ public class ConnectedActivity extends Activity implements SceneEventListener{
             case BUZZER:
                 startActivity(new Intent(this, GameBuzzerActivity.class));
                 break;
+            case WAGER:
+                startActivity(new Intent(this, WagerActivity.class));
+                break;
         }
     }
 

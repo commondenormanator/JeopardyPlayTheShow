@@ -12,4 +12,5 @@ public interface GameplayMessageSender {
     void sendAnswerRequest(List<String> answers);
     void sendRestartRequest();
     void sendVoiceState(VoiceCaptureState.State state);
+    void sendWagerRequest(int wager);
 }

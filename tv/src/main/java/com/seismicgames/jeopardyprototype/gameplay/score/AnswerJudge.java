@@ -15,6 +15,8 @@ public class AnswerJudge {
     private List<String> userAnswers = new ArrayList<>();
     private boolean didBuzzIn = false;
 
+    private Integer wager = null;
+
     public boolean didBuzzIn(){
         return didBuzzIn;
     }
@@ -32,6 +34,10 @@ public class AnswerJudge {
         this.userAnswers.addAll(userAnswers);
     }
 
+    public void setWager(int wager){
+        this.wager = wager;
+    }
+
     public void scoreAnswer(QuestionInfo info){
 
         if(didBuzzIn) {
@@ -45,12 +51,15 @@ public class AnswerJudge {
                 }
                 if(wasCorrect) break;
             }
-            int change = info.value * (wasCorrect ? 1 : -1);
+
+            int value = wager == null ? info.value : wager;
+            int change = value * (wasCorrect ? 1 : -1);
             userScore +=  change;
             if(listener != null) listener.onScoreChange(userScore, change);
         }
 
         didBuzzIn = false;
+        wager = null;
     }
 
     public int getUserScore(){

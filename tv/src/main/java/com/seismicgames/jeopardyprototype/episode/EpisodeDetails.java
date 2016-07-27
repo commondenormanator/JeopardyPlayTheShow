@@ -3,6 +3,8 @@ package com.seismicgames.jeopardyprototype.episode;
 import com.seismicgames.jeopardyprototype.gameplay.events.AnswerReadEvent;
 import com.seismicgames.jeopardyprototype.gameplay.events.EpisodeEvent;
 import com.seismicgames.jeopardyprototype.gameplay.events.FrameZeroEvent;
+import com.seismicgames.jeopardyprototype.gameplay.events.WagerEvent;
+import com.seismicgames.jeopardyprototype.util.TimeCode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,13 +84,36 @@ public class EpisodeDetails {
         events.add(new EpisodeEvent(3000, EpisodeEvent.Type.Skipped));
         FrameZeroEvent fZero = new FrameZeroEvent("00:58:04;09");
         events.add(fZero);
-        //events.add(new EpisodeEvent(fZero.timestamp + 100, EpisodeEvent.Type.Skipped));
+        events.add(new EpisodeEvent(fZero.timestamp + 100, EpisodeEvent.Type.Skipped));
+
+        //temp: quick skip to first question
         events.add(new EpisodeEvent(questions.get(0).readTimestamp + fZero.timestamp - 10000, EpisodeEvent.Type.EpisodeStart));
 
         for (QuestionInfo q : questions) {
             events.add(new EpisodeEvent(q.readTimestamp + fZero.timestamp, EpisodeEvent.Type.QuestAsked));
             events.add(new AnswerReadEvent(q.answerTimestamp + fZero.timestamp, q));
         }
+
+//        QuestionInfo q;
+//
+//        q = new QuestionInfo("LITTLE, JOHN","IT PRECEDES \"WILLIE WINKIE\" IN A NURSERY RHYME","WEE",200,"01:11:04;14", "01:11:07;01");
+//        events.add(new EpisodeEvent(q.readTimestamp + fZero.timestamp, EpisodeEvent.Type.QuestAsked));
+//        events.add(new AnswerReadEvent(q.answerTimestamp + fZero.timestamp, q));
+//
+//        q = new QuestionInfo("LITTLE, JOHN","A LAND CREATED BY JONATHAN SWIFT GAVE US THIS WORD MEANING TINY","LILLIPUTIAN",1000,"01:11:14;26", "01:11:18;02");
+//        events.add(new EpisodeEvent(q.readTimestamp + fZero.timestamp, EpisodeEvent.Type.QuestAsked));
+//        events.add(new AnswerReadEvent(q.answerTimestamp + fZero.timestamp, q));
+//
+//        //daily double
+//        q = new QuestionInfo("LITTLE, JOHN","BEGINNING WITH A WORD THAT MEANS IMMEASURABLY GREAT, IT MEANS EXCEEDINGLY SMALL","INFINITESIMAL",0,"01:11:41;04", "01:11:55;00");
+//        events.add(new WagerEvent(TimeCode.parse("01:11:29;12") + fZero.timestamp));
+//        events.add(new EpisodeEvent(q.readTimestamp + fZero.timestamp, EpisodeEvent.Type.QuestAsked));
+//        events.add(new AnswerReadEvent(q.answerTimestamp + fZero.timestamp, q));
+//
+//        q = new QuestionInfo("FRYER TUCK","TUCK GOES FULL FANNIE FLAGG MAKING THIS 3-WORD TITLE DISH, DIPPING 'EM IN FLOUR, MILK, EGGS & BREAD CRUMBS","FRIED GREEN TOMATOES",1000,"01:12:05;04", "01:12:08;10");
+//        events.add(new EpisodeEvent(q.readTimestamp + fZero.timestamp, EpisodeEvent.Type.QuestAsked));
+//        events.add(new AnswerReadEvent(q.answerTimestamp + fZero.timestamp, q));
+
 
 
     }

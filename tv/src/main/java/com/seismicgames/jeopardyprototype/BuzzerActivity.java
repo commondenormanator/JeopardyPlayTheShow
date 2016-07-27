@@ -32,7 +32,7 @@ public abstract class BuzzerActivity extends Activity {
     protected void onResume() {
         super.onResume();
         isVisible = true;
-        setScene();
+        setScene(getDefaultScene());
         buzzerConnection.addListener((ConnectionEventListener) mListener);
         buzzerConnection.addListener((RemoteEventListener) mListener);
         if (buzzerConnection.isBuzzerConnected()) {
@@ -60,23 +60,22 @@ public abstract class BuzzerActivity extends Activity {
         BuzzerDisconnectedActivity.show(this);
     }
 
-
-    private void setScene() {
+    private BuzzerScene.Scene getDefaultScene(){
         BuzzerScene annotation = getClass().getAnnotation(BuzzerScene.class);
         if (annotation != null) {
-            scene = annotation.value();
+            return annotation.value();
         }
+        return null;
     }
 
-    private void sendSceneInfo() {
+    public void setScene(BuzzerScene.Scene scene) {
+        BuzzerActivity.scene = scene;
+    }
+
+    public void sendSceneInfo() {
         if (scene != null) {
             buzzerConnection.sceneSender().sendSceneInfo(scene.name());
         }
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        return super.onKeyDown(keyCode, event);
     }
 
     private class BuzzerActivityListener implements ConnectionEventListener, RemoteEventListener {

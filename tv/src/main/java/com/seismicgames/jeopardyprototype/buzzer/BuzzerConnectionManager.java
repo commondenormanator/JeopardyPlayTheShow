@@ -15,6 +15,7 @@ import com.seismicgames.jeopardyprototype.buzzer.message.BuzzInResponse;
 import com.seismicgames.jeopardyprototype.buzzer.message.RemoteKeyMessage;
 import com.seismicgames.jeopardyprototype.buzzer.message.SceneInfoMessage;
 import com.seismicgames.jeopardyprototype.buzzer.message.VoiceCaptureState;
+import com.seismicgames.jeopardyprototype.buzzer.message.WagerRequest;
 import com.seismicgames.jeopardyprototype.buzzer.sender.GameplayMessageSender;
 import com.seismicgames.jeopardyprototype.buzzer.sender.SceneMessageSender;
 
@@ -67,6 +68,9 @@ public class BuzzerConnectionManager {
                         break;
                     case "RemoteKeyMessage":
                         mListener.onKeyEvent(gson.fromJson(json, RemoteKeyMessage.class));
+                        break;
+                    case "WagerRequest":
+                        mListener.onUserWager(gson.fromJson(json, WagerRequest.class));
                         break;
                     default:
                         Log.e(TAG, "Unhandled message: " + message);
@@ -211,6 +215,13 @@ public class BuzzerConnectionManager {
         public void onVoiceCaptureState(VoiceCaptureState request) {
             for (GameplayEventListener l : gameListeners) {
                 l.onVoiceCaptureState(request);
+            }
+        }
+
+        @Override
+        public void onUserWager(WagerRequest request) {
+            for (GameplayEventListener l : gameListeners) {
+                l.onUserWager(request);
             }
         }
 

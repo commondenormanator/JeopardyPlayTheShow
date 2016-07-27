@@ -11,12 +11,15 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.seismicgames.jeopardyprototype.AfterActionReportActivity;
+import com.seismicgames.jeopardyprototype.BuzzerActivity;
 import com.seismicgames.jeopardyprototype.Constants;
 import com.seismicgames.jeopardyprototype.buzzer.BuzzerConnectionManager;
+import com.seismicgames.jeopardyprototype.buzzer.BuzzerScene;
 import com.seismicgames.jeopardyprototype.buzzer.listeners.ConnectionEventListener;
 import com.seismicgames.jeopardyprototype.buzzer.listeners.GameplayEventListener;
 import com.seismicgames.jeopardyprototype.buzzer.message.AnswerRequest;
 import com.seismicgames.jeopardyprototype.buzzer.message.VoiceCaptureState;
+import com.seismicgames.jeopardyprototype.buzzer.message.WagerRequest;
 import com.seismicgames.jeopardyprototype.episode.EpisodeDetails;
 import com.seismicgames.jeopardyprototype.episode.QuestionInfo;
 import com.seismicgames.jeopardyprototype.gameplay.score.AnswerJudge;
@@ -29,12 +32,17 @@ public class GameState {
 
 
     public enum State{
-        WAIT_FOR_CONNECTION, USER_PAUSED, WAIT_FOR_MEDIA_EVENT, WAIT_FOR_BUZZ_IN, WAIT_FOR_USER_RESPONSE
+        WAIT_FOR_CONNECTION, USER_PAUSED, WAIT_FOR_MEDIA_EVENT,
+        WAIT_FOR_BUZZ_IN, WAIT_FOR_WAGER_BUZZ_IN,
+        WAIT_FOR_USER_ANSWER,  WAIT_FOR_USER_WAGER
     }
 
     private enum HandlerMessageType{
         BUZZER_CONN_CHANGE,
+
         QUESTION_ASKED,
+        ANSWER_READ,
+
 
         BUZZ_IN_TIMEOUT,
         BUZZ_IN_REQUEST,
@@ -42,7 +50,10 @@ public class GameState {
         USER_ANSWER_TIMEOUT,
         USER_ANSWER_REQUEST,
 
-        ANSWER_READ,
+
+        WAGER_PROMPT,
+        USER_WAGER_TIMEOUT,
+        USER_WAGER_REQUEST,
 
         VOICE_CAPTURE_STATE,
 
@@ -54,6 +65,7 @@ public class GameState {
 
 
     public interface MediaEventListener{
+        void onWager();
         void onQuestionAsked();
         void onAnswerRead(QuestionInfo info);
         void onMediaComplete();
@@ -81,7 +93,7 @@ public class GameState {
     private BuzzerHandler mBuzzerHandler = new BuzzerHandler();
     private MediaHandler mMediaHandler = new MediaHandler();
 
-    private Activity activity;
+    private BuzzerActivity activity;
     private Handler handler;
     private Handler.Callback callback = new Handler.Callback(){
         @Override
@@ -90,7 +102,7 @@ public class GameState {
         }
     };
 
-    public void onResume(Activity a){
+    public void onResume(BuzzerActivity a){
         activity = a;
         if(handler == null) {
             handler = new Handler(Looper.getMainLooper(), callback);
@@ -98,12 +110,12 @@ public class GameState {
         mMediaManager.onActivityResume(a);
     }
 
-    public void onPause(Activity a){
+    public void onPause(BuzzerActivity a){
         mMediaManager.onActivityPause(a);
         activity = null;
     }
 
-    public void onDestroy(Activity a){
+    public void onDestroy(BuzzerActivity a){
         mBuzzerManager.removeListener((ConnectionEventListener) mBuzzerHandler);
         mBuzzerManager.removeListener((GameplayEventListener) mBuzzerHandler);
         mMediaManager.onActivityDestroy(a);
@@ -168,17 +180,22 @@ public class GameState {
         mGameUiManager.hideBuzzTimer();
         mGameUiManager.hideAnswerTimer();
 
+        if(activity != null) {
+            activity.setScene(BuzzerScene.Scene.BUZZER);
+            activity.sendSceneInfo();
+        }
+
         resumeGame();
     }
 
     @MainThread
     private void onUserAnswerRequest(AnswerRequest request){
-        if(mState == State.WAIT_FOR_USER_RESPONSE){
+//        if(mState == State.WAIT_FOR_USER_ANSWER){
             judge.setUserAnswers(request.answers);
             if(request.answers.size() > 0) {
                 mGameUiManager.setUserAnswer(request.answers.get(0));
             }
-        }
+//        }
     }
 
     @MainThread
@@ -193,23 +210,67 @@ public class GameState {
     }
 
     @MainThread
-    private void onBuzzIn(){
-        if(mState != State.WAIT_FOR_BUZZ_IN){
-            mBuzzerManager.GameplaySender().sendBuzzInResponse(false);
-            return;
+    private void onUserWager(WagerRequest request){
+        if(mState == State.WAIT_FOR_USER_WAGER) {
+            //TODO judge.setWager
+            judge.setWager(request.wager);
+            judge.setUserBuzzedIn();
+            mGameUiManager.setWagerValue(request.wager);
         }
-        mBuzzerManager.GameplaySender().sendBuzzInResponse(true);
-        mState = State.WAIT_FOR_USER_RESPONSE;
+    }
 
-        handler.removeMessages(HandlerMessageType.BUZZ_IN_TIMEOUT.ordinal());
-        mGameUiManager.hideBuzzTimer();
+    @MainThread
+    private void onWagerTimeout(){
+        mGameUiManager.showWagerTimer(false);
+        if(activity != null) {
+            activity.setScene(BuzzerScene.Scene.BUZZER);
+            activity.sendSceneInfo();
+        }
+        resumeGame();
+    }
 
-        mGameUiManager.showAnswerTimer(Constants.AnswerTimeout);
-        handler.sendMessageDelayed(handler.obtainMessage(HandlerMessageType.USER_ANSWER_TIMEOUT.ordinal()), Constants.AnswerTimeout);
-        judge.setUserBuzzedIn();
+    @MainThread
+    private void onBuzzIn(){
 
 
+        if(mState == State.WAIT_FOR_BUZZ_IN ){
+            mBuzzerManager.GameplaySender().sendBuzzInResponse(true);
+            mState = State.WAIT_FOR_USER_ANSWER;
 
+            handler.removeMessages(HandlerMessageType.BUZZ_IN_TIMEOUT.ordinal());
+            mGameUiManager.hideBuzzTimer();
+
+            mGameUiManager.showAnswerTimer(Constants.AnswerTimeout);
+            handler.sendMessageDelayed(handler.obtainMessage(HandlerMessageType.USER_ANSWER_TIMEOUT.ordinal()), Constants.AnswerTimeout);
+            judge.setUserBuzzedIn();
+        }else if(mState == State.WAIT_FOR_WAGER_BUZZ_IN){
+            mBuzzerManager.GameplaySender().sendBuzzInResponse(true);
+            mState = State.WAIT_FOR_USER_WAGER;
+
+            handler.removeMessages(HandlerMessageType.BUZZ_IN_TIMEOUT.ordinal());
+            mGameUiManager.hideBuzzTimer();
+
+            mGameUiManager.showWagerTimer(true);
+            handler.sendMessageDelayed(handler.obtainMessage(HandlerMessageType.USER_WAGER_TIMEOUT.ordinal()), Constants.WagerTimeout);
+            judge.setUserBuzzedIn();
+
+
+        }else {
+            mBuzzerManager.GameplaySender().sendBuzzInResponse(false);
+
+        }
+
+    }
+
+    @MainThread
+    private void waitForWagerBuzzIn(){
+        mState = State.WAIT_FOR_WAGER_BUZZ_IN;
+
+        mGameUiManager.showBuzzTimer(Constants.BuzzInTimeout);
+        handler.sendMessageDelayed(handler.obtainMessage(HandlerMessageType.BUZZ_IN_TIMEOUT.ordinal()), Constants.BuzzInTimeout);
+
+        activity.setScene(BuzzerScene.Scene.WAGER);
+        activity.sendSceneInfo();
     }
 
 
@@ -280,6 +341,15 @@ public class GameState {
             case USER_RESTART:
                 restartGame();
                 break;
+            case WAGER_PROMPT:
+                waitForWagerBuzzIn();
+                break;
+            case USER_WAGER_TIMEOUT:
+                onWagerTimeout();
+                break;
+            case USER_WAGER_REQUEST:
+                onUserWager((WagerRequest) message.obj);
+                break;
             case MEDIA_COMPLETE:
                 onMediaComplete();
                 break;
@@ -295,6 +365,11 @@ public class GameState {
 
     @WorkerThread
     private class MediaHandler implements MediaEventListener {
+
+        @Override
+        public void onWager() {
+            handler.sendMessage(handler.obtainMessage(HandlerMessageType.WAGER_PROMPT.ordinal()));
+        }
 
         @Override
         public void onQuestionAsked() {
@@ -339,6 +414,11 @@ public class GameState {
         @Override
         public void onUserRestart() {
             handler.sendMessage(handler.obtainMessage(HandlerMessageType.USER_RESTART.ordinal()));
+        }
+
+        @Override
+        public void onUserWager(WagerRequest request) {
+            handler.sendMessage(handler.obtainMessage(HandlerMessageType.USER_WAGER_REQUEST.ordinal(), request));
         }
     }
 }
