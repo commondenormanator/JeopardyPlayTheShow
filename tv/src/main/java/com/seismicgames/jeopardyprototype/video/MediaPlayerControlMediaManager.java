@@ -117,6 +117,7 @@ public class MediaPlayerControlMediaManager implements GameState.MediaManager {
 
         switch (event.type){
             case Skipped:
+            case CommercialStart:
                 if(nextEvent != null){
                     if(!mPlayer.canSeekForward()) Log.e(TAG, "cannot seek");
                     mPlayer.seekTo(nextEvent.timestamp);

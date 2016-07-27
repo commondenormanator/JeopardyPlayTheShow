@@ -86,12 +86,12 @@ public class EpisodeDetails {
 
 
 
-        events.add(new EpisodeEvent(3000, EpisodeEvent.Type.Skipped));
+        events.add(new EpisodeEvent(2000, EpisodeEvent.Type.Skipped));
         FrameZeroEvent fZero = new FrameZeroEvent("00:58:04;09");
         events.add(fZero);
-        events.add(new EpisodeEvent(fZero.timestamp + 100, EpisodeEvent.Type.Skipped));
 
         //temp: quick skip to first question
+        events.add(new EpisodeEvent(fZero.timestamp + 100, EpisodeEvent.Type.Skipped));
 //        events.add(new EpisodeEvent(questions.get(0).readTimestamp + fZero.timestamp - 10000, EpisodeEvent.Type.EpisodeStart));
 
         for (QuestionInfo q : questions) {
@@ -99,14 +99,12 @@ public class EpisodeDetails {
             events.add(new AnswerReadEvent(q.answerTimestamp + fZero.timestamp, q));
         }
 
+
         QuestionInfo q;
         q = new QuestionInfo("LITTLE, JOHN","BEGINNING WITH A WORD THAT MEANS IMMEASURABLY GREAT, IT MEANS EXCEEDINGLY SMALL","INFINITESIMAL",0,"01:11:41;04", "01:11:55;00");
         events.add(new WagerEvent(TimeCode.parse("01:11:29;12") + fZero.timestamp));
         events.add(new QuestionAskedEvent(q.readTimestamp + fZero.timestamp, q));
         events.add(new AnswerReadEvent(q.answerTimestamp + fZero.timestamp, q));
-
-
-//        events.add(new EpisodeEvent(0, EpisodeEvent.Type.Skipped));
 
 
         q = new QuestionInfo("EUROPEAN RULERS","THIS FRENCH KING'S ATTEMPT TO ESCAPE HIS FATE IS KNOWN AS THE FLIGHT TO VARENNES","LOUIS XVI|LOUIS THE SIXTEENTH",0,"01:17:32;01", "01:17:38;14");
@@ -116,41 +114,30 @@ public class EpisodeDetails {
 
 
 
-//        events.add(new EpisodeEvent(0, EpisodeEvent.Type.Skipped));
-
         q = new QuestionInfo("SCIENCE","DISEASE-SPECIFIC GENES HAVE BEEN FOUND THAT COULD HELP TELL PSORIASIS FROM THIS SKIN AFFLICTION, AIDING IN TREATMENT","ECZEMA|DERMATITIS",0,"01:20:29;24", "01:20:41;00");
         events.add(new WagerEvent(TimeCode.parse("01:20:15;08") + fZero.timestamp));
         events.add(new QuestionAskedEvent(q.readTimestamp + fZero.timestamp, q));
         events.add(new AnswerReadEvent(q.answerTimestamp + fZero.timestamp, q));
 
 
-//        events.add(new EpisodeEvent(fZero.timestamp + 100, EpisodeEvent.Type.Skipped));
 
         q = new QuestionInfo("TELEVISION","SET TO THE SONG \"YOU'VE GOT TIME\", A MONTAGE OF REAL WOMEN WHO WERE INCARCERATED IS IN THE OPENING CREDITS OF THIS SERIES","ORANGE IS THE NEW BLACK",0,"01:25:59;07", "01:26:29;21");
         events.add(new WagerEvent(TimeCode.parse("01:25:59;07") + fZero.timestamp));
         events.add(new QuestionAskedEvent(q.readTimestamp + fZero.timestamp, q));
         events.add(new AnswerReadEvent(q.answerTimestamp + fZero.timestamp, q));
 
-//        QuestionInfo q;
-//
-//        q = new QuestionInfo("LITTLE, JOHN","IT PRECEDES \"WILLIE WINKIE\" IN A NURSERY RHYME","WEE",200,"01:11:04;14", "01:11:07;01");
-//        events.add(new EpisodeEvent(q.readTimestamp + fZero.timestamp, EpisodeEvent.Type.QuestAsked));
-//        events.add(new AnswerReadEvent(q.answerTimestamp + fZero.timestamp, q));
-//
-//        q = new QuestionInfo("LITTLE, JOHN","A LAND CREATED BY JONATHAN SWIFT GAVE US THIS WORD MEANING TINY","LILLIPUTIAN",1000,"01:11:14;26", "01:11:18;02");
-//        events.add(new EpisodeEvent(q.readTimestamp + fZero.timestamp, EpisodeEvent.Type.QuestAsked));
-//        events.add(new AnswerReadEvent(q.answerTimestamp + fZero.timestamp, q));
-//
-//        //daily double
-//        q = new QuestionInfo("LITTLE, JOHN","BEGINNING WITH A WORD THAT MEANS IMMEASURABLY GREAT, IT MEANS EXCEEDINGLY SMALL","INFINITESIMAL",0,"01:11:41;04", "01:11:55;00");
-//        events.add(new WagerEvent(TimeCode.parse("01:11:29;12") + fZero.timestamp));
-//        events.add(new EpisodeEvent(q.readTimestamp + fZero.timestamp, EpisodeEvent.Type.QuestAsked));
-//        events.add(new AnswerReadEvent(q.answerTimestamp + fZero.timestamp, q));
-//
-//        q = new QuestionInfo("FRYER TUCK","TUCK GOES FULL FANNIE FLAGG MAKING THIS 3-WORD TITLE DISH, DIPPING 'EM IN FLOUR, MILK, EGGS & BREAD CRUMBS","FRIED GREEN TOMATOES",1000,"01:12:05;04", "01:12:08;10");
-//        events.add(new EpisodeEvent(q.readTimestamp + fZero.timestamp, EpisodeEvent.Type.QuestAsked));
-//        events.add(new AnswerReadEvent(q.answerTimestamp + fZero.timestamp, q));
 
+
+        //commercials
+
+        events.add(new EpisodeEvent(TimeCode.parse("01:04:40;03") + fZero.timestamp, EpisodeEvent.Type.CommercialStart));
+        events.add(new EpisodeEvent(TimeCode.parse("01:06:41;26") + fZero.timestamp, EpisodeEvent.Type.CommercialEnd));
+
+        events.add(new EpisodeEvent(TimeCode.parse("01:12:19;10") + fZero.timestamp, EpisodeEvent.Type.CommercialStart));
+        events.add(new EpisodeEvent(TimeCode.parse("01:14:43;15") + fZero.timestamp, EpisodeEvent.Type.CommercialEnd));
+
+        events.add(new EpisodeEvent(TimeCode.parse("01:22:11;22") + fZero.timestamp, EpisodeEvent.Type.CommercialStart));
+        events.add(new EpisodeEvent(TimeCode.parse("01:25:45;09") + fZero.timestamp, EpisodeEvent.Type.CommercialEnd));
 
         Collections.sort(events, new Comparator<EpisodeEvent>() {
             @Override
