@@ -1,10 +1,9 @@
 package com.seismicgames.jeopardyprototype;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.app.Activity;
-import android.support.v4.app.ShareCompat;
 import android.widget.TextView;
 
 import butterknife.BindView;
@@ -18,7 +17,7 @@ public class AfterActionReportActivity extends Activity {
     @BindView(R.id.userScore)
     TextView userScoreTextView;
 
-    public static void ShowPostMatch(Context context, int userScore){
+    public static void ShowPostMatch(Context context, int userScore) {
         Intent intent = new Intent(context, AfterActionReportActivity.class);
         intent.putExtra(EXTRA_USER_SCORE, userScore);
         context.startActivity(intent);
@@ -35,6 +34,14 @@ public class AfterActionReportActivity extends Activity {
 
         userScoreTextView.setText(String.format("$%d", userScore));
 
+        userScoreTextView.postDelayed(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        finish();
+                    }
+                },
+                15000);
     }
 
 }
