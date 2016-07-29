@@ -103,9 +103,9 @@ public class GameActivity extends BuzzerActivity {
             InputStream meta = null;
             try{
                 File gameFile = ExternalFileUtil.getFile(getApplicationContext(), "game.csv");
-                if(gameFile == null) return false;
+                if(gameFile == null || !gameFile.exists()) return false;
                 File metaFile = ExternalFileUtil.getFile(getApplicationContext(), "meta.csv");
-                if(metaFile == null) return false;
+                if(metaFile == null || !metaFile.exists()) return false;
 
                 game = new FileInputStream(gameFile);
                 meta = new FileInputStream(metaFile);
