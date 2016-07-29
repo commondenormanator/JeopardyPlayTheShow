@@ -21,6 +21,7 @@ import com.seismicgames.jeopardyprototype.buzzer.sender.GameplayMessageSender;
 import com.seismicgames.jeopardyprototype.buzzer.sender.SceneMessageSender;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -177,59 +178,72 @@ public class BuzzerConnectionManager {
     }
 
 
-
     private class InternalListener implements ConnectionEventListener, GameplayEventListener, RemoteEventListener {
 
-        public final Set<ConnectionEventListener> connListeners = new HashSet<>();
-        public final Set<GameplayEventListener> gameListeners = new HashSet<>();
-        public final Set<RemoteEventListener> remoteListeners = new HashSet<>();
+        public final Set<ConnectionEventListener> connListeners = Collections.synchronizedSet(new HashSet<ConnectionEventListener>());
+        public final Set<GameplayEventListener> gameListeners = Collections.synchronizedSet(new HashSet<GameplayEventListener>());
+        public final Set<RemoteEventListener> remoteListeners = Collections.synchronizedSet(new HashSet<RemoteEventListener>());
 
         @Override
         public void onBuzzerConnectivityChange(boolean isConnected) {
-            for (ConnectionEventListener l : connListeners) {
-                l.onBuzzerConnectivityChange(isConnected);
+            synchronized (connListeners) {
+                for (ConnectionEventListener l : connListeners) {
+                    l.onBuzzerConnectivityChange(isConnected);
+                }
             }
         }
 
         @Override
         public void onUserBuzzIn() {
-            for (GameplayEventListener l : gameListeners) {
-                l.onUserBuzzIn();
+            synchronized (gameListeners) {
+                for (GameplayEventListener l : gameListeners) {
+                    l.onUserBuzzIn();
+                }
             }
         }
 
         @Override
         public void onUserRestart() {
-            for (GameplayEventListener l : gameListeners) {
-                l.onUserRestart();
+            synchronized (gameListeners) {
+                for (GameplayEventListener l : gameListeners) {
+                    l.onUserRestart();
+                }
             }
         }
 
         @Override
         public void onUserAnswer(AnswerRequest request) {
-            for (GameplayEventListener l : gameListeners) {
-                l.onUserAnswer(request);
+            synchronized (gameListeners) {
+                for (GameplayEventListener l : gameListeners) {
+                    l.onUserAnswer(request);
+                }
             }
         }
 
         @Override
         public void onVoiceCaptureState(VoiceCaptureState request) {
-            for (GameplayEventListener l : gameListeners) {
-                l.onVoiceCaptureState(request);
+            synchronized (gameListeners) {
+                for (GameplayEventListener l : gameListeners) {
+                    l.onVoiceCaptureState(request);
+                }
             }
         }
 
         @Override
         public void onUserWager(WagerRequest request) {
-            for (GameplayEventListener l : gameListeners) {
-                l.onUserWager(request);
+            synchronized (gameListeners) {
+                for (GameplayEventListener l : gameListeners) {
+                    l.onUserWager(request);
+                }
             }
         }
 
         @Override
         public void onKeyEvent(RemoteKeyMessage message) {
-            for (RemoteEventListener l : remoteListeners) {
-                l.onKeyEvent(message);
+            synchronized (remoteListeners) {
+                for (RemoteEventListener l : remoteListeners) {
+                    l.onKeyEvent(message);
+                }
             }
         }
     }
