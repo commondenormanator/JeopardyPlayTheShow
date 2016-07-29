@@ -7,7 +7,6 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.seismicgames.jeopardyprototype.buzzer.BuzzerScene;
 import com.seismicgames.jeopardyprototype.buzzer.client.listeners.ConnectionEventListener;
 import com.seismicgames.jeopardyprototype.buzzer.client.listeners.GameplayEventListener;
 import com.seismicgames.jeopardyprototype.buzzer.client.listeners.SceneEventListener;
@@ -22,6 +21,7 @@ import com.seismicgames.jeopardyprototype.buzzer.message.SceneInfoMessage;
 import com.seismicgames.jeopardyprototype.buzzer.message.VoiceCaptureState;
 import com.seismicgames.jeopardyprototype.buzzer.message.WagerRequest;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -34,7 +34,7 @@ public class BuzzerConnectionManager {
 
     private static BuzzerConnectionManager mInstance;
 
-    public static BuzzerConnectionManager getInstance(Application app) {
+    public static synchronized BuzzerConnectionManager getInstance(Application app) {
         if (mInstance == null) mInstance = new BuzzerConnectionManager(app);
         return mInstance;
     }
@@ -131,10 +131,6 @@ public class BuzzerConnectionManager {
 
         @Override
         public void onActivityStarted(Activity activity) {
-        }
-
-        @Override
-        public void onActivityResumed(Activity activity) {
             foregroundActivityCount++;
             if (foregroundActivityCount == 1 && mClient == null && !mHostScanner.isScanning()) {
                 Log.d(TAG, "start scan");
@@ -143,13 +139,17 @@ public class BuzzerConnectionManager {
         }
 
         @Override
+        public void onActivityResumed(Activity activity) {
+        }
+
+        @Override
         public void onActivityPaused(Activity activity) {
-            foregroundActivityCount--;
 
         }
 
         @Override
         public void onActivityStopped(Activity activity) {
+            foregroundActivityCount--;
             if (foregroundActivityCount == 0) {
                 Log.d(TAG, "stop server");
 
@@ -185,39 +185,47 @@ public class BuzzerConnectionManager {
     }
 
 
-    private class InternalListener implements ConnectionEventListener, GameplayEventListener, SceneEventListener{
+    private class InternalListener implements ConnectionEventListener, GameplayEventListener, SceneEventListener {
 
-        public final Set<ConnectionEventListener> connListeners = new HashSet<>();
-        public final Set<GameplayEventListener> gameListeners = new HashSet<>();
-        public final Set<SceneEventListener> sceneListeners = new HashSet<>();
+        public final Set<ConnectionEventListener> connListeners = Collections.synchronizedSet(new HashSet<ConnectionEventListener>());
+        public final Set<GameplayEventListener> gameListeners = Collections.synchronizedSet(new HashSet<GameplayEventListener>());
+        public final Set<SceneEventListener> sceneListeners = Collections.synchronizedSet(new HashSet<SceneEventListener>());
 
         @Override
         public void onBuzzerConnectivityChange(boolean isConnected) {
-            for (ConnectionEventListener l : connListeners) {
-                l.onBuzzerConnectivityChange(isConnected);
+            synchronized (connListeners) {
+                for (ConnectionEventListener l : connListeners) {
+                    l.onBuzzerConnectivityChange(isConnected);
+                }
             }
         }
 
 
         @Override
         public void onBuzzInResponse(BuzzInResponse response) {
-            for (GameplayEventListener l : gameListeners) {
-                l.onBuzzInResponse(response);
+            synchronized (gameListeners) {
+                for (GameplayEventListener l : gameListeners) {
+                    l.onBuzzInResponse(response);
+                }
             }
         }
 
         @Override
         public void onStopVoiceRec() {
-            for (GameplayEventListener l : gameListeners) {
-                l.onStopVoiceRec();
+            synchronized (gameListeners) {
+                for (GameplayEventListener l : gameListeners) {
+                    l.onStopVoiceRec();
+                }
             }
         }
 
         @Override
         public void onSceneInfo(SceneInfoMessage message) {
             scene = message;
-            for (SceneEventListener l : sceneListeners) {
-                l.onSceneInfo(message);
+            synchronized (sceneListeners) {
+                for (SceneEventListener l : sceneListeners) {
+                    l.onSceneInfo(message);
+                }
             }
         }
     }

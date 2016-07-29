@@ -138,12 +138,12 @@ public class HostScanner {
                         lastIpField
                 });
                 if (client != null) {
-                    //set byte counter to right ip.  Aids reconnect speed.
-                    hostScanner.byteCounter = lastIpField;
                     try {
                         hostScanner.mListener.onHostFound(client);
                     } finally {
                         hostScanner.finishScan();
+                        //set byte counter to right ip.  Aids reconnect speed.
+                        hostScanner.byteCounter = lastIpField;
                     }
                 }
             }

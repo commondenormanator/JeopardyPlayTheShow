@@ -43,7 +43,7 @@ public class BuzzerClient extends PingingWebSockClient {
     public void onMessage(String message) {
         Log.d(TAG, message);
 
-        mConnListener.onMessage(message);
+        if(mConnListener != null) mConnListener.onMessage(message);
     }
 
     @Override
@@ -54,30 +54,8 @@ public class BuzzerClient extends PingingWebSockClient {
 
     @Override
     public void onError(Exception ex) {
-        Log.e(TAG, ex.getMessage());
+        Log.e(TAG, ""+ex.getMessage());
         ex.printStackTrace();
     }
-
-//    public void sendBuzzInRequest(){
-//        send(gson.toJson(new BuzzInRequest()));
-//    }
-//
-//    public void sendAnswerRequest(List<String> answers){
-//        send(gson.toJson(new AnswerRequest(answers)));
-//    }
-//
-//
-//    public void onBuzzInResponse(BuzzInResponse response){
-//        if(mListener != null) mListener.onBuzzInResponse(response);
-//    }
-//
-//    public void sendRestartRequest(){
-//        send(gson.toJson(new RestartRequest()));
-//    }
-//
-//
-//    public void sendVoiceState(VoiceCaptureState.State state){
-//        send(gson.toJson(new VoiceCaptureState(state)));
-//    }
 
 }
