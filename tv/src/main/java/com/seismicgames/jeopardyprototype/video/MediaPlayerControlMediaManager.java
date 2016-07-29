@@ -79,6 +79,7 @@ public class MediaPlayerControlMediaManager implements GameState.MediaManager {
     public void reset() {
         mPlayer.pause();
         mPlayer.seekTo(0);
+        seekOnResume = 0;
         mEpisodeEventIndex = 0;
     }
 
@@ -89,7 +90,9 @@ public class MediaPlayerControlMediaManager implements GameState.MediaManager {
 
     @Override
     public void onActivityPause(Activity a) {
-        seekOnResume = mPlayer.getCurrentPosition();
+        if(mPlayer.getCurrentPosition() != 0) {
+            seekOnResume = mPlayer.getCurrentPosition();
+        }
     }
 
     @Override
