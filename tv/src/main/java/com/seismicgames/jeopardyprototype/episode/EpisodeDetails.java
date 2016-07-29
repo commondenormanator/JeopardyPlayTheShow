@@ -16,10 +16,13 @@ import java.util.List;
  * Created by jduffy on 6/30/16.
  */
 public class EpisodeDetails {
-
     public List<EpisodeEvent> events = new ArrayList<>();
 
-    public EpisodeDetails(){
+    public EpisodeDetails(List<EpisodeEvent> events) {
+        this.events = events;
+    }
+
+    public static EpisodeDetails getDebugDetails(){
 
         List<QuestionInfo> questions = new ArrayList<>();
 
@@ -84,7 +87,7 @@ public class EpisodeDetails {
         questions.add(new QuestionInfo("THE MUSEUM OF SOMETHING","IN BOZEMAN; MOR FOR SHORT","ROCKIES|MUSEUM OF THE ROCKIES",2000,"01:21:52;10", "01:21:56;01"));
 //        questions.add(new QuestionInfo("TELEVISION","SET TO THE SONG \"YOU'VE GOT TIME\", A MONTAGE OF REAL WOMEN WHO WERE INCARCERATED IS IN THE OPENING CREDITS OF THIS SERIES","ORANGE IS THE NEW BLACK",,));
 
-
+        List<EpisodeEvent> events = new ArrayList<>();
 
         events.add(new EpisodeEvent(2000, EpisodeEvent.Type.Skipped));
         FrameZeroEvent fZero = new FrameZeroEvent("00:58:04;09");
@@ -121,7 +124,7 @@ public class EpisodeDetails {
 
 
 
-        q = new QuestionInfo("TELEVISION","SET TO THE SONG \"YOU'VE GOT TIME\", A MONTAGE OF REAL WOMEN WHO WERE INCARCERATED IS IN THE OPENING CREDITS OF THIS SERIES","ORANGE IS THE NEW BLACK",0,"01:25:59;07", "01:26:29;21");
+        q = new QuestionInfo("TELEVISION","SET TO THE SONG \"YOU'VE GOT TIME\", A MONTAGE OF REAL WOMEN WHO WERE INCARCERATED IS IN THE OPENING CREDITS OF THIS SERIES","ORANGE IS THE NEW BLACK",0,"01:26:29;21", "01:26:45;24");
         events.add(new WagerEvent(TimeCode.parse("01:25:59;07") + fZero.timestamp));
         events.add(new QuestionAskedEvent(q.readTimestamp + fZero.timestamp, q));
         events.add(new AnswerReadEvent(q.answerTimestamp + fZero.timestamp, q));
@@ -137,7 +140,7 @@ public class EpisodeDetails {
         events.add(new EpisodeEvent(TimeCode.parse("01:14:43;15") + fZero.timestamp, EpisodeEvent.Type.CommercialEnd));
 
         events.add(new EpisodeEvent(TimeCode.parse("01:22:11;22") + fZero.timestamp, EpisodeEvent.Type.CommercialStart));
-        events.add(new EpisodeEvent(TimeCode.parse("01:25:45;09") + fZero.timestamp, EpisodeEvent.Type.CommercialEnd));
+        events.add(new EpisodeEvent(TimeCode.parse("01:25:45;09") + fZero.timestamp , EpisodeEvent.Type.CommercialEnd));
 
         Collections.sort(events, new Comparator<EpisodeEvent>() {
             @Override
@@ -145,6 +148,8 @@ public class EpisodeDetails {
                 return Double.compare(lhs.timestamp, rhs.timestamp);
             }
         });
+
+        return new EpisodeDetails(events);
     }
 
 

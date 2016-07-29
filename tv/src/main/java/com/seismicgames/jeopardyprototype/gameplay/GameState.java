@@ -86,6 +86,8 @@ public class GameState {
 
     private State mState;
 
+    private boolean initialized = false;
+
     private BuzzerConnectionManager mBuzzerManager;
     private MediaManager mMediaManager;
     private GameUiManager mGameUiManager;
@@ -104,20 +106,30 @@ public class GameState {
         }
     };
 
+    public boolean isInitialized(){
+        return initialized;
+    }
+
     public void onResume(BuzzerActivity a){
         activity = a;
         if(handler == null) {
             handler = new Handler(Looper.getMainLooper(), callback);
         }
+
+        if(!initialized) return;
         mMediaManager.onActivityResume(a);
     }
 
     public void onPause(BuzzerActivity a){
-        mMediaManager.onActivityPause(a);
         activity = null;
+
+        if(!initialized) return;
+        mMediaManager.onActivityPause(a);
     }
 
     public void onDestroy(BuzzerActivity a){
+        if(!initialized) return;
+
         mBuzzerManager.removeListener((ConnectionEventListener) mBuzzerHandler);
         mBuzzerManager.removeListener((GameplayEventListener) mBuzzerHandler);
         mMediaManager.onActivityDestroy(a);
@@ -134,6 +146,8 @@ public class GameState {
         mGameUiManager = ui;
 
         judge.setListener(mGameUiManager);
+
+        initialized = true;
     }
 
     public void startGame(EpisodeDetails details){

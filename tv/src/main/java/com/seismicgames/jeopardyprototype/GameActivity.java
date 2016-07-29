@@ -14,26 +14,29 @@
 
 package com.seismicgames.jeopardyprototype;
 
-import android.app.Activity;
-import android.content.Context;
-import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.seismicgames.jeopardyprototype.buzzer.BuzzerConnectionManager;
 import com.seismicgames.jeopardyprototype.buzzer.BuzzerScene;
-import com.seismicgames.jeopardyprototype.buzzer.BuzzerServer;
 import com.seismicgames.jeopardyprototype.episode.EpisodeDetails;
+import com.seismicgames.jeopardyprototype.episode.EpisodeParser;
 import com.seismicgames.jeopardyprototype.gameplay.GameState;
 import com.seismicgames.jeopardyprototype.ui.GameUiManager;
+import com.seismicgames.jeopardyprototype.util.ExternalFileUtil;
 import com.seismicgames.jeopardyprototype.video.local.ResourceMediaManager;
-import com.seismicgames.jeopardyprototype.video.mpx.MpxMediaManager;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
+import org.apache.commons.io.IOUtils;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /*
  * GameActivity class that loads MainFragment
@@ -46,33 +49,24 @@ public class GameActivity extends BuzzerActivity {
 
     private GameState gameState;
 
-    private EpisodeDetails episodeDetails = new EpisodeDetails();
+    private EpisodeDetails episodeDetails;
+
+    @BindView(R.id.videoContainer)
+    ViewGroup videoContainer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.adk_player);
-    }
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-
-        final ViewGroup videoContainer = (ViewGroup) this.findViewById(R.id.videoContainer);
-
+        ButterKnife.bind(this);
         gameState = new GameState();
-
-//        gameState.init(BuzzerConnectionManager.getInstance(getApplication()), MpxMediaManager.getInstance(videoContainer, episodeDetails), new GameUiManager(this));
-        gameState.init(BuzzerConnectionManager.getInstance(getApplication()), ResourceMediaManager.getInstance(this, videoContainer, episodeDetails), new GameUiManager(this));
-
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         gameState.onResume(this);
-        gameState.startGame(episodeDetails);
+        new LoadEpisodeAsyncTask().execute();
     }
 
     @Override
@@ -86,4 +80,59 @@ public class GameActivity extends BuzzerActivity {
         gameState.onDestroy(this);
         super.onDestroy();
     }
+
+    private void onEpisodeLoaded() {
+        if (!isFinishing()) {
+            if(!gameState.isInitialized()) {
+//        gameState.init(BuzzerConnectionManager.getInstance(getApplication()), MpxMediaManager.getInstance(videoContainer, episodeDetails), new GameUiManager(this));
+                gameState.init(BuzzerConnectionManager.getInstance(getApplication()), ResourceMediaManager.getInstance(this, videoContainer, episodeDetails), new GameUiManager(this));
+            }
+
+            gameState.startGame(episodeDetails);
+        }
+    }
+
+
+    private class LoadEpisodeAsyncTask extends AsyncTask<Void, Void, Boolean>{
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            if(episodeDetails != null) return true;
+
+            InputStream game = null;
+            InputStream meta = null;
+            try{
+                File gameFile = ExternalFileUtil.getFile(getApplicationContext(), "game.csv");
+                if(gameFile == null) return false;
+                File metaFile = ExternalFileUtil.getFile(getApplicationContext(), "meta.csv");
+                if(metaFile == null) return false;
+
+                game = new FileInputStream(gameFile);
+                meta = new FileInputStream(metaFile);
+
+                episodeDetails = EpisodeParser.parse(IOUtils.toString(game), IOUtils.toString(meta));
+
+
+                return true;
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                IOUtils.closeQuietly(game);
+                IOUtils.closeQuietly(meta);
+            }
+            return false;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            super.onPostExecute(success);
+            if(success) {
+                onEpisodeLoaded();
+            }else {
+                Toast.makeText(GameActivity.this, "Could not load episode", Toast.LENGTH_LONG).show();
+                finish();
+            }
+        }
+    }
+
 }
