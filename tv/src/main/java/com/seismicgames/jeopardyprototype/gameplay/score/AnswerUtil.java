@@ -73,7 +73,7 @@ public class AnswerUtil {
     }
 
     public static String normalizeAnswer(String s){
-        return replaceAmpersand(replaceDash(removePossessiveS(removeApostrophe(removePeriods(s)))));
+        return replaceWhitespace(replaceAmpersand(replaceDash(removePossessiveS(removeApostrophe(removePeriods(s))))));
     }
 
 
@@ -99,6 +99,10 @@ public class AnswerUtil {
 
     private static String replaceAmpersand(String s) {
         return s.replace("&", " and ");
+    }
+
+    private static String replaceWhitespace(String s) {
+        return s.replaceAll("\\s+", " ");
     }
 
     interface ReplacementAlgorithm {
