@@ -93,8 +93,8 @@ public class EpisodeParser {
                 gameRecord.get(GameHeaders.clue),
                 gameRecord.get(GameHeaders.answers),
                 type == QuestionType.FJ ? 0 : Integer.parseInt(gameRecord.get(GameHeaders.value)),
-                type == QuestionType.FJ ? gameRecord.get(GameHeaders.fj_start_music) : gameRecord.get(GameHeaders.clue_end),
-                type == QuestionType.FJ ? gameRecord.get(GameHeaders.fj_end_music) : gameRecord.get(GameHeaders.score_change));
+                type == QuestionType.FJ ? gameRecord.get(GameHeaders.fj_end_music) : gameRecord.get(GameHeaders.clue_end),
+                type == QuestionType.FJ ? gameRecord.get(GameHeaders.fj_end_music) + 100 : gameRecord.get(GameHeaders.score_change));
 
         switch (type){
 
