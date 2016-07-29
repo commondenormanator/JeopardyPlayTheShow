@@ -151,6 +151,44 @@ public class GameBuzzerActivity extends ConnectedActivity {
         }
     };
 
+    private GameplayEventListener gameplayEventListener = new GameplayEventListener(){
+        @Override
+        public void onBuzzInResponse(BuzzInResponse response) {
+            if(response.buzzInValid) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(speechRecognizer != null) {
+
+                            mHandler.removeCallbacks(stopSpeechRunnable);
+                            Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+                            intent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                intent.putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, true);
+                            }
+                            speechRecognizer.setRecognitionListener(recognitionListener);
+                            speechRecognizer.startListening(intent);
+                            mHandler.postDelayed(stopSpeechRunnable, Constants.AnswerListenTimeout);
+                        }
+                    }
+                });
+            }
+        }
+
+        @Override
+        public void onStopVoiceRec() {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if(speechRecognizer != null) {
+                        speechRecognizer.cancel();
+                        speechRecognizer.setRecognitionListener(null); //maybe this resets it?
+                    }
+                }
+            });
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -158,66 +196,9 @@ public class GameBuzzerActivity extends ConnectedActivity {
         ButterKnife.bind(this);
         mConnection = BuzzerConnectionManager.getInstance(getApplication());
 
-        mConnection.addListener(new ConnectionEventListener() {
-            @Override
-            public void onBuzzerConnectivityChange(final boolean isConnected) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (isConnected) {
-                            showConnectedUI();
-                        } else {
-                            showScanUI();
-                        }
-                    }
-                });
-            }
-        });
+        mConnection.addListener(gameplayEventListener);
 
-        if (mConnection.isBuzzerConnected()) {
-            showConnectedUI();
-        } else {
-            showScanUI();
-        }
-
-
-        mConnection.addListener(new GameplayEventListener() {
-            @Override
-            public void onBuzzInResponse(BuzzInResponse response) {
-                if(response.buzzInValid) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if(speechRecognizer != null) {
-
-                                mHandler.removeCallbacks(stopSpeechRunnable);
-                                Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-                                intent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                    intent.putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, true);
-                                }
-                                speechRecognizer.setRecognitionListener(recognitionListener);
-                                speechRecognizer.startListening(intent);
-                                mHandler.postDelayed(stopSpeechRunnable, Constants.AnswerListenTimeout);
-                            }
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onStopVoiceRec() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(speechRecognizer != null) {
-                            speechRecognizer.cancel();
-                            speechRecognizer.setRecognitionListener(null); //maybe this resets it?
-                        }
-                    }
-                });
-            }
-        });
+        setButtonEnabled(true);
     }
 
     @OnClick(R.id.dummy_button)
@@ -256,32 +237,21 @@ public class GameBuzzerActivity extends ConnectedActivity {
         super.onStop();
     }
 
-    private void showScanUI(){
-//        if(hostScanner.scanForHost(this)){
-            textView.setText("searching");
-            setButtonEnabled(false);
-//        } else {
-//            textView.setText("unable to connect");
-//        }
-    }
-
-    private void showConnectedUI(){
-        setButtonEnabled(true);
-
-        textView.setText("connected");
-
-    }
-
-    private void setButtonEnabled(boolean isEnabled){
+    private void setButtonEnabled(boolean isEnabled) {
         if (isEnabled) {
             buzzerButton.setEnabled(true);
             pulseImage.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             setButtonPulseAnimate(false);
             buzzerButton.setEnabled(false);
             pulseImage.setVisibility(View.INVISIBLE);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        mConnection.removeListener(gameplayEventListener);
+        super.onDestroy();
     }
 
     private void setButtonPulseAnimate(boolean animate){
