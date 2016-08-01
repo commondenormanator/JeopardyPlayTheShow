@@ -73,7 +73,7 @@ public class AnswerUtil {
     }
 
     public static String normalizeAnswer(String s){
-        return replaceWhitespace(replaceAmpersand(replaceDash(removePossessiveS(removeApostrophe(removePeriods(s))))));
+        return replaceWhitespace(replaceAmpersand(replaceDash(removePossessiveS(removeApostrophe(removePeriods(s)))))).trim();
     }
 
 
