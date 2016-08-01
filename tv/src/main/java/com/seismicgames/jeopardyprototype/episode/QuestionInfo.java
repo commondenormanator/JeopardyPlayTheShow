@@ -13,6 +13,11 @@ import java.util.Set;
  * Created by jduffy on 7/7/16.
  */
 public class QuestionInfo {
+    public enum QuestionType{
+        S,DD,FJ
+    }
+
+    public final QuestionType type;
     public final String category;
     public final String clue;
     public final String[] answers;
@@ -20,7 +25,8 @@ public class QuestionInfo {
     public final int readTimestamp;
     public final int answerTimestamp;
 
-    public QuestionInfo(String category, String clue, String answerString, int value, String read_timestamp, String answer_timestamp) {
+    public QuestionInfo(QuestionType type, String category, String clue, String answerString, int value, String read_timestamp, String answer_timestamp) {
+        this.type = type;
         this.category = category;
         this.clue = clue;
         this.answers = parseAnswer(answerString);

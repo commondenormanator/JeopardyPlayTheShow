@@ -1,5 +1,7 @@
 package com.seismicgames.jeopardyprototype.gameplay.score;
 
+import android.util.Log;
+
 import com.seismicgames.jeopardyprototype.episode.QuestionInfo;
 
 import java.util.ArrayList;
@@ -22,6 +24,10 @@ public class AnswerJudge {
     }
     public void setUserBuzzedIn(){
         didBuzzIn = true;
+    }
+
+    public boolean didWager(){
+        return wager != null;
     }
 
     private ScoreChangeListener listener;
@@ -69,6 +75,8 @@ public class AnswerJudge {
     private boolean compareAnswer(String guess, String answer){
         guess = AnswerUtil.normalizeAnswer(guess.toLowerCase());
         answer = AnswerUtil.normalizeAnswer(answer.toLowerCase());
+
+        Log.d("Judge", String.format("comparing %s to %s: %s", guess, answer, guess.contains(answer)));
 
         return guess.contains(answer);
     }

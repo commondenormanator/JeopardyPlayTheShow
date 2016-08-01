@@ -184,7 +184,12 @@ public class GameState {
     }
 
     @MainThread
-    private void waitForBuzzIn(){
+    private void waitForBuzzIn(QuestionInfo questionInfo){
+        if(questionInfo.type == QuestionInfo.QuestionType.DD && !judge.didWager()){
+            onQuestionTimeout();
+            return;
+        }
+
         mState = State.WAIT_FOR_BUZZ_IN;
 
         mGameUiManager.showBuzzTimer(Constants.BuzzInTimeout);
@@ -195,6 +200,7 @@ public class GameState {
     private void onQuestionTimeout(){
         mGameUiManager.hideBuzzTimer();
         mGameUiManager.hideAnswerTimer();
+        mGameUiManager.hideWagerBuzzIn();
 
         if(activity != null) {
             activity.setScene(BuzzerScene.Scene.BUZZER);
@@ -265,7 +271,7 @@ public class GameState {
             mState = State.WAIT_FOR_USER_WAGER;
 
             handler.removeMessages(HandlerMessageType.BUZZ_IN_TIMEOUT.ordinal());
-            mGameUiManager.hideBuzzTimer();
+            mGameUiManager.hideWagerBuzzIn();
 
             mGameUiManager.showWagerTimer(true);
             handler.sendMessageDelayed(handler.obtainMessage(HandlerMessageType.USER_WAGER_TIMEOUT.ordinal()), Constants.WagerTimeout);
@@ -283,7 +289,7 @@ public class GameState {
     private void waitForWagerBuzzIn(){
         mState = State.WAIT_FOR_WAGER_BUZZ_IN;
 
-        mGameUiManager.showBuzzTimer(Constants.BuzzInTimeout);
+        mGameUiManager.showWagerBuzzIn(Constants.BuzzInTimeout);
         handler.sendMessageDelayed(handler.obtainMessage(HandlerMessageType.BUZZ_IN_TIMEOUT.ordinal()), Constants.BuzzInTimeout);
 
         activity.setScene(BuzzerScene.Scene.WAGER);
@@ -335,7 +341,7 @@ public class GameState {
                 onBuzzerConnChange((Boolean)message.obj);
                 break;
             case QUESTION_ASKED:
-                waitForBuzzIn();
+                waitForBuzzIn((QuestionInfo) message.obj);
                 break;
             case ANSWER_READ:
                 onAnswerRead((QuestionInfo) message.obj);
@@ -390,7 +396,7 @@ public class GameState {
 
         @Override
         public void onQuestionAsked(QuestionAskedEvent event) {
-            handler.sendMessage(handler.obtainMessage(HandlerMessageType.QUESTION_ASKED.ordinal()));
+            handler.sendMessage(handler.obtainMessage(HandlerMessageType.QUESTION_ASKED.ordinal(), event.questionInfo));
         }
 
         @Override

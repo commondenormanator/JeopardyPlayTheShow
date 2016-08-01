@@ -52,6 +52,8 @@ public class GameUiManager implements ScoreChangeListener{
     @BindView(R.id.wagerValue)
     public TextView wagerValue;
 
+    @BindView(R.id.wagerPrompt)
+    public View wagerPrompt;
 
     public GameUiManager(Activity view) {
         ButterKnife.bind(this, view);
@@ -91,6 +93,15 @@ public class GameUiManager implements ScoreChangeListener{
         stopAnim(buzzerTimer);
 
         buzzerTimer.setVisibility(View.INVISIBLE);
+    }
+
+    public void showWagerBuzzIn(int duration) {
+       showBuzzTimer(duration);
+        wagerPrompt.setVisibility(View.VISIBLE);
+    }
+    public void hideWagerBuzzIn() {
+        hideBuzzTimer();
+        wagerPrompt.setVisibility(View.GONE);
     }
 
     public void showWagerTimer(boolean show){

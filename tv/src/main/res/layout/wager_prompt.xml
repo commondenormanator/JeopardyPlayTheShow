@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/main_bg"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:layout_margin="16dp"
+        android:background="@drawable/wager_panel"
+        android:padding="32dp"
+        android:shadowRadius="10"
+        android:shadowDy="1"
+        android:shadowDx="1"
+        android:shadowColor="#000000"
+        android:text="WOULD YOU LIKE TO PLACE A WAGER?\n Buzz in to place a wager"
+        android:textColor="@android:color/white"
+        android:textSize="30sp" />
+
+
+</RelativeLayout>

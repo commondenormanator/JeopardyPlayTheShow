@@ -11,6 +11,14 @@
         android:layout_height="match_parent" />
 
     <include
+        layout="@layout/wager_prompt"
+        android:id="@+id/wagerPrompt"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible" />
+
+
+    <include
         android:id="@+id/buzzerTimerLeft"
         layout="@layout/buzzer_timer"
         android:layout_width="72dp"

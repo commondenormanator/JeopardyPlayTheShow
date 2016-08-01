@@ -6,6 +6,7 @@ import com.seismicgames.jeopardyprototype.gameplay.events.FrameZeroEvent;
 import com.seismicgames.jeopardyprototype.gameplay.events.QuestionAskedEvent;
 import com.seismicgames.jeopardyprototype.gameplay.events.WagerEvent;
 import com.seismicgames.jeopardyprototype.util.TimeCode;
+import com.seismicgames.jeopardyprototype.episode.QuestionInfo.*;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -29,9 +30,7 @@ public class EpisodeParser {
     public enum GameHeaders {
         round,cat_order,played_order,type,category,clue,preface,answers,value,wager,clue_end,score_change,daily_double_reveal,wager_pause,fj_start_music,fj_end_music,fj_reveal_contestant_1,fj_reveal_contestant_2,fj_reveal_contestant_3,game_winner_announced
     }
-    public enum QuestionType{
-        S,DD,FJ
-    }
+
 
     private static final String TAG = EpisodeParser.class.getName();
 
@@ -89,6 +88,7 @@ public class EpisodeParser {
     private static void parseQuestion(List<EpisodeEvent> events, CSVRecord gameRecord, FrameZeroEvent fZero) {
         QuestionType type = QuestionType.valueOf(gameRecord.get(GameHeaders.type));
         QuestionInfo q = new QuestionInfo(
+                type,
                 gameRecord.get(GameHeaders.category),
                 gameRecord.get(GameHeaders.clue),
                 gameRecord.get(GameHeaders.answers),
