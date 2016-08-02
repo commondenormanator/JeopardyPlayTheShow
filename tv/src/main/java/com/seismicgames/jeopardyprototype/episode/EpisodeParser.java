@@ -69,8 +69,7 @@ public class EpisodeParser {
             }
         });
 
-//        return new EpisodeDetails(events);
-        return EpisodeDetails.getDebugDetails();
+        return new EpisodeDetails(events);
     }
 
     private static void parseCommercials(List<EpisodeEvent> events, CSVRecord metaRecord, FrameZeroEvent fZero){
