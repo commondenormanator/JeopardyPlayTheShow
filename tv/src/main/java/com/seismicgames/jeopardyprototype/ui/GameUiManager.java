@@ -26,6 +26,7 @@ import butterknife.ButterKnife;
  * Created by jduffy on 7/6/16.
  */
 public class GameUiManager implements ScoreChangeListener{
+
     @BindView(R.id.buzzerTimerLeft)
     public ProgressBar buzzerTimerLeft;
     @BindView(R.id.buzzerTimerRight)
@@ -126,9 +127,6 @@ public class GameUiManager implements ScoreChangeListener{
 
     public void showCustomClue(){
         clueLayout.setVisibility(View.VISIBLE);
-//        clueLayout.getParent().requestTransparentRegion(clueLayout);
-//        clueText.setTranslationX(-1* clueText.getMeasuredWidth());
-//        clueText.animate().translationX(0).setDuration(500).start();
     }
 
     public void setCustomClueText(QuestionInfo info){
@@ -142,10 +140,12 @@ public class GameUiManager implements ScoreChangeListener{
 
     public void showAnswerTimer(int duration) {
         answerTimer.start(duration);
+        shrinkVideo();
     }
 
     public void hideAnswerTimer(){
         answerTimer.cancel();
+        expandVideo();
     }
 
     @Override
@@ -213,4 +213,34 @@ public class GameUiManager implements ScoreChangeListener{
         userScore.setText("");
     }
 
+
+    private void shrinkVideo(){
+        ValueAnimator animator = ValueAnimator.ofInt(0, answerTimer.getHeight());
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator){
+                int vertical = (Integer) valueAnimator.getAnimatedValue() / 2;
+                int horizontalPadding = (((Integer) valueAnimator.getAnimatedValue() * 16) / 9) /2;
+                videoContainer.setPadding(horizontalPadding, vertical, horizontalPadding, vertical);
+                videoContainer.setTranslationY(-vertical);
+            }
+        });
+        animator.setDuration(300);
+        animator.start();
+    }
+
+    private void expandVideo(){
+        ValueAnimator animator = ValueAnimator.ofInt(videoContainer.getPaddingTop() + videoContainer.getPaddingBottom(), 0);
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator){
+                int vertical = (Integer) valueAnimator.getAnimatedValue() / 2;
+                int horizontalPadding = (((Integer) valueAnimator.getAnimatedValue() * 16) / 9) /2;
+                videoContainer.setPadding(horizontalPadding, vertical, horizontalPadding, vertical);
+                videoContainer.setTranslationY(-vertical);
+            }
+        });
+        animator.setDuration(300);
+        animator.start();
+    }
 }
