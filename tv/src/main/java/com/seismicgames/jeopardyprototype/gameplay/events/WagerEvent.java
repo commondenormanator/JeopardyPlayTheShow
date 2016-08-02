@@ -7,7 +7,10 @@ import com.seismicgames.jeopardyprototype.episode.QuestionInfo;
  */
 public class WagerEvent extends EpisodeEvent {
 
-    public WagerEvent(int timestamp) {
+    public final QuestionInfo questionInfo;
+
+    public WagerEvent(int timestamp, QuestionInfo questionInfo) {
         super(timestamp, Type.Wager);
+        this.questionInfo = questionInfo;
     }
 }

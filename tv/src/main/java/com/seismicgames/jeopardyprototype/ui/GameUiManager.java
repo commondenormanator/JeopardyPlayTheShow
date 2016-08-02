@@ -8,13 +8,13 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.seismicgames.jeopardyprototype.R;
 import com.seismicgames.jeopardyprototype.buzzer.message.VoiceCaptureState;
+import com.seismicgames.jeopardyprototype.episode.QuestionInfo;
 import com.seismicgames.jeopardyprototype.gameplay.score.ScoreChangeListener;
 import com.seismicgames.jeopardyprototype.view.AnswerTimer;
 
@@ -54,6 +54,11 @@ public class GameUiManager implements ScoreChangeListener{
 
     @BindView(R.id.wagerPrompt)
     public View wagerPrompt;
+
+    @BindView(R.id.clueLayout)
+    public View clueLayout;
+    @BindView(R.id.clueText)
+    public TextView clueText;
 
     public GameUiManager(Activity view) {
         ButterKnife.bind(this, view);
@@ -117,6 +122,23 @@ public class GameUiManager implements ScoreChangeListener{
     public void setWagerValue(int value){
         wagerValue.setText(String.format("$%5d", value));
     }
+
+
+    public void showCustomClue(){
+        clueLayout.setVisibility(View.VISIBLE);
+//        clueLayout.getParent().requestTransparentRegion(clueLayout);
+//        clueText.setTranslationX(-1* clueText.getMeasuredWidth());
+//        clueText.animate().translationX(0).setDuration(500).start();
+    }
+
+    public void setCustomClueText(QuestionInfo info){
+        clueText.setText(info.clue);
+    }
+
+    public void hideCustomClue(){
+        clueLayout.setVisibility(View.GONE);
+    }
+
 
     public void showAnswerTimer(int duration) {
         answerTimer.start(duration);

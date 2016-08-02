@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#30000000">
+
+    <TextView
+        android:id="@+id/clueText"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:paddingLeft="100dp"
+        android:paddingRight="100dp"
+        android:background="#0000FF"
+        android:gravity="center"
+        android:textColor="@android:color/white"
+        android:textSize="50sp" />
+
+</RelativeLayout>

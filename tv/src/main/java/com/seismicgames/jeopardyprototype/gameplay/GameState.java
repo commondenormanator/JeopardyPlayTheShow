@@ -24,6 +24,7 @@ import com.seismicgames.jeopardyprototype.episode.EpisodeDetails;
 import com.seismicgames.jeopardyprototype.episode.QuestionInfo;
 import com.seismicgames.jeopardyprototype.gameplay.events.AnswerReadEvent;
 import com.seismicgames.jeopardyprototype.gameplay.events.QuestionAskedEvent;
+import com.seismicgames.jeopardyprototype.gameplay.events.WagerEvent;
 import com.seismicgames.jeopardyprototype.gameplay.score.AnswerJudge;
 import com.seismicgames.jeopardyprototype.ui.GameUiManager;
 
@@ -67,7 +68,7 @@ public class GameState {
 
 
     public interface MediaEventListener{
-        void onWager();
+        void onWager(WagerEvent event);
         void onQuestionAsked(QuestionAskedEvent event);
         void onAnswerRead(AnswerReadEvent event);
         void onMediaComplete();
@@ -201,6 +202,7 @@ public class GameState {
         mGameUiManager.hideBuzzTimer();
         mGameUiManager.hideAnswerTimer();
         mGameUiManager.hideWagerBuzzIn();
+        mGameUiManager.hideCustomClue();
 
         if(activity != null) {
             activity.setScene(BuzzerScene.Scene.BUZZER);
@@ -235,7 +237,6 @@ public class GameState {
     @MainThread
     private void onUserWager(WagerRequest request){
         if(mState == State.WAIT_FOR_USER_WAGER) {
-            //TODO judge.setWager
             judge.setWager(request.wager);
             judge.setUserBuzzedIn();
             mGameUiManager.setWagerValue(request.wager);
@@ -249,6 +250,11 @@ public class GameState {
             activity.setScene(BuzzerScene.Scene.BUZZER);
             activity.sendSceneInfo();
         }
+
+        if(judge.didWager()){
+            mGameUiManager.showCustomClue();
+        }
+
         resumeGame();
     }
 
@@ -286,10 +292,12 @@ public class GameState {
     }
 
     @MainThread
-    private void waitForWagerBuzzIn(){
+    private void waitForWagerBuzzIn(QuestionInfo questionInfo){
         mState = State.WAIT_FOR_WAGER_BUZZ_IN;
 
         mGameUiManager.showWagerBuzzIn(Constants.BuzzInTimeout);
+        mGameUiManager.setCustomClueText(questionInfo);
+
         handler.sendMessageDelayed(handler.obtainMessage(HandlerMessageType.BUZZ_IN_TIMEOUT.ordinal()), Constants.BuzzInTimeout);
 
         activity.setScene(BuzzerScene.Scene.WAGER);
@@ -298,6 +306,7 @@ public class GameState {
 
 
     private void resumeGame(){
+
         if(mBuzzerManager.isBuzzerConnected()){
             //start playback
             mState = State.WAIT_FOR_MEDIA_EVENT;
@@ -365,7 +374,7 @@ public class GameState {
                 restartGame();
                 break;
             case WAGER_PROMPT:
-                waitForWagerBuzzIn();
+                waitForWagerBuzzIn((QuestionInfo) message.obj);
                 break;
             case USER_WAGER_TIMEOUT:
                 onWagerTimeout();
@@ -390,8 +399,8 @@ public class GameState {
     private class MediaHandler implements MediaEventListener {
 
         @Override
-        public void onWager() {
-            handler.sendMessage(handler.obtainMessage(HandlerMessageType.WAGER_PROMPT.ordinal()));
+        public void onWager(WagerEvent event) {
+            handler.sendMessage(handler.obtainMessage(HandlerMessageType.WAGER_PROMPT.ordinal(), event.questionInfo));
         }
 
         @Override

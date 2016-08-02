@@ -19,6 +19,9 @@ public class MpxMediaManager extends MediaPlayerControlMediaManager {
 
     private Player mPlayer;
 
+    private URL url;
+    private boolean playbackStarted = false;
+
     public static MpxMediaManager getInstance(ViewGroup videoContainer, EpisodeDetails details) {
         Player player = new Player(videoContainer);
         return new MpxMediaManager(player, details);
@@ -29,12 +32,22 @@ public class MpxMediaManager extends MediaPlayerControlMediaManager {
         mPlayer = player;
 
         try {
-            mPlayer.loadReleaseUrl(new URL("http://link.theplatform.com/s/spe/media/MXha0q_JklY_"));
+            url = new URL("http://link.theplatform.com/s/spe/media/MXha0q_JklY_");
+            mPlayer.loadReleaseUrl(url);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
 
         mPlayer.asEventDispatcher().addEventListener(MediaEndEvent.getType(), new MediaCompleteListener());
+    }
+
+    @Override
+    public void play() {
+        if(!playbackStarted) {
+            mPlayer.playReleaseUrl(url);
+            playbackStarted = true;
+        }
+        super.play();
     }
 
     @Override

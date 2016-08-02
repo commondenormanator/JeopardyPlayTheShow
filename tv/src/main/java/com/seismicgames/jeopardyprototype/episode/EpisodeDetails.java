@@ -54,7 +54,7 @@ public class EpisodeDetails {
 //        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "MAID, MARRYIN'","THIS CHAUCER GAL TELLS SOON-TO-BE HUBBY NO. 5 SHE'D MARRY HIM IF SHE WERE A WIDOW","WIFE OF BATH|ALISON",1000,"01:10:54;13", "01:10:58;12"));
 //        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "LITTLE, JOHN","IT PRECEDES \"WILLIE WINKIE\" IN A NURSERY RHYME","WEE",200,"01:11:04;14", "01:11:07;01"));
         questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "LITTLE, JOHN","A LAND CREATED BY JONATHAN SWIFT GAVE US THIS WORD MEANING TINY","LILLIPUTIAN",1000,"01:11:14;26", "01:11:18;02"));
-//        questions.add(new QuestionInfo("LITTLE, JOHN","BEGINNING WITH A WORD THAT MEANS IMMEASURABLY GREAT, IT MEANS EXCEEDINGLY SMALL","INFINITESIMAL",,"01:11:41;04", "01:11:55;00"));
+////        questions.add(new QuestionInfo("LITTLE, JOHN","BEGINNING WITH A WORD THAT MEANS IMMEASURABLY GREAT, IT MEANS EXCEEDINGLY SMALL","INFINITESIMAL",,"01:11:41;04", "01:11:55;00"));
         questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "FRYER TUCK","TUCK GOES FULL FANNIE FLAGG MAKING THIS 3-WORD TITLE DISH, DIPPING 'EM IN FLOUR, MILK, EGGS & BREAD CRUMBS","FRIED GREEN TOMATOES",1000,"01:12:05;04", "01:12:08;10"));
         questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "TRIBUTE ALBUMS","A 1995 ALBUM, \"COME TOGETHER: AMERICA SALUTES\" THIS GROUP, FEATURED 17 OF THEIR SONGS AS SUNG BY COUNTRY MUSIC STARS","BEATLES",400,"01:15:25;24", "01:15:28;13"));
         questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "TRIBUTE ALBUMS","THIS SINGER'S GUITARIST RECORDED A TRIBUTE ALBUM CONTAINING SUCH TRACKS AS \"ONLY THE LONELY\" & \"IN DREAMS\"","ROY ORBISON",800,"01:15:37;02", "01:15:40;02"));
@@ -89,7 +89,7 @@ public class EpisodeDetails {
 
         List<EpisodeEvent> events = new ArrayList<>();
 
-        events.add(new EpisodeEvent(2000, EpisodeEvent.Type.Skipped));
+        events.add(new EpisodeEvent(1000, EpisodeEvent.Type.Skipped));
         FrameZeroEvent fZero = new FrameZeroEvent("00:58:04;09");
         events.add(fZero);
 
@@ -105,27 +105,27 @@ public class EpisodeDetails {
 
         QuestionInfo q;
         q = new QuestionInfo(QuestionInfo.QuestionType.DD, "LITTLE, JOHN","BEGINNING WITH A WORD THAT MEANS IMMEASURABLY GREAT, IT MEANS EXCEEDINGLY SMALL","INFINITESIMAL",0,"01:11:41;04", "01:11:55;00");
-        events.add(new WagerEvent(TimeCode.parse("01:11:29;12") + fZero.timestamp));
+        events.add(new WagerEvent(TimeCode.parse("01:11:31;12") + fZero.timestamp, q));
         events.add(new QuestionAskedEvent(q.readTimestamp + fZero.timestamp, q));
         events.add(new AnswerReadEvent(q.answerTimestamp + fZero.timestamp, q));
 
 
         q = new QuestionInfo(QuestionInfo.QuestionType.DD, "EUROPEAN RULERS","THIS FRENCH KING'S ATTEMPT TO ESCAPE HIS FATE IS KNOWN AS THE FLIGHT TO VARENNES","LOUIS XVI|LOUIS THE SIXTEENTH",0,"01:17:32;01", "01:17:38;14");
-        events.add(new WagerEvent(TimeCode.parse("01:17:22;25") + fZero.timestamp));
+        events.add(new WagerEvent(TimeCode.parse("01:17:22;25") + fZero.timestamp, q));
         events.add(new QuestionAskedEvent(q.readTimestamp + fZero.timestamp, q));
         events.add(new AnswerReadEvent(q.answerTimestamp + fZero.timestamp, q));
 
 
 
         q = new QuestionInfo(QuestionInfo.QuestionType.DD, "SCIENCE","DISEASE-SPECIFIC GENES HAVE BEEN FOUND THAT COULD HELP TELL PSORIASIS FROM THIS SKIN AFFLICTION, AIDING IN TREATMENT","ECZEMA|DERMATITIS",0,"01:20:29;24", "01:20:41;00");
-        events.add(new WagerEvent(TimeCode.parse("01:20:15;08") + fZero.timestamp));
+        events.add(new WagerEvent(TimeCode.parse("01:20:15;08") + fZero.timestamp, q));
         events.add(new QuestionAskedEvent(q.readTimestamp + fZero.timestamp, q));
         events.add(new AnswerReadEvent(q.answerTimestamp + fZero.timestamp, q));
 
 
 
         q = new QuestionInfo(QuestionInfo.QuestionType.DD, "TELEVISION","SET TO THE SONG \"YOU'VE GOT TIME\", A MONTAGE OF REAL WOMEN WHO WERE INCARCERATED IS IN THE OPENING CREDITS OF THIS SERIES","ORANGE IS THE NEW BLACK",0,"01:26:29;21", "01:26:45;24");
-        events.add(new WagerEvent(TimeCode.parse("01:25:59;07") + fZero.timestamp));
+        events.add(new WagerEvent(TimeCode.parse("01:25:59;07") + fZero.timestamp, q));
         events.add(new QuestionAskedEvent(q.readTimestamp + fZero.timestamp, q));
         events.add(new AnswerReadEvent(q.answerTimestamp + fZero.timestamp, q));
 

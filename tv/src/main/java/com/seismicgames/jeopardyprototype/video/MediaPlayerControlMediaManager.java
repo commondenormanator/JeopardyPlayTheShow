@@ -9,6 +9,7 @@ import com.seismicgames.jeopardyprototype.gameplay.GameState;
 import com.seismicgames.jeopardyprototype.gameplay.events.AnswerReadEvent;
 import com.seismicgames.jeopardyprototype.gameplay.events.EpisodeEvent;
 import com.seismicgames.jeopardyprototype.gameplay.events.QuestionAskedEvent;
+import com.seismicgames.jeopardyprototype.gameplay.events.WagerEvent;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -142,7 +143,7 @@ public class MediaPlayerControlMediaManager implements GameState.MediaManager {
                 break;
             case Wager:
                 mPlayer.pause();
-                mListener.onWager();
+                mListener.onWager((WagerEvent) event);
                 break;
         }
 

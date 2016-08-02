@@ -69,8 +69,8 @@ public class EpisodeParser {
             }
         });
 
-        return new EpisodeDetails(events);
-
+//        return new EpisodeDetails(events);
+        return EpisodeDetails.getDebugDetails();
     }
 
     private static void parseCommercials(List<EpisodeEvent> events, CSVRecord metaRecord, FrameZeroEvent fZero){
@@ -103,12 +103,12 @@ public class EpisodeParser {
                 events.add(new AnswerReadEvent(q.answerTimestamp + fZero.timestamp, q));
                 break;
             case DD:
-                events.add(new WagerEvent(TimeCode.parse(gameRecord.get(GameHeaders.wager_pause)) + fZero.timestamp));
+                events.add(new WagerEvent(TimeCode.parse(gameRecord.get(GameHeaders.wager_pause)) + fZero.timestamp, q));
                 events.add(new QuestionAskedEvent(q.readTimestamp + fZero.timestamp, q));
                 events.add(new AnswerReadEvent(q.answerTimestamp + fZero.timestamp, q));
                 break;
             case FJ:
-                events.add(new WagerEvent(TimeCode.parse(gameRecord.get(GameHeaders.fj_start_music)) + fZero.timestamp - 100));
+                events.add(new WagerEvent(TimeCode.parse(gameRecord.get(GameHeaders.fj_start_music)) + fZero.timestamp - 100, q));
                 events.add(new QuestionAskedEvent(q.readTimestamp + fZero.timestamp, q));
                 events.add(new AnswerReadEvent(q.answerTimestamp + fZero.timestamp, q));
                 break;
