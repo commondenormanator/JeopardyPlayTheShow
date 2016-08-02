@@ -22,4 +22,7 @@
 
     <color name="black_overlay">#66000000</color>
 
+
+    <color name="question_blue">#000d89</color>
+
 </resources>

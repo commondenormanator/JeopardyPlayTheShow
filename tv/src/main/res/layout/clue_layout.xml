@@ -11,7 +11,7 @@
         android:layout_centerInParent="true"
         android:paddingLeft="100dp"
         android:paddingRight="100dp"
-        android:background="#0000FF"
+        android:background="@color/question_blue"
         android:gravity="center"
         android:textColor="@android:color/white"
         android:textSize="50sp" />
