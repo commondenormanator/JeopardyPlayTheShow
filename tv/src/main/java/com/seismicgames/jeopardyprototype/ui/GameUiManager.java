@@ -27,10 +27,8 @@ import butterknife.ButterKnife;
  */
 public class GameUiManager implements ScoreChangeListener{
 
-    @BindView(R.id.buzzerTimerLeft)
-    public ProgressBar buzzerTimerLeft;
-    @BindView(R.id.buzzerTimerRight)
-    public ProgressBar buzzerTimerRight;
+    @BindView(R.id.buzzerTimer)
+    public ProgressBar buzzerTimer;
 
     @BindView(R.id.userScore)
     public TextView userScore;
@@ -63,17 +61,15 @@ public class GameUiManager implements ScoreChangeListener{
 
     public GameUiManager(Activity view) {
         ButterKnife.bind(this, view);
-        buzzerTimerLeft.setVisibility(View.INVISIBLE);
-        buzzerTimerRight.setVisibility(View.INVISIBLE);
+        buzzerTimer.setVisibility(View.INVISIBLE);
     }
 
     public void showBuzzTimer(int duration) {
-        showBuzzTimer(buzzerTimerLeft, duration);
-        showBuzzTimer(buzzerTimerRight, duration);
+        showBuzzTimer(buzzerTimer, duration);
     }
-    public void hideBuzzTimer(){
-       hideBuzzTimer(buzzerTimerLeft);
-        hideBuzzTimer(buzzerTimerRight);
+
+    public void hideBuzzTimer() {
+        hideBuzzTimer(buzzerTimer);
     }
 
     private void showBuzzTimer(final ProgressBar buzzerTimer, int duration) {
