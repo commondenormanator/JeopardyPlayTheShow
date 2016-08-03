@@ -90,6 +90,8 @@ public class GameUiManager implements ScoreChangeListener{
         });
         storeAnim(buzzerTimer, anim);
         anim.start();
+
+        shrinkVideo();
     }
     private void hideBuzzTimer(ProgressBar buzzerTimer){
         stopAnim(buzzerTimer);
@@ -136,7 +138,6 @@ public class GameUiManager implements ScoreChangeListener{
 
     public void showAnswerTimer(int duration) {
         answerTimer.start(duration);
-        shrinkVideo();
     }
 
     public void hideAnswerTimer(){
