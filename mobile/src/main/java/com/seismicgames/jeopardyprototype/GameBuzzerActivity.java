@@ -3,7 +3,6 @@ package com.seismicgames.jeopardyprototype;
 import android.Manifest;
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -14,20 +13,26 @@ import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.seismicgames.jeopardyprototype.buzzer.BuzzerScene;
 import com.seismicgames.jeopardyprototype.buzzer.client.BuzzerConnectionManager;
-import com.seismicgames.jeopardyprototype.buzzer.client.listeners.ConnectionEventListener;
 import com.seismicgames.jeopardyprototype.buzzer.client.listeners.GameplayEventListener;
 import com.seismicgames.jeopardyprototype.buzzer.message.BuzzInResponse;
+import com.seismicgames.jeopardyprototype.buzzer.message.EpisodeMarkerList;
 import com.seismicgames.jeopardyprototype.buzzer.message.VoiceCaptureState;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -58,7 +63,6 @@ public class GameBuzzerActivity extends ConnectedActivity {
     };
 
     private BuzzerConnectionManager mConnection;
-
 
     private SpeechRecognizer speechRecognizer;
 
@@ -187,7 +191,16 @@ public class GameBuzzerActivity extends ConnectedActivity {
                 }
             });
         }
+
+        @Override
+        public void onEpisodeMarkers(EpisodeMarkerList markers) {
+            mEpisodeMarkers = markers;
+            invalidateOptionsMenu();
+        }
+
     };
+
+    private EpisodeMarkerList mEpisodeMarkers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -198,8 +211,29 @@ public class GameBuzzerActivity extends ConnectedActivity {
 
         mConnection.addListener(gameplayEventListener);
 
+        mConnection.gameplaySender().sendMarkerRequest();
+
         setButtonEnabled(true);
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        for (int i = 0; mEpisodeMarkers != null && i < mEpisodeMarkers.markers.size(); i++) {
+            final int index = i;
+            menu.add("Jump To: " + mEpisodeMarkers.markers.get(i))
+                    .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem menuItem) {
+                            mConnection.gameplaySender().sendUserJumpToMarker(index);
+                            return true;
+                        }
+                    });
+        }
+        return true;
+    }
+
+
 
     @OnClick(R.id.dummy_button)
     protected void onButtonClick() {

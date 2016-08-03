@@ -24,7 +24,7 @@ public class ResourceMediaManager extends MediaPlayerControlMediaManager {
 
     private VideoView videoView;
 
-    public static ResourceMediaManager getInstance(Context activity, ViewGroup videoContainer, EpisodeDetails episodeDetails) {
+    public static ResourceMediaManager getInstance(Context activity, ViewGroup videoContainer) {
         VideoView videoView = new VideoView(activity);
         videoView.setZOrderOnTop(false);
         videoContainer.addView(videoView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
@@ -32,11 +32,11 @@ public class ResourceMediaManager extends MediaPlayerControlMediaManager {
         File video = ExternalFileUtil.getFile(activity, "video.mp4");
 
         videoView.setVideoURI(Uri.fromFile(video));
-        return new ResourceMediaManager(videoView, episodeDetails);
+        return new ResourceMediaManager(videoView);
     }
 
-    private ResourceMediaManager(VideoView videoView, EpisodeDetails episodeDetails) {
-        super(videoView, episodeDetails);
+    private ResourceMediaManager(VideoView videoView) {
+        super(videoView);
         this.videoView = videoView;
         videoView.setOnCompletionListener(new MediaCompleteListener());
         videoView.setOnInfoListener(new MediaPlayer.OnInfoListener() {

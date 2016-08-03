@@ -61,8 +61,10 @@ public class GameState {
         VOICE_CAPTURE_STATE,
 
         USER_RESTART,
+        USER_JUMP_TO_MARKER,
 
         MEDIA_COMPLETE
+
 
     }
 
@@ -75,10 +77,12 @@ public class GameState {
     }
 
     public interface MediaManager{
+        void setEpisodeDetails(EpisodeDetails details);
         void registerListener(MediaEventListener listener);
         void play();
         void pause();
         void reset();
+        void seekTo(int timestamp);
         void onActivityResume(Activity a);
         void onActivityPause(Activity a);
         void onActivityDestroy(Activity a);
@@ -88,6 +92,8 @@ public class GameState {
     private State mState;
 
     private boolean initialized = false;
+
+    private EpisodeDetails mDetails;
 
     private BuzzerConnectionManager mBuzzerManager;
     private MediaManager mMediaManager;
@@ -136,13 +142,16 @@ public class GameState {
         mMediaManager.onActivityDestroy(a);
     }
 
-    public void init(BuzzerConnectionManager b, MediaManager m, GameUiManager ui){
+    public void init(EpisodeDetails details, BuzzerConnectionManager b, MediaManager m, GameUiManager ui){
+        mDetails = details;
+
         mBuzzerManager = b;
         mBuzzerManager.addListener((ConnectionEventListener) mBuzzerHandler);
         mBuzzerManager.addListener((GameplayEventListener) mBuzzerHandler);
 
         mMediaManager = m;
         mMediaManager.registerListener(mMediaHandler);
+        mMediaManager.setEpisodeDetails(details);
 
         mGameUiManager = ui;
 
@@ -160,7 +169,6 @@ public class GameState {
     @MainThread
     private void onBuzzerConnChange(boolean isConnected){
         if(isConnected){
-//            mGameUiManager.showDisconnectWarning(false);
 
             if(activity != null) {
                 Toast.makeText(activity, "connected", Toast.LENGTH_LONG).show();
@@ -310,6 +318,8 @@ public class GameState {
         if(mBuzzerManager.isBuzzerConnected()){
             //start playback
             mState = State.WAIT_FOR_MEDIA_EVENT;
+
+            mBuzzerManager.gameplaySender().sendEpisodeMarkers(mDetails.markers);
             mMediaManager.play();
         } else {
 
@@ -331,6 +341,15 @@ public class GameState {
         mMediaManager.reset();
         judge.reset();
         mGameUiManager.reset();
+        resumeGame();
+    }
+
+    public void jumpToMarker(int index){
+        if(index < 0 || index > mDetails.markers.size() - 1) return;
+        mGameUiManager.reset();
+
+        mMediaManager.seekTo(mDetails.markers.get(index).timestamp);
+
         resumeGame();
     }
 
@@ -373,6 +392,9 @@ public class GameState {
             case USER_RESTART:
                 restartGame();
                 break;
+            case USER_JUMP_TO_MARKER:
+                jumpToMarker((Integer) message.obj);
+                break;
             case WAGER_PROMPT:
                 waitForWagerBuzzIn((QuestionInfo) message.obj);
                 break;
@@ -389,7 +411,6 @@ public class GameState {
             default:
                 Log.w("GAME_EVENT_HANDLER", type.name() + " was not handled.");
         }
-
 
         return false;
     }
@@ -451,6 +472,16 @@ public class GameState {
         @Override
         public void onUserWager(WagerRequest request) {
             handler.sendMessage(handler.obtainMessage(HandlerMessageType.USER_WAGER_REQUEST.ordinal(), request));
+        }
+
+        @Override
+        public void onMarkerRequest() {
+            mBuzzerManager.gameplaySender().sendEpisodeMarkers(mDetails.markers);
+        }
+
+        @Override
+        public void onUserJumpToMarker(int markerIndex) {
+            handler.sendMessage(handler.obtainMessage(HandlerMessageType.USER_JUMP_TO_MARKER.ordinal(), markerIndex));
         }
     }
 }

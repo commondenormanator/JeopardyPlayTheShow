@@ -11,9 +11,6 @@ import com.seismicgames.jeopardyprototype.gameplay.events.EpisodeEvent;
 import com.seismicgames.jeopardyprototype.gameplay.events.QuestionAskedEvent;
 import com.seismicgames.jeopardyprototype.gameplay.events.WagerEvent;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
 /**
  * Created by jduffy on 7/1/16.
  */
@@ -51,12 +48,13 @@ public class MediaPlayerControlMediaManager implements GameState.MediaManager {
     private volatile boolean shouldPlay;
 
 
-    public MediaPlayerControlMediaManager(MediaController.MediaPlayerControl player, EpisodeDetails details) {
+    public MediaPlayerControlMediaManager(MediaController.MediaPlayerControl player) {
         this.mPlayer = player;
+    }
+
+    @Override
+    public void setEpisodeDetails(EpisodeDetails details) {
         this.mDetails = details;
-
-        thread.start();
-
     }
 
     @Override
@@ -67,6 +65,9 @@ public class MediaPlayerControlMediaManager implements GameState.MediaManager {
 
     @Override
     public void play() {
+        if(mDetails == null) throw new IllegalStateException("details must be set");
+        if(!thread.isAlive()) thread.start();
+
         shouldPlay = true;
         mPlayer.start();
     }
@@ -82,6 +83,18 @@ public class MediaPlayerControlMediaManager implements GameState.MediaManager {
         mPlayer.seekTo(0);
         seekOnResume = 0;
         mEpisodeEventIndex = 0;
+    }
+
+    @Override
+    public void seekTo(int timestamp) {
+        mPlayer.seekTo(timestamp);
+        mEpisodeEventIndex = mDetails.events.get(mEpisodeEventIndex).timestamp > timestamp ? 0 : mEpisodeEventIndex;
+
+        //search for correct episode index.  No loop body is intentional
+        for (;mEpisodeEventIndex < mDetails.events.size()
+                     && mDetails.events.get(mEpisodeEventIndex).timestamp < timestamp;
+             mEpisodeEventIndex++);
+
     }
 
     @Override

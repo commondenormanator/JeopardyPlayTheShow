@@ -12,6 +12,8 @@ import com.seismicgames.jeopardyprototype.buzzer.listeners.GameplayEventListener
 import com.seismicgames.jeopardyprototype.buzzer.listeners.RemoteEventListener;
 import com.seismicgames.jeopardyprototype.buzzer.message.AnswerRequest;
 import com.seismicgames.jeopardyprototype.buzzer.message.BuzzInResponse;
+import com.seismicgames.jeopardyprototype.buzzer.message.EpisodeMarkerList;
+import com.seismicgames.jeopardyprototype.buzzer.message.JumpToMarkerRequest;
 import com.seismicgames.jeopardyprototype.buzzer.message.RemoteKeyMessage;
 import com.seismicgames.jeopardyprototype.buzzer.message.SceneInfoMessage;
 import com.seismicgames.jeopardyprototype.buzzer.message.StopVoiceRecRequest;
@@ -19,10 +21,14 @@ import com.seismicgames.jeopardyprototype.buzzer.message.VoiceCaptureState;
 import com.seismicgames.jeopardyprototype.buzzer.message.WagerRequest;
 import com.seismicgames.jeopardyprototype.buzzer.sender.GameplayMessageSender;
 import com.seismicgames.jeopardyprototype.buzzer.sender.SceneMessageSender;
+import com.seismicgames.jeopardyprototype.episode.EpisodeMarker;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -73,6 +79,12 @@ public class BuzzerConnectionManager {
                         break;
                     case "WagerRequest":
                         mListener.onUserWager(gson.fromJson(json, WagerRequest.class));
+                        break;
+                    case "EpisodeMarkerRequest":
+                        mListener.onMarkerRequest();
+                        break;
+                    case "JumpToMarkerRequest":
+                        mListener.onUserJumpToMarker(gson.fromJson(json, JumpToMarkerRequest.class).markerIndex);
                         break;
                     default:
                         Log.e(TAG, "Unhandled message: " + message);
@@ -239,6 +251,24 @@ public class BuzzerConnectionManager {
         }
 
         @Override
+        public void onMarkerRequest() {
+            synchronized (gameListeners) {
+                for (GameplayEventListener l : gameListeners) {
+                    l.onMarkerRequest();
+                }
+            }
+        }
+
+        @Override
+        public void onUserJumpToMarker(int markerIndex) {
+            synchronized (gameListeners) {
+                for (GameplayEventListener l : gameListeners) {
+                    l.onUserJumpToMarker(markerIndex);
+                }
+            }
+        }
+
+        @Override
         public void onKeyEvent(RemoteKeyMessage message) {
             synchronized (remoteListeners) {
                 for (RemoteEventListener l : remoteListeners) {
@@ -265,6 +295,15 @@ public class BuzzerConnectionManager {
         @Override
         public void sendStopVoiceRec() {
             sendMessage(gson.toJson(new StopVoiceRecRequest()));
+        }
+
+        @Override
+        public void sendEpisodeMarkers(List<EpisodeMarker> markers) {
+            List<String> markerNames = new ArrayList<>(markers.size());
+            for(EpisodeMarker marker : markers){
+                markerNames.add(marker.name);
+            }
+            sendMessage(gson.toJson(new EpisodeMarkerList(markerNames)));
         }
 
         @Override

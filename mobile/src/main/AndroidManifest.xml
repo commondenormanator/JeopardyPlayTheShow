@@ -17,7 +17,14 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
             android:screenOrientation="sensorPortrait"
-            android:theme="@style/FullscreenTheme">
+            android:theme="@style/FullscreenTheme"/>
+        <activity
+            android:name=".RemoteActivity"
+            android:screenOrientation="sensorPortrait" />
+        <activity
+            android:name=".DisconnectedActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="sensorPortrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -25,19 +32,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".RemoteActivity"
-            android:screenOrientation="sensorPortrait" />
-        <activity
-            android:name=".DisconnectedActivity"
-            android:launchMode="singleTask"
-            android:screenOrientation="sensorPortrait" />
-        <activity
             android:name=".WagerActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
 
-            android:screenOrientation="sensorPortrait"
-            android:theme="@style/FullscreenTheme" />
+            android:screenOrientation="sensorPortrait" />
     </application>
 
 </manifest>

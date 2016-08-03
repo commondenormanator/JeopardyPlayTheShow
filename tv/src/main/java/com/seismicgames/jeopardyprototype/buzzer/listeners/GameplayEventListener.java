@@ -15,4 +15,9 @@ public interface GameplayEventListener {
     void onVoiceCaptureState(VoiceCaptureState request);
 
     void onUserWager(WagerRequest request);
+
+
+    //demo methods
+    void onMarkerRequest();
+    void onUserJumpToMarker(int markerIndex);
 }

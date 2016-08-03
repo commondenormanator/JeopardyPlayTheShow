@@ -22,13 +22,13 @@ public class MpxMediaManager extends MediaPlayerControlMediaManager {
     private URL url;
     private boolean playbackStarted = false;
 
-    public static MpxMediaManager getInstance(ViewGroup videoContainer, EpisodeDetails details) {
+    public static MpxMediaManager getInstance(ViewGroup videoContainer) {
         Player player = new Player(videoContainer);
-        return new MpxMediaManager(player, details);
+        return new MpxMediaManager(player);
     }
 
-    public MpxMediaManager(Player player, EpisodeDetails details) {
-        super(player.asMediaPlayerControl(), details);
+    public MpxMediaManager(Player player) {
+        super(player.asMediaPlayerControl());
         mPlayer = player;
 
         try {

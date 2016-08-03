@@ -13,4 +13,6 @@ public interface GameplayMessageSender {
     void sendRestartRequest();
     void sendVoiceState(VoiceCaptureState.State state);
     void sendWagerRequest(int wager);
+    void sendMarkerRequest();
+    void sendUserJumpToMarker(int markerIndex);
 }

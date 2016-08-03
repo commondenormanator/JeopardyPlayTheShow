@@ -15,6 +15,9 @@ import com.seismicgames.jeopardyprototype.buzzer.client.senders.RemoteMessageSen
 import com.seismicgames.jeopardyprototype.buzzer.message.AnswerRequest;
 import com.seismicgames.jeopardyprototype.buzzer.message.BuzzInRequest;
 import com.seismicgames.jeopardyprototype.buzzer.message.BuzzInResponse;
+import com.seismicgames.jeopardyprototype.buzzer.message.EpisodeMarkerList;
+import com.seismicgames.jeopardyprototype.buzzer.message.EpisodeMarkerRequest;
+import com.seismicgames.jeopardyprototype.buzzer.message.JumpToMarkerRequest;
 import com.seismicgames.jeopardyprototype.buzzer.message.RemoteKeyMessage;
 import com.seismicgames.jeopardyprototype.buzzer.message.RestartRequest;
 import com.seismicgames.jeopardyprototype.buzzer.message.SceneInfoMessage;
@@ -72,6 +75,9 @@ public class BuzzerConnectionManager {
                     break;
                 case "StopVoiceRecRequest":
                     mListener.onStopVoiceRec();
+                    break;
+                case "EpisodeMarkerList":
+                    mListener.onEpisodeMarkers(gson.fromJson(json, EpisodeMarkerList.class));
                     break;
                 default:
                     Log.e(TAG, "Unhandled message: " + message);
@@ -220,6 +226,15 @@ public class BuzzerConnectionManager {
         }
 
         @Override
+        public void onEpisodeMarkers(EpisodeMarkerList markers) {
+            synchronized (gameListeners) {
+                for (GameplayEventListener l : gameListeners) {
+                    l.onEpisodeMarkers(markers);
+                }
+            }
+        }
+
+        @Override
         public void onSceneInfo(SceneInfoMessage message) {
             scene = message;
             synchronized (sceneListeners) {
@@ -260,6 +275,16 @@ public class BuzzerConnectionManager {
 
         public void sendWagerRequest(int wager) {
             send(gson.toJson(new WagerRequest(wager)));
+        }
+
+        @Override
+        public void sendMarkerRequest() {
+            send(gson.toJson(new EpisodeMarkerRequest()));
+        }
+
+        @Override
+        public void sendUserJumpToMarker(int markerIndex) {
+            send(gson.toJson(new JumpToMarkerRequest(markerIndex)));
         }
     }
 

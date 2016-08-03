@@ -27,6 +27,8 @@ import com.seismicgames.jeopardyprototype.gameplay.GameState;
 import com.seismicgames.jeopardyprototype.ui.GameUiManager;
 import com.seismicgames.jeopardyprototype.util.ExternalFileUtil;
 import com.seismicgames.jeopardyprototype.video.local.ResourceMediaManager;
+import com.seismicgames.jeopardyprototype.video.local.TextureViewMediaManager;
+import com.seismicgames.jeopardyprototype.video.mpx.MpxMediaManager;
 
 import org.apache.commons.io.IOUtils;
 
@@ -82,10 +84,12 @@ public class GameActivity extends BuzzerActivity {
     }
 
     private void onEpisodeLoaded() {
+
         if (!isFinishing()) {
             if(!gameState.isInitialized()) {
 //        gameState.init(BuzzerConnectionManager.getInstance(getApplication()), MpxMediaManager.getInstance(videoContainer, episodeDetails), new GameUiManager(this));
-                gameState.init(BuzzerConnectionManager.getInstance(getApplication()), ResourceMediaManager.getInstance(this, videoContainer, episodeDetails), new GameUiManager(this));
+                gameState.init(episodeDetails, BuzzerConnectionManager.getInstance(getApplication()), ResourceMediaManager.getInstance(this, videoContainer), new GameUiManager(this));
+//                gameState.init(BuzzerConnectionManager.getInstance(getApplication()), TextureViewMediaManager.getInstance(this, videoContainer, episodeDetails), new GameUiManager(this));
             }
 
             gameState.startGame(episodeDetails);

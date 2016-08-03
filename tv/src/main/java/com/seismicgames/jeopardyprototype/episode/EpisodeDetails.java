@@ -16,10 +16,13 @@ import java.util.List;
  * Created by jduffy on 6/30/16.
  */
 public class EpisodeDetails {
-    public List<EpisodeEvent> events = new ArrayList<>();
+    public List<EpisodeEvent> events;
+    public List<EpisodeMarker> markers;
 
-    public EpisodeDetails(List<EpisodeEvent> events) {
+
+    public EpisodeDetails(List<EpisodeEvent> events, List<EpisodeMarker> markers) {
         this.events = events;
+        this.markers = markers;
     }
 
     public static EpisodeDetails getDebugDetails(){
@@ -27,32 +30,32 @@ public class EpisodeDetails {
         List<QuestionInfo> questions = new ArrayList<>();
 
 
-//        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "SHERWOOD FOREST","REMEMBER THE SHERIFF WHO BATTLED ROBIN HOOD & IT MAKES SENSE THAT SHERWOOD FOREST IS IN THIS BRITISH SHIRE","NOTTINGHAMSHIRE|NOTTINGHAM",200,"01:01:44;13", "01:01:48;00"));
-//        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "SHERWOOD FOREST","THE 800-YEAR-OLD \"MAJOR\" ONE OF THESE IN THE FOREST IS STILL PRODUCING ACORNS","OAK",400,"01:01:55;20", "01:01:58;11"));
-//        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "SHERWOOD FOREST","THE CLUMBER TYPE OF THIS DOG GETS ITS NAME FROM AN ESTATE IN SHERWOOD FOREST","SPANIEL",600,"01:02:05;08", "01:02:10;08"));
-//        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "SHERWOOD FOREST","SHERWOOD TIMBER WAS USED IN THIS CATHEDRAL BUILT IN LONDON BETWEEN 1675 & 1710","ST. PAUL'S",800,"01:02:18;00", "01:02:21;01"));
-//        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "SHERWOOD FOREST","SHERWOOD FOREST WAS A FAVORITE HUNTING GROUND OF THIS FIRST STUART KING OF ENGLAND","JAMES I|JAMES THE FIRST",1000,"01:02:28;18", "01:02:32;01"));
-//        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "ROBIN HOOD","IN \"ROBIN HOOD: PRINCE OF THIEVES\" CHRISTIAN SLATER WAS WILL SCARLETT TO HIS ROBIN HOOD","KEVIN COSTNER",200,"01:02:39;29", "01:02:42;13"));
-//        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "ALAN OR DALE","HE DIED IN 2001 DUE TO INJURIES SUFFERED DURING THE DAYTONA 500","DALE EARNHARDT",200,"01:02:49;15", "01:02:53;07"));
-//        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "ALAN OR DALE","HIS REIGN AS THE HEAD OF THE FED LASTED FROM 1987 TO 2006","ALAN GREENSPAN",400,"01:03:00;03", "01:03:03;14"));
-//        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "ALAN OR DALE","THIS PERSONALITY FIRST WON FRIENDS & INFLUENCED PEOPLE WHILE TEACHING PUBLIC SPEAKING AT THE YMCA","DALE CARNEGIE",600,"01:03:11;19", "01:03:14;25"));
-//        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "ROBIN HOOD","ROBIN AND THE 7 HOODS RETOLD THE LEGEND AS A GANGSTER STORY, WITH DEAN MARTIN AS LITTLE JOHN & THIS CROONER AS ROBBO","FRANK SINATRA",400,"01:03:25;16", "01:03:28;13"));
-//        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "ROBIN HOOD","HERE'S THIS ACTOR WHO PLAYED ROBIN HOOD MAKING MERRY WITH ONE OF HIS MEN DURING A BREAK IN FILMING","ERROL FLYNN",600,"01:03:36;01", "01:03:38;08"));
-//        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "FRYER TUCK","TUCK MAKES HIS OWN FRIED THIS SOFT DRINK DUBBED \"MOST CREATIVE\" AT THE TEXAS STATE FAIR; HAVE ONE & A SMILE","COKE|COCA-COLA",200,"01:03:49;11", "01:03:52;06"));
-//        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "MAID, MARRYIN'","AFTER ARTHUR BECOMES KING LEODEGRANCE'S SON-IN-LAW, THE KING GIVES HIM THIS, WHICH WILL SEAT 150","ROUND TABLE",200,"01:04:00;05", "01:04:03;17"));
-//        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "MAID, MARRYIN'","IN THIS NOVEL, MOLLY BLOOM THINKS BACK ON HER HUSBAND'S PROPOSAL: \"THEN HE ASKED ME WOULD I YES TO SAY YES MY MOUNTAIN FLOWER\"","ULYSSES",400,"01:04:13;29", "01:04:17;10"));
-//        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "MAID, MARRYIN'","IN A CHRISTOPHER MARLOWE POEM, A \"PASSIONATE\" MAN WITH THIS JOB SAYS, \"COME LIVE WITH ME AND BE MY LOVE\"","SHEPHERD",600,"01:04:26;11", "01:04:33;27"));
-//        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "ALAN OR DALE","THE CAPTCHA TEST, AGAINST SPAM & ROBOT PROGRAMS, IS CALLED THE REVERSE TEST NAMED FOR THIS BRITISH CODEBREAKER","ALAN TURING",800,"01:08:40;15", "01:08:43;09"));
-//        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "ALAN OR DALE","A 1976 CAR ACCIDENT LEFT THIS AMERICAN ARTIST BLIND IN ONE EYE; HE THEN USED ASSISTANT GLASSBLOWERS TO EXECUTE HIS DESIGNS","DALE CHIHULY",1000,"01:08:54;27", "01:09:01;14"));
-//        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "ROBIN HOOD","THE 2010 FILM OF \"ROBIN HOOD\" STARRED HIM IN THE TITLE ROLE, AS AN ARCHER IN THE ARMY WHO BECOMES THE LEGENDARY HERO","RUSSELL CROWE",800,"01:09:11;08", "01:09:17;11"));
-//        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "ROBIN HOOD","VIEWERS WERE SHAKEN & STIRRED BY HIS PORTRAYAL OF THE OLDER BUT WISER TITLE HERO IN \"ROBIN AND MARIAN\"","SEAN CONNERY",1000,"01:09:26;03", "01:09:29;06"));
-//        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "FRYER TUCK","CHECK OUT TUCK'S DEEP-FRYING OF THIS HIGH-PROTEIN SOY ITEM... Y'KNOW, 'CAUSE IT'S HEALTHY","TOFU|BEAN CURD",400,"01:09:37;09", "01:09:39;14"));
-//        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "MAID, MARRYIN'","IN THIS GARCIA MARQUEZ BOOK WITH \"LOVE\" IN THE TITLE, FERMINA WILL WED FLORENTINO IF HE NEVER MAKES HER EAT EGGPLANT","LOVE IN THE TIME OF CHOLERA",800,"01:09:50;25", "01:09:54;18"));
-//        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "LITTLE, JOHN","THIS HYPHENATED TERM FOR SOMEONE WHO'S SMALL CONTAINS A LIQUID MEASURE","PINT-SIZE|HALF-PINT",600,"01:10:02;23", "01:10:14;24"));
-//        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "FRYER TUCK","IN 2011 CAROUSEL FOODS WOWED TUCK, PUTTING THIS ITEM, FRIED, ATOP A CHEESEBURGER; NO WORD IF IT WAS CHERRY GARCIA","ICE CREAM",600,"01:10:28;00", "01:10:30;24"));
-//        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "FRYER TUCK","TUCK GROANS, \"ARR, ME HEART-IE!\" EATING A BRUNCH BURGER (FRIED EGG, BEEF, BACON & CHEESE IN A DONUT) AT PNC PARK IN THIS CITY","PITTSBURGH",800,"01:10:42;27", "01:10:45;26"));
-//        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "MAID, MARRYIN'","THIS CHAUCER GAL TELLS SOON-TO-BE HUBBY NO. 5 SHE'D MARRY HIM IF SHE WERE A WIDOW","WIFE OF BATH|ALISON",1000,"01:10:54;13", "01:10:58;12"));
-//        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "LITTLE, JOHN","IT PRECEDES \"WILLIE WINKIE\" IN A NURSERY RHYME","WEE",200,"01:11:04;14", "01:11:07;01"));
+        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "SHERWOOD FOREST","REMEMBER THE SHERIFF WHO BATTLED ROBIN HOOD & IT MAKES SENSE THAT SHERWOOD FOREST IS IN THIS BRITISH SHIRE","NOTTINGHAMSHIRE|NOTTINGHAM",200,"01:01:44;13", "01:01:48;00"));
+        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "SHERWOOD FOREST","THE 800-YEAR-OLD \"MAJOR\" ONE OF THESE IN THE FOREST IS STILL PRODUCING ACORNS","OAK",400,"01:01:55;20", "01:01:58;11"));
+        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "SHERWOOD FOREST","THE CLUMBER TYPE OF THIS DOG GETS ITS NAME FROM AN ESTATE IN SHERWOOD FOREST","SPANIEL",600,"01:02:05;08", "01:02:10;08"));
+        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "SHERWOOD FOREST","SHERWOOD TIMBER WAS USED IN THIS CATHEDRAL BUILT IN LONDON BETWEEN 1675 & 1710","ST. PAUL'S",800,"01:02:18;00", "01:02:21;01"));
+        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "SHERWOOD FOREST","SHERWOOD FOREST WAS A FAVORITE HUNTING GROUND OF THIS FIRST STUART KING OF ENGLAND","JAMES I|JAMES THE FIRST",1000,"01:02:28;18", "01:02:32;01"));
+        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "ROBIN HOOD","IN \"ROBIN HOOD: PRINCE OF THIEVES\" CHRISTIAN SLATER WAS WILL SCARLETT TO HIS ROBIN HOOD","KEVIN COSTNER",200,"01:02:39;29", "01:02:42;13"));
+        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "ALAN OR DALE","HE DIED IN 2001 DUE TO INJURIES SUFFERED DURING THE DAYTONA 500","DALE EARNHARDT",200,"01:02:49;15", "01:02:53;07"));
+        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "ALAN OR DALE","HIS REIGN AS THE HEAD OF THE FED LASTED FROM 1987 TO 2006","ALAN GREENSPAN",400,"01:03:00;03", "01:03:03;14"));
+        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "ALAN OR DALE","THIS PERSONALITY FIRST WON FRIENDS & INFLUENCED PEOPLE WHILE TEACHING PUBLIC SPEAKING AT THE YMCA","DALE CARNEGIE",600,"01:03:11;19", "01:03:14;25"));
+        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "ROBIN HOOD","ROBIN AND THE 7 HOODS RETOLD THE LEGEND AS A GANGSTER STORY, WITH DEAN MARTIN AS LITTLE JOHN & THIS CROONER AS ROBBO","FRANK SINATRA",400,"01:03:25;16", "01:03:28;13"));
+        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "ROBIN HOOD","HERE'S THIS ACTOR WHO PLAYED ROBIN HOOD MAKING MERRY WITH ONE OF HIS MEN DURING A BREAK IN FILMING","ERROL FLYNN",600,"01:03:36;01", "01:03:38;08"));
+        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "FRYER TUCK","TUCK MAKES HIS OWN FRIED THIS SOFT DRINK DUBBED \"MOST CREATIVE\" AT THE TEXAS STATE FAIR; HAVE ONE & A SMILE","COKE|COCA-COLA",200,"01:03:49;11", "01:03:52;06"));
+        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "MAID, MARRYIN'","AFTER ARTHUR BECOMES KING LEODEGRANCE'S SON-IN-LAW, THE KING GIVES HIM THIS, WHICH WILL SEAT 150","ROUND TABLE",200,"01:04:00;05", "01:04:03;17"));
+        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "MAID, MARRYIN'","IN THIS NOVEL, MOLLY BLOOM THINKS BACK ON HER HUSBAND'S PROPOSAL: \"THEN HE ASKED ME WOULD I YES TO SAY YES MY MOUNTAIN FLOWER\"","ULYSSES",400,"01:04:13;29", "01:04:17;10"));
+        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "MAID, MARRYIN'","IN A CHRISTOPHER MARLOWE POEM, A \"PASSIONATE\" MAN WITH THIS JOB SAYS, \"COME LIVE WITH ME AND BE MY LOVE\"","SHEPHERD",600,"01:04:26;11", "01:04:33;27"));
+        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "ALAN OR DALE","THE CAPTCHA TEST, AGAINST SPAM & ROBOT PROGRAMS, IS CALLED THE REVERSE TEST NAMED FOR THIS BRITISH CODEBREAKER","ALAN TURING",800,"01:08:40;15", "01:08:43;09"));
+        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "ALAN OR DALE","A 1976 CAR ACCIDENT LEFT THIS AMERICAN ARTIST BLIND IN ONE EYE; HE THEN USED ASSISTANT GLASSBLOWERS TO EXECUTE HIS DESIGNS","DALE CHIHULY",1000,"01:08:54;27", "01:09:01;14"));
+        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "ROBIN HOOD","THE 2010 FILM OF \"ROBIN HOOD\" STARRED HIM IN THE TITLE ROLE, AS AN ARCHER IN THE ARMY WHO BECOMES THE LEGENDARY HERO","RUSSELL CROWE",800,"01:09:11;08", "01:09:17;11"));
+        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "ROBIN HOOD","VIEWERS WERE SHAKEN & STIRRED BY HIS PORTRAYAL OF THE OLDER BUT WISER TITLE HERO IN \"ROBIN AND MARIAN\"","SEAN CONNERY",1000,"01:09:26;03", "01:09:29;06"));
+        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "FRYER TUCK","CHECK OUT TUCK'S DEEP-FRYING OF THIS HIGH-PROTEIN SOY ITEM... Y'KNOW, 'CAUSE IT'S HEALTHY","TOFU|BEAN CURD",400,"01:09:37;09", "01:09:39;14"));
+        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "MAID, MARRYIN'","IN THIS GARCIA MARQUEZ BOOK WITH \"LOVE\" IN THE TITLE, FERMINA WILL WED FLORENTINO IF HE NEVER MAKES HER EAT EGGPLANT","LOVE IN THE TIME OF CHOLERA",800,"01:09:50;25", "01:09:54;18"));
+        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "LITTLE, JOHN","THIS HYPHENATED TERM FOR SOMEONE WHO'S SMALL CONTAINS A LIQUID MEASURE","PINT-SIZE|HALF-PINT",600,"01:10:02;23", "01:10:14;24"));
+        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "FRYER TUCK","IN 2011 CAROUSEL FOODS WOWED TUCK, PUTTING THIS ITEM, FRIED, ATOP A CHEESEBURGER; NO WORD IF IT WAS CHERRY GARCIA","ICE CREAM",600,"01:10:28;00", "01:10:30;24"));
+        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "FRYER TUCK","TUCK GROANS, \"ARR, ME HEART-IE!\" EATING A BRUNCH BURGER (FRIED EGG, BEEF, BACON & CHEESE IN A DONUT) AT PNC PARK IN THIS CITY","PITTSBURGH",800,"01:10:42;27", "01:10:45;26"));
+        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "MAID, MARRYIN'","THIS CHAUCER GAL TELLS SOON-TO-BE HUBBY NO. 5 SHE'D MARRY HIM IF SHE WERE A WIDOW","WIFE OF BATH|ALISON",1000,"01:10:54;13", "01:10:58;12"));
+        questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "LITTLE, JOHN","IT PRECEDES \"WILLIE WINKIE\" IN A NURSERY RHYME","WEE",200,"01:11:04;14", "01:11:07;01"));
         questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "LITTLE, JOHN","A LAND CREATED BY JONATHAN SWIFT GAVE US THIS WORD MEANING TINY","LILLIPUTIAN",1000,"01:11:14;26", "01:11:18;02"));
 ////        questions.add(new QuestionInfo("LITTLE, JOHN","BEGINNING WITH A WORD THAT MEANS IMMEASURABLY GREAT, IT MEANS EXCEEDINGLY SMALL","INFINITESIMAL",,"01:11:41;04", "01:11:55;00"));
         questions.add(new QuestionInfo(QuestionInfo.QuestionType.S, "FRYER TUCK","TUCK GOES FULL FANNIE FLAGG MAKING THIS 3-WORD TITLE DISH, DIPPING 'EM IN FLOUR, MILK, EGGS & BREAD CRUMBS","FRIED GREEN TOMATOES",1000,"01:12:05;04", "01:12:08;10"));
@@ -149,7 +152,7 @@ public class EpisodeDetails {
             }
         });
 
-        return new EpisodeDetails(events);
+        return new EpisodeDetails(events, new ArrayList<EpisodeMarker>());
     }
 
 

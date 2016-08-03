@@ -23,6 +23,7 @@ import com.seismicgames.jeopardyprototype.buzzer.client.BuzzerConnectionManager;
 import com.seismicgames.jeopardyprototype.buzzer.client.listeners.ConnectionEventListener;
 import com.seismicgames.jeopardyprototype.buzzer.client.listeners.GameplayEventListener;
 import com.seismicgames.jeopardyprototype.buzzer.message.BuzzInResponse;
+import com.seismicgames.jeopardyprototype.buzzer.message.EpisodeMarkerList;
 import com.seismicgames.jeopardyprototype.buzzer.message.VoiceCaptureState;
 
 import java.text.NumberFormat;
@@ -221,6 +222,11 @@ public class WagerActivity extends ConnectedActivity {
                         }
                     }
                 });
+            }
+
+            @Override
+            public void onEpisodeMarkers(EpisodeMarkerList markers) {
+
             }
         });
     }

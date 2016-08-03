@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -50,6 +51,9 @@ public class EpisodeParser {
         FrameZeroEvent fZero = new FrameZeroEvent(metaRecord.get("episode_start"));
         events.add(fZero);
 
+
+        events.add(new EpisodeEvent(fZero.timestamp +100, EpisodeEvent.Type.Skipped));
+
         //commercials
         parseCommercials(events, metaRecord, fZero);
 
@@ -69,7 +73,8 @@ public class EpisodeParser {
             }
         });
 
-        return new EpisodeDetails(events);
+//        return EpisodeDetails.getDebugDetails();
+        return new EpisodeDetails(events, Arrays.asList(new EpisodeMarker("blah", TimeCode.parse("01:11:31;12"))));
     }
 
     private static void parseCommercials(List<EpisodeEvent> events, CSVRecord metaRecord, FrameZeroEvent fZero){
