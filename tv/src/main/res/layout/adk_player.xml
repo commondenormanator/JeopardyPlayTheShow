@@ -29,7 +29,7 @@
     <android.widget.ProgressBar xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/buzzerTimer"
         android:layout_width="match_parent"
-        android:layout_height="72dp"
+        android:layout_height="@dimen/timer_height"
         android:layout_alignParentBottom="true"
         android:background="@color/black"
         android:indeterminate="false"
@@ -56,7 +56,7 @@
         android:id="@+id/podiumTimer"
         class="com.seismicgames.jeopardyprototype.view.AnswerTimer"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/podium_timer_height"
+        android:layout_height="@dimen/timer_height"
         android:layout_alignParentBottom="true"
         android:visibility="invisible" />
 

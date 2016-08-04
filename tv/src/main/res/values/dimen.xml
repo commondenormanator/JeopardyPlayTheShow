@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="podium_timer_height">64dp</dimen>
+    <dimen name="timer_height">64dp</dimen>
 </resources>
