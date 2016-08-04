@@ -1,14 +1,23 @@
 package com.seismicgames.jeopardyprototype.buzzer.transport;
 
 
+import com.seismicgames.jeopardyprototype.Constants;
+
 import org.java_websocket.WebSocket;
+import org.java_websocket.WebSocketAdapter;
+import org.java_websocket.WebSocketImpl;
+import org.java_websocket.client.DefaultWebSocketClientFactory;
+import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft;
 import org.java_websocket.handshake.ClientHandshake;
+import org.java_websocket.server.DefaultWebSocketServerFactory;
 import org.java_websocket.server.WebSocketServer;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,81 +30,75 @@ import java.util.Map;
  */
 public abstract class PingingWebSockServer extends WebSocketServer {
 
-    private final PingThread pingThread = new PingThread();
-
-    private Map<WebSocket, PingRunnable> pings = new HashMap<>();
-
-    public PingingWebSockServer() throws UnknownHostException {
-    }
-
     public PingingWebSockServer(InetSocketAddress address) {
         super(address);
+        setWebSocketFactory(new KeepAliveWebSocketClientFactory());
     }
 
     public PingingWebSockServer(InetSocketAddress address, int decoders) {
         super(address, decoders);
+        setWebSocketFactory(new KeepAliveWebSocketClientFactory());
     }
 
     public PingingWebSockServer(InetSocketAddress address, List<Draft> drafts) {
         super(address, drafts);
+        setWebSocketFactory(new KeepAliveWebSocketClientFactory());
     }
 
     public PingingWebSockServer(InetSocketAddress address, int decodercount, List<Draft> drafts) {
         super(address, decodercount, drafts);
+        setWebSocketFactory(new KeepAliveWebSocketClientFactory());
     }
 
     public PingingWebSockServer(InetSocketAddress address, int decodercount, List<Draft> drafts, Collection<WebSocket> connectionscontainer) {
         super(address, decodercount, drafts, connectionscontainer);
+        setWebSocketFactory(new KeepAliveWebSocketClientFactory());
     }
 
     @Override
     public void start() {
         super.start();
-        pingThread.start();
     }
 
     @Override
     public void stop(int timeout) throws IOException, InterruptedException {
-        pingThread.finish();
         super.stop(timeout);
     }
 
     @Override
     public void stop() throws IOException, InterruptedException {
-        pingThread.finish();
         super.stop();
     }
 
 
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
-        pings.put(conn, new PingRunnable(conn));
     }
 
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-        pings.remove(conn);
     }
 
-    private class PingThread extends Thread {
-        private volatile boolean isFinished;
+    private static class KeepAliveWebSocketClientFactory extends DefaultWebSocketServerFactory {
 
-        public void finish() {
-            isFinished = true;
+        @Override
+        public WebSocketImpl createWebSocket(WebSocketAdapter a, Draft d, Socket s) {
+            initSocket(s);
+            return super.createWebSocket(a, d, s);
         }
 
         @Override
-        public void run() {
-            while (!isFinished) {
-                for (PingRunnable ping :
-                        new ArrayList<>(pings.values())) {
-                    ping.run();
-                }
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+        public WebSocketImpl createWebSocket(WebSocketAdapter a, List<Draft> d, Socket s) {
+            initSocket(s);
+            return super.createWebSocket(a, d, s);
+        }
+
+        private void initSocket(Socket s){
+            try {
+                s.setSoTimeout(Constants.SocketTimeout);
+                s.setKeepAlive(true);
+            } catch (SocketException e) {
+                e.printStackTrace();
             }
         }
     }

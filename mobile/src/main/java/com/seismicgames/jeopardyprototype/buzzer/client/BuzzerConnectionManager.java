@@ -24,6 +24,8 @@ import com.seismicgames.jeopardyprototype.buzzer.message.SceneInfoMessage;
 import com.seismicgames.jeopardyprototype.buzzer.message.VoiceCaptureState;
 import com.seismicgames.jeopardyprototype.buzzer.message.WagerRequest;
 
+import org.java_websocket.exceptions.WebsocketNotConnectedException;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -249,7 +251,11 @@ public class BuzzerConnectionManager {
     private class InternalSender implements GameplayMessageSender, RemoteMessageSender {
 
         private void send(String message) {
-            if (mClient != null) mClient.send(message);
+            if (mClient != null) {
+                try {
+                    mClient.send(message);
+                } catch (WebsocketNotConnectedException ignored){}
+            }
         }
 
         public void sendBuzzInRequest() {
