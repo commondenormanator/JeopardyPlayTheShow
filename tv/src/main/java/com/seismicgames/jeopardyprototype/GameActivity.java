@@ -105,6 +105,7 @@ public class GameActivity extends BuzzerActivity {
 
             InputStream game = null;
             InputStream meta = null;
+            InputStream marker = null;
             try{
                 File gameFile = ExternalFileUtil.getFile(getApplicationContext(), "game.csv");
                 if(gameFile == null || !gameFile.exists()) return false;
@@ -114,8 +115,17 @@ public class GameActivity extends BuzzerActivity {
                 game = new FileInputStream(gameFile);
                 meta = new FileInputStream(metaFile);
 
-                episodeDetails = EpisodeParser.parse(IOUtils.toString(game), IOUtils.toString(meta));
+                String markerString;
+                File markerFile = ExternalFileUtil.getFile(getApplicationContext(), "marker.csv");
 
+                if(markerFile == null || !markerFile.exists()) {
+                    markerString = "";
+                }else {
+                    marker = new FileInputStream(markerFile);
+                    markerString = IOUtils.toString(marker);
+                }
+
+                episodeDetails = EpisodeParser.parse(IOUtils.toString(game), IOUtils.toString(meta), markerString);
 
                 return true;
             } catch (IOException e) {
@@ -123,6 +133,7 @@ public class GameActivity extends BuzzerActivity {
             } finally {
                 IOUtils.closeQuietly(game);
                 IOUtils.closeQuietly(meta);
+                IOUtils.closeQuietly(marker);
             }
             return false;
         }

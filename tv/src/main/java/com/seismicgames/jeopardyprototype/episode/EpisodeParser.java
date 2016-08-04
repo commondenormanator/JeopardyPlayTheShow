@@ -35,13 +35,15 @@ public class EpisodeParser {
 
     private static final String TAG = EpisodeParser.class.getName();
 
-    public static EpisodeDetails parse(String questions, String meta) throws IOException {
+    public static EpisodeDetails parse(String questions, String meta, String marker) throws IOException {
 
         List<EpisodeEvent> events = new ArrayList<>();
+        List<EpisodeMarker> markers = new ArrayList<>();
 
         //parse files
         CSVParser questionParser = CSVParser.parse(questions, getQuestionFormat());
         CSVParser metaParser = CSVParser.parse(meta, getMetaFormat());
+        CSVParser markerParser = CSVParser.parse(marker, getMarkerFormat());
         CSVRecord metaRecord = metaParser.getRecords().get(0);
 
         //skip to first frame
@@ -57,14 +59,16 @@ public class EpisodeParser {
         //commercials
         parseCommercials(events, metaRecord, fZero);
 
-
-
         //questions
         for (CSVRecord csvRecord : questionParser) {
             System.out.println(csvRecord.toString());
             parseQuestion(events, csvRecord, fZero);
         }
 
+        //markers
+        for (CSVRecord csvRecord : markerParser) {
+            markers.add(new EpisodeMarker(csvRecord.get("name"), TimeCode.parse(csvRecord.get("timestamp")) + fZero.timestamp));
+        }
 
         Collections.sort(events, new Comparator<EpisodeEvent>() {
             @Override
@@ -74,7 +78,7 @@ public class EpisodeParser {
         });
 
 //        return EpisodeDetails.getDebugDetails();
-        return new EpisodeDetails(events, Arrays.asList(new EpisodeMarker("blah", TimeCode.parse("01:11:31;12"))));
+        return new EpisodeDetails(events, markers);
     }
 
     private static void parseCommercials(List<EpisodeEvent> events, CSVRecord metaRecord, FrameZeroEvent fZero){
@@ -133,4 +137,9 @@ public class EpisodeParser {
                 .withSkipHeaderRecord(true);
     }
 
+    private static CSVFormat getMarkerFormat(){
+        return CSVFormat.EXCEL
+                .withFirstRecordAsHeader()
+                .withSkipHeaderRecord(true);
+    }
 }
