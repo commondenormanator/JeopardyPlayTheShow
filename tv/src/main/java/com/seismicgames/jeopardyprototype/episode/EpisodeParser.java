@@ -62,7 +62,7 @@ public class EpisodeParser {
         //questions
         for (CSVRecord csvRecord : questionParser) {
             System.out.println(csvRecord.toString());
-            parseQuestion(events, csvRecord, fZero);
+            parseQuestion(events, csvRecord, metaRecord, fZero);
         }
 
         //markers
@@ -93,7 +93,7 @@ public class EpisodeParser {
 
     }
 
-    private static void parseQuestion(List<EpisodeEvent> events, CSVRecord gameRecord, FrameZeroEvent fZero) {
+    private static void parseQuestion(List<EpisodeEvent> events, CSVRecord gameRecord, CSVRecord metaRecord, FrameZeroEvent fZero) {
         QuestionType type = QuestionType.valueOf(gameRecord.get(GameHeaders.type));
         QuestionInfo q = new QuestionInfo(
                 type,
@@ -101,8 +101,8 @@ public class EpisodeParser {
                 gameRecord.get(GameHeaders.clue),
                 gameRecord.get(GameHeaders.answers),
                 type == QuestionType.FJ ? 0 : Integer.parseInt(gameRecord.get(GameHeaders.value)),
-                type == QuestionType.FJ ? gameRecord.get(GameHeaders.fj_end_music) : gameRecord.get(GameHeaders.clue_end),
-                type == QuestionType.FJ ? gameRecord.get(GameHeaders.fj_end_music) + 100 : gameRecord.get(GameHeaders.score_change));
+                type == QuestionType.FJ ? gameRecord.get(GameHeaders.fj_start_music) : gameRecord.get(GameHeaders.clue_end),
+                type == QuestionType.FJ ? gameRecord.get(GameHeaders.fj_end_music) : gameRecord.get(GameHeaders.score_change));
 
         switch (type){
 
@@ -116,7 +116,7 @@ public class EpisodeParser {
                 events.add(new AnswerReadEvent(q.answerTimestamp + fZero.timestamp, q));
                 break;
             case FJ:
-                events.add(new WagerEvent(TimeCode.parse(gameRecord.get(GameHeaders.fj_start_music)) + fZero.timestamp - 100, q));
+                events.add(new WagerEvent(TimeCode.parse(metaRecord.get("commercial_break_3_start")) + fZero.timestamp - 100, q));
                 events.add(new QuestionAskedEvent(q.readTimestamp + fZero.timestamp, q));
                 events.add(new AnswerReadEvent(q.answerTimestamp + fZero.timestamp, q));
                 break;

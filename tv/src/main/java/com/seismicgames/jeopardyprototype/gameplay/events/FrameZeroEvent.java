@@ -10,7 +10,7 @@ public class FrameZeroEvent extends EpisodeEvent {
     private static final int HourOne = 60*60*1000;
 
     public FrameZeroEvent(String time) {
-        super(HourOne - TimeCode.parse(time), Type.FrameZero);
+        super(-1 * TimeCode.parse(time), Type.FrameZero);
     }
 
 

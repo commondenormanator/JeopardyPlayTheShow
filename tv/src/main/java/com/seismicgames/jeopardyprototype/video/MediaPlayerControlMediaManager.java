@@ -66,7 +66,7 @@ public class MediaPlayerControlMediaManager implements GameState.MediaManager {
     @Override
     public void play() {
         if(mDetails == null) throw new IllegalStateException("details must be set");
-        if(!thread.isAlive()) thread.start();
+        if(thread.getState() == Thread.State.NEW) thread.start();
 
         shouldPlay = true;
         mPlayer.start();
@@ -88,7 +88,7 @@ public class MediaPlayerControlMediaManager implements GameState.MediaManager {
     @Override
     public void seekTo(int timestamp) {
         mPlayer.seekTo(timestamp);
-        mEpisodeEventIndex = mDetails.events.get(mEpisodeEventIndex).timestamp > timestamp ? 0 : mEpisodeEventIndex;
+        mEpisodeEventIndex = mEpisodeEventIndex >= mDetails.events.size() || mDetails.events.get(mEpisodeEventIndex).timestamp > timestamp ? 0 : mEpisodeEventIndex;
 
         //search for correct episode index.  No loop body is intentional
         for (;mEpisodeEventIndex < mDetails.events.size()
