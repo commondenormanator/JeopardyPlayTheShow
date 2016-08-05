@@ -71,7 +71,7 @@ public class GameState {
 
     public interface MediaEventListener{
         void onWager(WagerEvent event);
-        void onQuestionAsked(QuestionAskedEvent event);
+        boolean onQuestionAsked(QuestionAskedEvent event);
         void onAnswerRead(AnswerReadEvent event);
         void onMediaComplete();
     }
@@ -194,6 +194,9 @@ public class GameState {
 
     @MainThread
     private void waitForBuzzIn(QuestionInfo questionInfo){
+
+
+        //skipp daily double answer if no wager was made
         if(questionInfo.type == QuestionInfo.QuestionType.DD && !judge.didWager()){
             onQuestionTimeout();
             return;
@@ -201,8 +204,18 @@ public class GameState {
 
         mState = State.WAIT_FOR_BUZZ_IN;
 
-        mGameUiManager.showBuzzTimer(Constants.BuzzInTimeout);
-        handler.sendMessageDelayed(handler.obtainMessage(HandlerMessageType.BUZZ_IN_TIMEOUT.ordinal()), Constants.BuzzInTimeout);
+        int buzzInTime = questionInfo.type == QuestionInfo.QuestionType.FJ ? Constants.FinalJeopardyTimeout : Constants.BuzzInTimeout;
+        mGameUiManager.showBuzzTimer(buzzInTime);
+
+        //shrink or show custom clue
+        if(questionInfo.type == QuestionInfo.QuestionType.DD) {
+            mGameUiManager.showCustomClue();
+        }else {
+            mGameUiManager.shrinkVideo();
+        }
+
+
+        handler.sendMessageDelayed(handler.obtainMessage(HandlerMessageType.BUZZ_IN_TIMEOUT.ordinal()), buzzInTime);
     }
 
     @MainThread
@@ -211,6 +224,8 @@ public class GameState {
         mGameUiManager.hideAnswerTimer();
         mGameUiManager.hideWagerBuzzIn();
         mGameUiManager.hideCustomClue();
+        mGameUiManager.expandVideo();
+        mGameUiManager.showUserAnswer(false);
 
         if(activity != null) {
             activity.setScene(BuzzerScene.Scene.BUZZER);
@@ -259,10 +274,6 @@ public class GameState {
             activity.sendSceneInfo();
         }
 
-        if(judge.didWager()){
-            mGameUiManager.showCustomClue();
-        }
-
         resumeGame();
     }
 
@@ -277,6 +288,7 @@ public class GameState {
             handler.removeMessages(HandlerMessageType.BUZZ_IN_TIMEOUT.ordinal());
             mGameUiManager.hideBuzzTimer();
 
+            mGameUiManager.showUserAnswer(true);
             mGameUiManager.showAnswerTimer(Constants.AnswerTimeout);
             handler.sendMessageDelayed(handler.obtainMessage(HandlerMessageType.USER_ANSWER_TIMEOUT.ordinal()), Constants.AnswerTimeout);
             judge.setUserBuzzedIn();
@@ -415,6 +427,9 @@ public class GameState {
         return false;
     }
 
+    private boolean shouldPauseForQuestion(QuestionAskedEvent event){
+        return event.questionInfo.type != QuestionInfo.QuestionType.FJ;
+    }
 
     @WorkerThread
     private class MediaHandler implements MediaEventListener {
@@ -425,8 +440,9 @@ public class GameState {
         }
 
         @Override
-        public void onQuestionAsked(QuestionAskedEvent event) {
+        public boolean onQuestionAsked(QuestionAskedEvent event) {
             handler.sendMessage(handler.obtainMessage(HandlerMessageType.QUESTION_ASKED.ordinal(), event.questionInfo));
+            return shouldPauseForQuestion(event);
         }
 
         @Override

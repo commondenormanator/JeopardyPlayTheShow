@@ -90,8 +90,6 @@ public class GameUiManager implements ScoreChangeListener{
         });
         storeAnim(buzzerTimer, anim);
         anim.start();
-
-        shrinkVideo();
     }
     private void hideBuzzTimer(ProgressBar buzzerTimer){
         stopAnim(buzzerTimer);
@@ -100,7 +98,7 @@ public class GameUiManager implements ScoreChangeListener{
     }
 
     public void showWagerBuzzIn(int duration) {
-       showBuzzTimer(duration);
+        showBuzzTimer(duration);
         wagerPrompt.setVisibility(View.VISIBLE);
     }
     public void hideWagerBuzzIn() {
@@ -142,7 +140,6 @@ public class GameUiManager implements ScoreChangeListener{
 
     public void hideAnswerTimer(){
         answerTimer.cancel();
-        expandVideo();
     }
 
     @Override
@@ -172,7 +169,9 @@ public class GameUiManager implements ScoreChangeListener{
         }
     }
 
-
+    public void showUserAnswer(boolean show){
+        userAnswer.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
+    }
     public void setUserAnswer(String s){
         userAnswer.setText(s);
     }
@@ -211,7 +210,7 @@ public class GameUiManager implements ScoreChangeListener{
     }
 
 
-    private void shrinkVideo(){
+    public void shrinkVideo(){
         ValueAnimator animator = ValueAnimator.ofInt(0, answerTimer.getHeight());
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -226,7 +225,7 @@ public class GameUiManager implements ScoreChangeListener{
         animator.start();
     }
 
-    private void expandVideo(){
+    public void expandVideo(){
         ValueAnimator animator = ValueAnimator.ofInt(videoContainer.getPaddingTop() + videoContainer.getPaddingBottom(), 0);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
