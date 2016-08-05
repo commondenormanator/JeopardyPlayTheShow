@@ -6,6 +6,7 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -58,10 +59,15 @@ public class GameUiManager implements ScoreChangeListener{
     public View clueLayout;
     @BindView(R.id.clueText)
     public TextView clueText;
+    @BindView(R.id.clueShadow)
+    public TextView clueShadow;
 
     public GameUiManager(Activity view) {
         ButterKnife.bind(this, view);
         buzzerTimer.setVisibility(View.INVISIBLE);
+        Typeface tf = Typeface.createFromAsset(view.getAssets(), "fonts/clue.ttf");
+        clueText.setTypeface(tf);
+        clueShadow.setTypeface(tf);
     }
 
     public void showBuzzTimer(int duration) {
@@ -127,6 +133,7 @@ public class GameUiManager implements ScoreChangeListener{
 
     public void setCustomClueText(QuestionInfo info){
         clueText.setText(info.clue);
+        clueShadow.setText(info.clue);
     }
 
     public void hideCustomClue(){

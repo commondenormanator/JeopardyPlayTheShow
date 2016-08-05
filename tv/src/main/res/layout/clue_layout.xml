@@ -2,7 +2,22 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#30000000">
+    android:background="@color/question_blue">
+
+
+
+    <TextView
+        android:id="@+id/clueShadow"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:paddingLeft="100dp"
+        android:paddingRight="100dp"
+        android:gravity="center"
+        android:translationY="4dp"
+        android:translationX="4dp"
+        android:textColor="#FF000000"
+        android:textSize="50sp" />
 
     <TextView
         android:id="@+id/clueText"
@@ -11,9 +26,11 @@
         android:layout_centerInParent="true"
         android:paddingLeft="100dp"
         android:paddingRight="100dp"
-        android:background="@color/question_blue"
         android:gravity="center"
+
         android:textColor="@android:color/white"
         android:textSize="50sp" />
+
+
 
 </RelativeLayout>
