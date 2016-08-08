@@ -225,7 +225,6 @@ public class GameState {
         mGameUiManager.hideWagerBuzzIn();
         mGameUiManager.hideCustomClue();
         mGameUiManager.expandVideo();
-        mGameUiManager.showUserAnswer(false);
 
         if(activity != null) {
             activity.setScene(BuzzerScene.Scene.BUZZER);
@@ -255,6 +254,7 @@ public class GameState {
         mBuzzerManager.gameplaySender().sendStopVoiceRec();
         judge.scoreAnswer(questionInfo);
         mGameUiManager.clearUserAnswer();
+        mGameUiManager.showUserAnswer(false);
     }
 
     @MainThread

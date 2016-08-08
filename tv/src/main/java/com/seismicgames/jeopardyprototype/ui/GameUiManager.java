@@ -17,6 +17,7 @@ import com.seismicgames.jeopardyprototype.R;
 import com.seismicgames.jeopardyprototype.buzzer.message.VoiceCaptureState;
 import com.seismicgames.jeopardyprototype.episode.QuestionInfo;
 import com.seismicgames.jeopardyprototype.gameplay.score.ScoreChangeListener;
+import com.seismicgames.jeopardyprototype.ui.view.game.PlayerView;
 import com.seismicgames.jeopardyprototype.view.AnswerTimer;
 
 import butterknife.BindView;
@@ -30,9 +31,6 @@ public class GameUiManager implements ScoreChangeListener{
 
     @BindView(R.id.buzzerTimer)
     public ProgressBar buzzerTimer;
-
-    @BindView(R.id.userScore)
-    public TextView userScore;
 
     @BindView(R.id.podiumTimer)
     public AnswerTimer answerTimer;
@@ -62,6 +60,16 @@ public class GameUiManager implements ScoreChangeListener{
     @BindView(R.id.clueShadow)
     public TextView clueShadow;
 
+    @BindView(R.id.playerLayout)
+    public ViewGroup playerLayout;
+
+    @BindView(R.id.player1)
+    public PlayerView player1;
+    @BindView(R.id.player2)
+    public PlayerView player2;
+    @BindView(R.id.player3)
+    public PlayerView player3;
+
     public GameUiManager(Activity view) {
         ButterKnife.bind(this, view);
         buzzerTimer.setVisibility(View.INVISIBLE);
@@ -69,6 +77,7 @@ public class GameUiManager implements ScoreChangeListener{
         clueText.setTypeface(tf);
         clueShadow.setTypeface(tf);
     }
+
 
     public void showBuzzTimer(int duration) {
         showBuzzTimer(buzzerTimer, duration);
@@ -140,7 +149,6 @@ public class GameUiManager implements ScoreChangeListener{
         clueLayout.setVisibility(View.GONE);
     }
 
-
     public void showAnswerTimer(int duration) {
         answerTimer.start(duration);
     }
@@ -151,16 +159,11 @@ public class GameUiManager implements ScoreChangeListener{
 
     @Override
     public void onScoreChange(final int score, int change) {
-        userScore.setText((change > 0 ? "+" : "-") + String.valueOf(Math.abs(change)));
-        userScore.setTextColor(change > 0 ? Color.GREEN : Color.RED);
-        userScore.animate().translationYBy(-1 * Math.copySign(100, change)).withEndAction(new Runnable() {
-            @Override
-            public void run() {
-                userScore.setTextColor(Color.WHITE);
-                userScore.setTranslationY(0);
-                userScore.setText(String.valueOf(score));
-            }
-        }).start();
+        scoreChange(player1, score, change);
+    }
+
+    private void scoreChange(PlayerView player, int score, int change){
+        player.setPlayerScore(score);
     }
 
     private void storeAnim(View v, ValueAnimator animation){
@@ -179,6 +182,7 @@ public class GameUiManager implements ScoreChangeListener{
     public void showUserAnswer(boolean show){
         userAnswer.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
     }
+
     public void setUserAnswer(String s){
         userAnswer.setText(s);
     }
@@ -194,11 +198,11 @@ public class GameUiManager implements ScoreChangeListener{
 
             case LISTENING:
                 micIcon.setVisibility(View.VISIBLE);
-                micIcon.setImageResource(R.drawable.lb_ic_search_mic_out);
+                micIcon.setImageResource(R.drawable.voice_ready_icn);
                 break;
             case SPEECH_BEGIN:
                 micIcon.setVisibility(View.VISIBLE);
-                micIcon.setImageResource(R.drawable.lb_ic_search_mic);
+                micIcon.setImageResource(R.drawable.voice_heard_icn);
                 break;
             case SPEECH_END:
                 micIcon.setVisibility(View.GONE);
@@ -210,10 +214,15 @@ public class GameUiManager implements ScoreChangeListener{
     }
 
 
+
+
+
     public void reset(){
         hideAnswerTimer();
         hideBuzzTimer();
-        userScore.setText("");
+        player1.setPlayerScore(0);
+        player2.setPlayerScore(0);
+        player3.setPlayerScore(0);
     }
 
 

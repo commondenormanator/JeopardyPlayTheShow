@@ -9,4 +9,9 @@
         <attr name="metaButtonBarButtonStyle" format="reference" />
     </declare-styleable>
 
+    <declare-styleable name="PlayerView">
+        <attr name="avatar" format="reference" />
+        <attr name="playerName" format="string" />
+    </declare-styleable>
+
 </resources>
