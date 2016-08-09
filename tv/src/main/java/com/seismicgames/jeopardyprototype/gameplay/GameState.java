@@ -27,6 +27,7 @@ import com.seismicgames.jeopardyprototype.gameplay.events.QuestionAskedEvent;
 import com.seismicgames.jeopardyprototype.gameplay.events.WagerEvent;
 import com.seismicgames.jeopardyprototype.gameplay.score.AnswerJudge;
 import com.seismicgames.jeopardyprototype.ui.GameUiManager;
+import com.seismicgames.jeopardyprototype.ui.view.game.PlayerView;
 
 /**
  * Created by jduffy on 6/30/16.
@@ -226,6 +227,10 @@ public class GameState {
         mGameUiManager.hideCustomClue();
         mGameUiManager.expandVideo();
 
+        if(judge.didBuzzIn()){
+            mGameUiManager.player1.setState(PlayerView.State.AnswerLocked);
+        }
+
         if(activity != null) {
             activity.setScene(BuzzerScene.Scene.BUZZER);
             activity.sendSceneInfo();
@@ -246,7 +251,9 @@ public class GameState {
 
     @MainThread
     private void onVoiceCaptureState(VoiceCaptureState request){
-        mGameUiManager.onVoiceCaptureState(request.state);
+        if(mState == State.WAIT_FOR_USER_ANSWER) {
+            mGameUiManager.onVoiceCaptureState(request.state);
+        }
     }
 
     @MainThread
@@ -255,6 +262,7 @@ public class GameState {
         judge.scoreAnswer(questionInfo);
         mGameUiManager.clearUserAnswer();
         mGameUiManager.showUserAnswer(false);
+        mGameUiManager.player1.setState(PlayerView.State.Normal);
     }
 
     @MainThread
@@ -280,7 +288,6 @@ public class GameState {
     @MainThread
     private void onBuzzIn(){
 
-
         if(mState == State.WAIT_FOR_BUZZ_IN ){
             mBuzzerManager.gameplaySender().sendBuzzInResponse(true);
             mState = State.WAIT_FOR_USER_ANSWER;
@@ -292,6 +299,9 @@ public class GameState {
             mGameUiManager.showAnswerTimer(Constants.AnswerTimeout);
             handler.sendMessageDelayed(handler.obtainMessage(HandlerMessageType.USER_ANSWER_TIMEOUT.ordinal()), Constants.AnswerTimeout);
             judge.setUserBuzzedIn();
+
+            mGameUiManager.player1.setState(PlayerView.State.BuzzedIn);
+
         }else if(mState == State.WAIT_FOR_WAGER_BUZZ_IN){
             mBuzzerManager.gameplaySender().sendBuzzInResponse(true);
             mState = State.WAIT_FOR_USER_WAGER;
@@ -303,6 +313,7 @@ public class GameState {
             handler.sendMessageDelayed(handler.obtainMessage(HandlerMessageType.USER_WAGER_TIMEOUT.ordinal()), Constants.WagerTimeout);
             judge.setUserBuzzedIn();
 
+            mGameUiManager.player1.setState(PlayerView.State.BuzzedIn);
 
         }else {
             mBuzzerManager.gameplaySender().sendBuzzInResponse(false);
