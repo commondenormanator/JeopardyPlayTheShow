@@ -14,6 +14,7 @@ import com.seismicgames.jeopardyprototype.buzzer.message.AnswerRequest;
 import com.seismicgames.jeopardyprototype.buzzer.message.BuzzInResponse;
 import com.seismicgames.jeopardyprototype.buzzer.message.EpisodeMarkerList;
 import com.seismicgames.jeopardyprototype.buzzer.message.JumpToMarkerRequest;
+import com.seismicgames.jeopardyprototype.buzzer.message.QuitGameRequest;
 import com.seismicgames.jeopardyprototype.buzzer.message.RemoteKeyMessage;
 import com.seismicgames.jeopardyprototype.buzzer.message.SceneInfoMessage;
 import com.seismicgames.jeopardyprototype.buzzer.message.StopVoiceRecRequest;
@@ -85,6 +86,9 @@ public class BuzzerConnectionManager {
                         break;
                     case "JumpToMarkerRequest":
                         mListener.onUserJumpToMarker(gson.fromJson(json, JumpToMarkerRequest.class).markerIndex);
+                        break;
+                    case "QuitGameRequest":
+                        mListener.onQuitGameRequest();
                         break;
                     default:
                         Log.e(TAG, "Unhandled message: " + message);
@@ -246,6 +250,15 @@ public class BuzzerConnectionManager {
             synchronized (gameListeners) {
                 for (GameplayEventListener l : gameListeners) {
                     l.onUserWager(request);
+                }
+            }
+        }
+
+        @Override
+        public void onQuitGameRequest() {
+            synchronized (gameListeners) {
+                for (GameplayEventListener l : gameListeners) {
+                    l.onQuitGameRequest();
                 }
             }
         }

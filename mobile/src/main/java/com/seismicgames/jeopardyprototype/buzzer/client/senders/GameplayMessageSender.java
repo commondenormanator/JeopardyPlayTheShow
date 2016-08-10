@@ -15,4 +15,5 @@ public interface GameplayMessageSender {
     void sendWagerRequest(int wager);
     void sendMarkerRequest();
     void sendUserJumpToMarker(int markerIndex);
+    void sendQuitGame();
 }

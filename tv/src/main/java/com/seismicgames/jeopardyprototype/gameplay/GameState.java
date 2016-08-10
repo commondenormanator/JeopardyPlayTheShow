@@ -526,5 +526,10 @@ public class GameState {
         public void onUserJumpToMarker(int markerIndex) {
             handler.sendMessage(handler.obtainMessage(HandlerMessageType.USER_JUMP_TO_MARKER.ordinal(), markerIndex));
         }
+
+        @Override
+        public void onQuitGameRequest() {
+            activity.finish();
+        }
     }
 }

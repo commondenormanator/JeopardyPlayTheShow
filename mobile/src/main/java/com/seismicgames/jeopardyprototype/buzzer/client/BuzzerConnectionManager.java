@@ -18,6 +18,7 @@ import com.seismicgames.jeopardyprototype.buzzer.message.BuzzInResponse;
 import com.seismicgames.jeopardyprototype.buzzer.message.EpisodeMarkerList;
 import com.seismicgames.jeopardyprototype.buzzer.message.EpisodeMarkerRequest;
 import com.seismicgames.jeopardyprototype.buzzer.message.JumpToMarkerRequest;
+import com.seismicgames.jeopardyprototype.buzzer.message.QuitGameRequest;
 import com.seismicgames.jeopardyprototype.buzzer.message.RemoteKeyMessage;
 import com.seismicgames.jeopardyprototype.buzzer.message.RestartRequest;
 import com.seismicgames.jeopardyprototype.buzzer.message.SceneInfoMessage;
@@ -291,6 +292,11 @@ public class BuzzerConnectionManager {
         @Override
         public void sendUserJumpToMarker(int markerIndex) {
             send(gson.toJson(new JumpToMarkerRequest(markerIndex)));
+        }
+
+        @Override
+        public void sendQuitGame() {
+            send(gson.toJson(new QuitGameRequest()));
         }
     }
 

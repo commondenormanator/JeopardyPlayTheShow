@@ -13,6 +13,7 @@ import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -240,10 +241,10 @@ public class GameBuzzerActivity extends ConnectedActivity {
         mConnection.gameplaySender().sendBuzzInRequest();
     }
 
-    @OnClick(R.id.restartButton)
-    protected void onRestartClick() {
-        mConnection.gameplaySender().sendRestartRequest();
-    }
+//    @OnClick(R.id.restartButton)
+//    protected void onRestartClick() {
+//        mConnection.gameplaySender().sendRestartRequest();
+//    }
 
 
     @Override
@@ -299,6 +300,15 @@ public class GameBuzzerActivity extends ConnectedActivity {
             if (pulseAnim != null && pulseAnim.isRunning()){
                 pulseAnim.end();
             }
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(mConnection.isBuzzerConnected()) {
+            mConnection.gameplaySender().sendQuitGame();
+        } else {
+            super.onBackPressed();
         }
     }
 

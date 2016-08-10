@@ -16,8 +16,11 @@ public interface GameplayEventListener {
 
     void onUserWager(WagerRequest request);
 
+    void onQuitGameRequest();
 
     //demo methods
     void onMarkerRequest();
     void onUserJumpToMarker(int markerIndex);
+
+
 }
