@@ -48,6 +48,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:layout_margin="24dp"
+        android:visibility="invisible"
         android:orientation="vertical">
 
         <com.seismicgames.jeopardyprototype.ui.view.game.PlayerView
@@ -123,5 +124,13 @@
         android:layout_height="match_parent"
         android:visibility="invisible" />
 
+
+    <ImageView
+        android:id="@+id/homePlayerSplash"
+        android:visibility="gone"
+        android:scaleType="centerCrop"
+        android:src="@drawable/home_player_splash"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </RelativeLayout>

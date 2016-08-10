@@ -162,6 +162,10 @@ public class MediaPlayerControlMediaManager implements GameState.MediaManager {
                 mPlayer.pause();
                 mListener.onWager((WagerEvent) event);
                 break;
+            case HomePlayerIntro:
+                mPlayer.pause();
+                mListener.onHomePlayerIntro();
+                break;
         }
 
         return true;

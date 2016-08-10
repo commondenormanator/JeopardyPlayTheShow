@@ -5,8 +5,8 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
-import android.graphics.Color;
 import android.graphics.Typeface;
+import android.media.MediaPlayer;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -70,12 +70,21 @@ public class GameUiManager implements ScoreChangeListener{
     @BindView(R.id.player3)
     public PlayerView player3;
 
+
+    @BindView(R.id.homePlayerSplash)
+    public View homePlayerSplash;
+
+    private MediaPlayer applause;
+
     public GameUiManager(Activity view) {
         ButterKnife.bind(this, view);
         buzzerTimer.setVisibility(View.INVISIBLE);
         Typeface tf = Typeface.createFromAsset(view.getAssets(), "fonts/clue.ttf");
         clueText.setTypeface(tf);
         clueShadow.setTypeface(tf);
+
+        applause = MediaPlayer.create(view, R.raw.applause);
+        applause.setLooping(true);
     }
 
 
@@ -213,7 +222,30 @@ public class GameUiManager implements ScoreChangeListener{
         }
     }
 
+    public void showPlayers(){
+        playerLayout.setVisibility(View.VISIBLE);
+    }
 
+    public void showHomePlayerSplash(final boolean show) {
+        if (show){
+            homePlayerSplash.setVisibility(View.VISIBLE);
+            applause.start();
+        }else {
+            applause.stop();
+        }
+
+        homePlayerSplash
+                .animate()
+                .setDuration(1000)
+                .alpha(show ? 1 : 0)
+                .withEndAction(new Runnable() {
+                    @Override
+                    public void run() {
+                        homePlayerSplash.setVisibility(show ? View.VISIBLE : View.GONE);
+                    }
+                }).start();
+
+    }
 
 
     public void reset(){
@@ -223,9 +255,11 @@ public class GameUiManager implements ScoreChangeListener{
         hideAnswerTimer();
         hideBuzzTimer();
         expandVideo();
-        player1.setPlayerScore(0, false);
-        player2.setPlayerScore(0, false);
-        player3.setPlayerScore(0, false);
+        if(resetScore) {
+            player1.setPlayerScore(0, false);
+            player2.setPlayerScore(0, false);
+            player3.setPlayerScore(0, false);
+        }
     }
 
 

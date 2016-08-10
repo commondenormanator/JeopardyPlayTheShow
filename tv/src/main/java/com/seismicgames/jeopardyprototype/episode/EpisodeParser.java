@@ -4,6 +4,7 @@ import com.seismicgames.jeopardyprototype.gameplay.events.AnswerReadEvent;
 import com.seismicgames.jeopardyprototype.gameplay.events.EpisodeEndEvent;
 import com.seismicgames.jeopardyprototype.gameplay.events.EpisodeEvent;
 import com.seismicgames.jeopardyprototype.gameplay.events.FrameZeroEvent;
+import com.seismicgames.jeopardyprototype.gameplay.events.HomePlayerIntroEvent;
 import com.seismicgames.jeopardyprototype.gameplay.events.QuestionAskedEvent;
 import com.seismicgames.jeopardyprototype.gameplay.events.WagerEvent;
 import com.seismicgames.jeopardyprototype.util.TimeCode;
@@ -54,6 +55,7 @@ public class EpisodeParser {
         FrameZeroEvent fZero = new FrameZeroEvent(metaRecord.get("episode_start"));
         events.add(fZero);
 
+        events.add(new HomePlayerIntroEvent(TimeCode.parse(metaRecord.get("home_player_intro_break")) + fZero.timestamp));
 
         //TODO remove this debug skip
 //        events.add(new EpisodeEvent(fZero.timestamp +100, EpisodeEvent.Type.Skipped));

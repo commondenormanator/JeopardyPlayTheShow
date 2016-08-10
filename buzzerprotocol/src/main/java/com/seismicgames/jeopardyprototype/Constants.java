@@ -12,5 +12,6 @@ public class Constants {
     public static final int AnswerListenTimeout = AnswerTimeout+1000;
     public static final int WagerTimeout = 8000;
     public static final int EventTimestampOffset = 0;
+    public static final int HomeIntroDuration = 5000;
 
 }

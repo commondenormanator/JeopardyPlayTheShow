@@ -2,6 +2,7 @@ package com.seismicgames.jeopardyprototype.gameplay;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -13,6 +14,7 @@ import android.widget.Toast;
 import com.seismicgames.jeopardyprototype.AfterActionReportActivity;
 import com.seismicgames.jeopardyprototype.BuzzerActivity;
 import com.seismicgames.jeopardyprototype.Constants;
+import com.seismicgames.jeopardyprototype.R;
 import com.seismicgames.jeopardyprototype.buzzer.BuzzerConnectionManager;
 import com.seismicgames.jeopardyprototype.buzzer.BuzzerScene;
 import com.seismicgames.jeopardyprototype.buzzer.listeners.ConnectionEventListener;
@@ -65,13 +67,16 @@ public class GameState {
         USER_RESTART,
         USER_JUMP_TO_MARKER,
 
-        MEDIA_COMPLETE
+        HOME_PLAYER_INTRO_START,
+        HOME_PLAYER_INTRO_TIMEOUT,
 
+        MEDIA_COMPLETE
 
     }
 
 
     public interface MediaEventListener{
+        void onHomePlayerIntro();
         void onWager(WagerEvent event);
         boolean onQuestionAsked(QuestionAskedEvent event);
         void onAnswerRead(AnswerReadEvent event);
@@ -225,6 +230,21 @@ public class GameState {
 
 
         handler.sendMessageDelayed(handler.obtainMessage(HandlerMessageType.BUZZ_IN_TIMEOUT.ordinal()), buzzInTime);
+    }
+
+    @MainThread
+    private void onHomePlayerIntroStart(){
+        mGameUiManager.showHomePlayerSplash(true);
+        handler.sendMessageDelayed(handler.obtainMessage(HandlerMessageType.HOME_PLAYER_INTRO_TIMEOUT.ordinal()), Constants.HomeIntroDuration);
+        MediaPlayer mediaPlayer= MediaPlayer.create(activity, R.raw.home_intro);
+        mediaPlayer.start();
+    }
+
+    @MainThread
+    private void onHomePlayerIntroEnd(){
+        mGameUiManager.showHomePlayerSplash(false);
+        mGameUiManager.showPlayers();
+        resumeGame();
     }
 
     @MainThread
@@ -446,7 +466,12 @@ public class GameState {
             case MEDIA_COMPLETE:
                 onMediaComplete();
                 break;
-
+            case HOME_PLAYER_INTRO_START:
+                onHomePlayerIntroStart();
+                break;
+            case HOME_PLAYER_INTRO_TIMEOUT:
+                onHomePlayerIntroEnd();
+                break;
             default:
                 Log.w("GAME_EVENT_HANDLER", type.name() + " was not handled.");
         }
@@ -460,6 +485,11 @@ public class GameState {
 
     @WorkerThread
     private class MediaHandler implements MediaEventListener {
+
+        @Override
+        public void onHomePlayerIntro() {
+            handler.sendMessage(handler.obtainMessage(HandlerMessageType.HOME_PLAYER_INTRO_START.ordinal()));
+        }
 
         @Override
         public void onWager(WagerEvent event) {
