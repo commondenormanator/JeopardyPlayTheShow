@@ -16,7 +16,7 @@ public class AnswerJudge {
     private int userScore = 0;
     private List<String> userAnswers = new ArrayList<>();
     private boolean didBuzzIn = false;
-
+    private QuestionInfo currentQuestion;
     private Integer wager = null;
 
     public boolean didBuzzIn(){
@@ -35,16 +35,42 @@ public class AnswerJudge {
         this.listener = listener;
     }
 
+    public void setCurrentQuestion(QuestionInfo info){
+        currentQuestion = info;
+    }
+    public QuestionInfo getCurrentQuestion(){
+        return currentQuestion;
+    }
+
     public void setUserAnswers(Collection<String> userAnswers) {
         this.userAnswers.clear();
         this.userAnswers.addAll(userAnswers);
     }
 
     public void setWager(int wager){
-        this.wager = wager;
+        this.wager = clampWager(wager);
+    }
+
+    private int clampWager(int userWager){
+        if(currentQuestion.type == QuestionInfo.QuestionType.DD){
+            //min wager is 5
+            int minWager = 5;
+            //max wager is the clue value or the current score
+            int maxWager = Math.max(currentQuestion.value, userScore);
+            return Math.max(minWager, Math.min(maxWager, userWager));
+        } else {
+            //min wager is 1
+            int minWager = 0;
+            //max wager is the current score
+            int maxWager = Math.max(0, userScore);
+            return Math.max(minWager, Math.min(maxWager, userWager));
+        }
+
     }
 
     public void scoreAnswer(QuestionInfo info){
+
+        if(currentQuestion != info) Log.e("JUDGE", "Question info mismatch");
 
         if(didBuzzIn) {
             boolean wasCorrect = false;
@@ -66,6 +92,7 @@ public class AnswerJudge {
 
         didBuzzIn = false;
         wager = null;
+        currentQuestion = null;
     }
 
     public int getUserScore(){

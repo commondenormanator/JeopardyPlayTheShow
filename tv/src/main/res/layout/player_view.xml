@@ -1,28 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="300dp"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/playerAvatar"
+    <FrameLayout
+        android:id="@+id/avatarLayout"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:padding="4dp"
-        tools:src="@drawable/avatar_player1" />
+        android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/playerRing"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/playerAvatar"
-        android:layout_alignLeft="@id/playerAvatar"
-        android:layout_alignParentStart="true"
-        android:layout_alignRight="@id/playerAvatar"
-        android:layout_alignTop="@id/playerAvatar"
-        android:visibility="gone"
-        tools:src="@drawable/player_buzz" />
+        <ImageView
+            android:id="@+id/playerAvatar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            tools:src="@drawable/avatar_player1" />
+
+        <ImageView
+            android:id="@+id/playerRing"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="invisible"
+            android:src="@drawable/player_buzz" />
+    </FrameLayout>
 
     <ImageView
         android:id="@+id/playerBanner"
@@ -36,11 +37,11 @@
         android:id="@+id/bannerText"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/playerAvatar"
-        android:layout_alignTop="@id/playerAvatar"
+        android:layout_alignBottom="@id/avatarLayout"
+        android:layout_alignTop="@id/avatarLayout"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="-12dp"
-        android:layout_toEndOf="@id/playerAvatar"
+        android:layout_marginLeft="-10dp"
+        android:layout_toEndOf="@id/avatarLayout"
         android:clipChildren="false"
         android:clipToPadding="false"
         android:minWidth="150dp"

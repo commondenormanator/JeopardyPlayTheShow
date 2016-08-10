@@ -32,6 +32,7 @@ public class PlayerView extends RelativeLayout {
     protected TextView playerName;
 
     private int mScore = 0;
+    private State mState = State.Normal;
 
     private TransitionDrawable rightDrawable;
     private TransitionDrawable wrongDrawable;
@@ -91,21 +92,32 @@ public class PlayerView extends RelativeLayout {
     }
 
     public void setPlayerScore(int score) {
-
+        setPlayerScore(score, true);
+    }
+    public void setPlayerScore(int score, boolean animate) {
         playerScore.setText(String.format("$%s", new DecimalFormat("#,###").format(score)));
 
-        TransitionDrawable drawable = score >= mScore ? rightDrawable : wrongDrawable;
-        playerBanner.setImageDrawable(drawable);
-        drawable.startTransition(2000);
+        if(animate) {
+            TransitionDrawable drawable = score >= mScore ? rightDrawable : wrongDrawable;
+            playerBanner.setImageDrawable(drawable);
+            drawable.startTransition(2000);
+        } else {
+            playerBanner.setImageResource(R.drawable.player_panel);
+        }
 
         mScore = score;
     }
 
+    public State getState(){
+        return mState;
+    }
+
     public void setState(State state){
+        mState = state;
         switch(state){
 
             case Normal:
-                ring.setVisibility(GONE);
+                ring.setVisibility(INVISIBLE);
                 break;
             case BuzzedIn:
                 ring.setVisibility(VISIBLE);

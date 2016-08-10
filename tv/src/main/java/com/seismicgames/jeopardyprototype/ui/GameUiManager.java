@@ -216,13 +216,16 @@ public class GameUiManager implements ScoreChangeListener{
 
 
 
-
     public void reset(){
+        reset(true);
+    }
+    public void reset(boolean resetScore){
         hideAnswerTimer();
         hideBuzzTimer();
-        player1.setPlayerScore(0);
-        player2.setPlayerScore(0);
-        player3.setPlayerScore(0);
+        expandVideo();
+        player1.setPlayerScore(0, false);
+        player2.setPlayerScore(0, false);
+        player3.setPlayerScore(0, false);
     }
 
 

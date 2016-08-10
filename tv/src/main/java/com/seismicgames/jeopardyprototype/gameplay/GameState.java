@@ -22,6 +22,7 @@ import com.seismicgames.jeopardyprototype.buzzer.message.VoiceCaptureState;
 import com.seismicgames.jeopardyprototype.buzzer.message.WagerRequest;
 import com.seismicgames.jeopardyprototype.episode.EpisodeDetails;
 import com.seismicgames.jeopardyprototype.episode.QuestionInfo;
+import com.seismicgames.jeopardyprototype.gameplay.ai.AiManager;
 import com.seismicgames.jeopardyprototype.gameplay.events.AnswerReadEvent;
 import com.seismicgames.jeopardyprototype.gameplay.events.QuestionAskedEvent;
 import com.seismicgames.jeopardyprototype.gameplay.events.WagerEvent;
@@ -101,6 +102,8 @@ public class GameState {
     private GameUiManager mGameUiManager;
 
     private AnswerJudge judge = new AnswerJudge();
+    private Player player2 = new Player();
+    private Player player3 = new Player();
 
     private BuzzerHandler mBuzzerHandler = new BuzzerHandler();
     private MediaHandler mMediaHandler = new MediaHandler();
@@ -155,8 +158,10 @@ public class GameState {
         mMediaManager.setEpisodeDetails(details);
 
         mGameUiManager = ui;
+        mGameUiManager.reset();
 
         judge.setListener(mGameUiManager);
+
 
         initialized = true;
     }
@@ -195,15 +200,18 @@ public class GameState {
 
     @MainThread
     private void waitForBuzzIn(QuestionInfo questionInfo){
-
-
-        //skipp daily double answer if no wager was made
+        //skip daily double answer if no wager was made
         if(questionInfo.type == QuestionInfo.QuestionType.DD && !judge.didWager()){
             onQuestionTimeout();
             return;
         }
 
         mState = State.WAIT_FOR_BUZZ_IN;
+
+        judge.setCurrentQuestion(questionInfo);
+
+        AiManager.AiBuzzIn(player2, mGameUiManager.player2);
+        AiManager.AiBuzzIn(player3, mGameUiManager.player3);
 
         int buzzInTime = questionInfo.type == QuestionInfo.QuestionType.FJ ? Constants.FinalJeopardyTimeout : Constants.BuzzInTimeout;
         mGameUiManager.showBuzzTimer(buzzInTime);
@@ -230,6 +238,8 @@ public class GameState {
         if(judge.didBuzzIn()){
             mGameUiManager.player1.setState(PlayerView.State.AnswerLocked);
         }
+        AiManager.AiAnswerLock(player2, mGameUiManager.player2);
+        AiManager.AiAnswerLock(player3, mGameUiManager.player3);
 
         if(activity != null) {
             activity.setScene(BuzzerScene.Scene.BUZZER);
@@ -260,9 +270,12 @@ public class GameState {
     private void onAnswerRead(QuestionInfo questionInfo){
         mBuzzerManager.gameplaySender().sendStopVoiceRec();
         judge.scoreAnswer(questionInfo);
+        AiManager.AiAnswer(player2, mGameUiManager.player2, questionInfo);
+        AiManager.AiAnswer(player3, mGameUiManager.player3, questionInfo);
         mGameUiManager.clearUserAnswer();
         mGameUiManager.showUserAnswer(false);
         mGameUiManager.player1.setState(PlayerView.State.Normal);
+
     }
 
     @MainThread
@@ -300,6 +313,7 @@ public class GameState {
             handler.sendMessageDelayed(handler.obtainMessage(HandlerMessageType.USER_ANSWER_TIMEOUT.ordinal()), Constants.AnswerTimeout);
             judge.setUserBuzzedIn();
 
+
             mGameUiManager.player1.setState(PlayerView.State.BuzzedIn);
 
         }else if(mState == State.WAIT_FOR_WAGER_BUZZ_IN){
@@ -325,6 +339,8 @@ public class GameState {
     @MainThread
     private void waitForWagerBuzzIn(QuestionInfo questionInfo){
         mState = State.WAIT_FOR_WAGER_BUZZ_IN;
+
+        judge.setCurrentQuestion(questionInfo);
 
         mGameUiManager.showWagerBuzzIn(Constants.BuzzInTimeout);
         mGameUiManager.setCustomClueText(questionInfo);
@@ -369,7 +385,7 @@ public class GameState {
 
     public void jumpToMarker(int index){
         if(index < 0 || index > mDetails.markers.size() - 1) return;
-        mGameUiManager.reset();
+        mGameUiManager.reset(false);
 
         mMediaManager.seekTo(mDetails.markers.get(index).timestamp);
 
