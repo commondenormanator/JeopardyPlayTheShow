@@ -1,35 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:clipToPadding="false" android:layout_height="100dp" android:background="@drawable/leaderboard_winner_container_patched">
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    android:background="@drawable/leaderboard_winner_container_patched"
+    android:clipToPadding="false">
 
     <TextView
-        android:id = "@+id/userScore"
+        android:id="@+id/userScore"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="$99,999"
-        android:layout_centerInParent="true"
         android:layout_alignParentRight="true"
+        android:layout_centerInParent="true"
         android:layout_marginRight="32dp"
+        android:text="$99,999"
+        android:textColor="#FFF200"
         android:textSize="32dp"
-        android:textStyle="bold"
-        android:textColor="#FFF200"/>
+        android:textStyle="bold" />
 
-    <ImageView
+    <LinearLayout
         android:id="@+id/winner_container_tag"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:src="@drawable/leaderboard_winner_tag"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:layout_marginLeft="-4dp"
         android:layout_marginTop="-4dp"
-        android:layout_alignParentLeft="true"/>
+        android:orientation="vertical"
+        android:weightSum="10">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="7"
+            android:adjustViewBounds="true"
+            android:src="@drawable/leaderboard_winner_tag" />
+    </LinearLayout>
 
     <ImageView
+        android:id="@+id/playerAvatar"
         android:layout_width="80dp"
         android:layout_height="80dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="6dp"
         android:layout_toRightOf="@id/winner_container_tag"
-        android:layout_margin="6dp"
-        android:src="@drawable/jennings_portrait"/>
+        android:src="@drawable/jennings_portrait" />
 
 </RelativeLayout>
 

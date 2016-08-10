@@ -36,9 +36,9 @@ public class AiManager {
                 && info.value != 0){
             player.mScore += rand.nextBoolean() ? info.value : -info.value;
             playerView.setPlayerScore(player.mScore);
-            player.mDidBuzzIn = false;
-            playerView.setState(PlayerView.State.Normal);
         }
+        player.mDidBuzzIn = false;
+        playerView.setState(PlayerView.State.Normal);
     }
 
 }

@@ -24,8 +24,26 @@
         android:id="@+id/winner1"
         layout="@layout/aar_winner_container"
         android:layout_width="500dp"
-        android:layout_height="wrap_content"
+        android:layout_height="100dp"
         android:layout_below="@id/aar_logo"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp" />
+
+    <include
+        android:id="@+id/winner2"
+        layout="@layout/aar_winner_container"
+        android:layout_width="400dp"
+        android:layout_height="80dp"
+        android:layout_below="@id/winner1"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp" />
+
+    <include
+        android:id="@+id/winner3"
+        layout="@layout/aar_winner_container"
+        android:layout_width="400dp"
+        android:layout_height="80dp"
+        android:layout_below="@id/winner2"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp" />
 

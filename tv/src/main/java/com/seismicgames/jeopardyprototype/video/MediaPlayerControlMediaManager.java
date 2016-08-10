@@ -142,6 +142,9 @@ public class MediaPlayerControlMediaManager implements GameState.MediaManager {
                 break;
             case EpisodeStart:
                 break;
+            case EpisodeEnd:
+                mListener.onMediaComplete();
+                break;
             case Categories:
                 break;
             case QuestAsked:

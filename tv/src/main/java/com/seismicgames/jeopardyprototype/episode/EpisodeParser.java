@@ -1,6 +1,7 @@
 package com.seismicgames.jeopardyprototype.episode;
 
 import com.seismicgames.jeopardyprototype.gameplay.events.AnswerReadEvent;
+import com.seismicgames.jeopardyprototype.gameplay.events.EpisodeEndEvent;
 import com.seismicgames.jeopardyprototype.gameplay.events.EpisodeEvent;
 import com.seismicgames.jeopardyprototype.gameplay.events.FrameZeroEvent;
 import com.seismicgames.jeopardyprototype.gameplay.events.QuestionAskedEvent;
@@ -54,7 +55,8 @@ public class EpisodeParser {
         events.add(fZero);
 
 
-        events.add(new EpisodeEvent(fZero.timestamp +100, EpisodeEvent.Type.Skipped));
+        //TODO remove this debug skip
+//        events.add(new EpisodeEvent(fZero.timestamp +100, EpisodeEvent.Type.Skipped));
 
         //commercials
         parseCommercials(events, metaRecord, fZero);
@@ -64,6 +66,9 @@ public class EpisodeParser {
             System.out.println(csvRecord.toString());
             parseQuestion(events, csvRecord, metaRecord, fZero);
         }
+
+        //end of episode
+        events.add(new EpisodeEndEvent(TimeCode.parse(metaRecord.get("end"))+fZero.timestamp));
 
         //markers
         for (CSVRecord csvRecord : markerParser) {
