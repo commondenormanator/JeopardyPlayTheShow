@@ -224,6 +224,7 @@ public class GameUiManager implements ScoreChangeListener{
 
     public void showPlayers(){
         playerLayout.setVisibility(View.VISIBLE);
+        playerLayout.getParent().requestTransparentRegion(playerLayout);
     }
 
     public void showHomePlayerSplash(final boolean show) {

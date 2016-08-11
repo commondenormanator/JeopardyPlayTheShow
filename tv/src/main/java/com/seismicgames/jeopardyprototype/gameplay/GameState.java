@@ -406,6 +406,7 @@ public class GameState {
     public void jumpToMarker(int index){
         if(index < 0 || index > mDetails.markers.size() - 1) return;
         mGameUiManager.reset(false);
+        mGameUiManager.showPlayers();
 
         mMediaManager.seekTo(mDetails.markers.get(index).timestamp);
 
