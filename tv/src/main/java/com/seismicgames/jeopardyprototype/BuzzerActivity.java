@@ -104,8 +104,8 @@ public abstract class BuzzerActivity extends Activity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    BuzzerActivity.this.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
-                    BuzzerActivity.this.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_ENTER));
+                    BuzzerActivity.this.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, message.key));
+                    BuzzerActivity.this.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP,  message.key));
                 }
             });
         }

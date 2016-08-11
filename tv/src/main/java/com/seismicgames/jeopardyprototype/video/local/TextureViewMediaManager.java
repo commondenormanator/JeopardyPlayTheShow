@@ -10,11 +10,10 @@ import android.view.Surface;
 import android.view.TextureView;
 import android.view.ViewGroup;
 import android.widget.MediaController;
-import android.widget.VideoView;
 
 import com.seismicgames.jeopardyprototype.R;
 import com.seismicgames.jeopardyprototype.episode.EpisodeDetails;
-import com.seismicgames.jeopardyprototype.util.ExternalFileUtil;
+import com.seismicgames.jeopardyprototype.util.file.ExternalFileUtil;
 import com.seismicgames.jeopardyprototype.video.MediaPlayerControlMediaManager;
 
 import java.io.File;

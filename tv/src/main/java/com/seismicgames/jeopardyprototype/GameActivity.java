@@ -14,6 +14,8 @@
 
 package com.seismicgames.jeopardyprototype;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.ViewGroup;
@@ -25,10 +27,8 @@ import com.seismicgames.jeopardyprototype.episode.EpisodeDetails;
 import com.seismicgames.jeopardyprototype.episode.EpisodeParser;
 import com.seismicgames.jeopardyprototype.gameplay.GameState;
 import com.seismicgames.jeopardyprototype.ui.GameUiManager;
-import com.seismicgames.jeopardyprototype.util.ExternalFileUtil;
+import com.seismicgames.jeopardyprototype.util.file.ExternalFileUtil;
 import com.seismicgames.jeopardyprototype.video.local.ResourceMediaManager;
-import com.seismicgames.jeopardyprototype.video.local.TextureViewMediaManager;
-import com.seismicgames.jeopardyprototype.video.mpx.MpxMediaManager;
 
 import org.apache.commons.io.IOUtils;
 
@@ -48,13 +48,21 @@ public class GameActivity extends BuzzerActivity {
     /**
      * Called when the activity is first created.
      */
+    private static final String EPISODE_PATH_EXTRA = "EPISODE_PATH_EXTRA";
 
     private GameState gameState;
 
+    private File episodeDir;
     private EpisodeDetails episodeDetails;
 
     @BindView(R.id.videoContainer)
     ViewGroup videoContainer;
+
+    public static void show(Activity context, File episodePath){
+        Intent i = new Intent(context, GameActivity.class);
+        i.putExtra(EPISODE_PATH_EXTRA, episodePath);
+        context.startActivity(i);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,6 +70,8 @@ public class GameActivity extends BuzzerActivity {
         setContentView(R.layout.adk_player);
         ButterKnife.bind(this);
         gameState = new GameState();
+
+        episodeDir = (File) getIntent().getSerializableExtra(EPISODE_PATH_EXTRA);
     }
 
     @Override
@@ -88,7 +98,7 @@ public class GameActivity extends BuzzerActivity {
         if (!isFinishing()) {
             if(!gameState.isInitialized()) {
 //        gameState.init(BuzzerConnectionManager.getInstance(getApplication()), MpxMediaManager.getInstance(videoContainer, episodeDetails), new GameUiManager(this));
-                gameState.init(episodeDetails, BuzzerConnectionManager.getInstance(getApplication()), ResourceMediaManager.getInstance(this, videoContainer), new GameUiManager(this));
+                gameState.init(episodeDetails, BuzzerConnectionManager.getInstance(getApplication()), ResourceMediaManager.getInstance(this, videoContainer, episodeDir), new GameUiManager(this));
 //                gameState.init(BuzzerConnectionManager.getInstance(getApplication()), TextureViewMediaManager.getInstance(this, videoContainer, episodeDetails), new GameUiManager(this));
             }
 
@@ -107,16 +117,18 @@ public class GameActivity extends BuzzerActivity {
             InputStream meta = null;
             InputStream marker = null;
             try{
-                File gameFile = ExternalFileUtil.getFile(getApplicationContext(), "game.csv");
+                File videoFile = new File(episodeDir, "video.mp4");
+                if(!videoFile.exists()) return false;
+                File gameFile = new File(episodeDir, "game.csv");
                 if(gameFile == null || !gameFile.exists()) return false;
-                File metaFile = ExternalFileUtil.getFile(getApplicationContext(), "meta.csv");
+                File metaFile = new File(episodeDir, "meta.csv");
                 if(metaFile == null || !metaFile.exists()) return false;
 
                 game = new FileInputStream(gameFile);
                 meta = new FileInputStream(metaFile);
 
                 String markerString;
-                File markerFile = ExternalFileUtil.getFile(getApplicationContext(), "marker.csv");
+                File markerFile = new File(episodeDir, "marker.csv");
 
                 if(markerFile == null || !markerFile.exists()) {
                     markerString = "";
