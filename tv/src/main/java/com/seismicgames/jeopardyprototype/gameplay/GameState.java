@@ -301,9 +301,9 @@ public class GameState {
     @MainThread
     private void onUserWager(WagerRequest request){
         if(mState == State.WAIT_FOR_USER_WAGER) {
-            judge.setWager(request.wager);
+            int clampedWager = judge.setWager(request.wager);
             judge.setUserBuzzedIn();
-            mGameUiManager.setWagerValue(request.wager);
+            mGameUiManager.setWagerValue(clampedWager);
         }
     }
 

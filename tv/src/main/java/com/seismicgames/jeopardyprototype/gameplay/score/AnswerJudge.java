@@ -47,8 +47,9 @@ public class AnswerJudge {
         this.userAnswers.addAll(userAnswers);
     }
 
-    public void setWager(int wager){
+    public int setWager(int wager){
         this.wager = clampWager(wager);
+        return this.wager;
     }
 
     private int clampWager(int userWager){
