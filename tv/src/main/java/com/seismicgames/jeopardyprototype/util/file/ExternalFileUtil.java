@@ -36,6 +36,7 @@ public class ExternalFileUtil {
         List<File> episodeDirs = new ArrayList<>();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             for (File externalDir : context.getExternalFilesDirs(null)) {
+                if(externalDir == null) continue;
                 episodeDirs.addAll(getEpisodeList(externalDir));
             }
         } else {
