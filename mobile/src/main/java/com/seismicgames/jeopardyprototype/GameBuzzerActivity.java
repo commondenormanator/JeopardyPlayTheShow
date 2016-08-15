@@ -3,6 +3,8 @@ package com.seismicgames.jeopardyprototype;
 import android.Manifest;
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -54,6 +56,7 @@ public class GameBuzzerActivity extends ConnectedActivity {
     protected ImageView pulseImage;
     protected AnimatorSet pulseAnim;
 
+    private AlertDialog dialog;
     private Handler mHandler = new Handler();
 
     private final Runnable stopSpeechRunnable = new Runnable() {
@@ -241,11 +244,6 @@ public class GameBuzzerActivity extends ConnectedActivity {
         mConnection.gameplaySender().sendBuzzInRequest();
     }
 
-//    @OnClick(R.id.restartButton)
-//    protected void onRestartClick() {
-//        mConnection.gameplaySender().sendRestartRequest();
-//    }
-
 
     @Override
     protected void onStart() {
@@ -259,6 +257,15 @@ public class GameBuzzerActivity extends ConnectedActivity {
 
         speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
         speechRecognizer.setRecognitionListener(this.recognitionListener);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(dialog != null){
+            dialog.dismiss();
+            dialog = null;
+        }
     }
 
     @Override
@@ -303,13 +310,29 @@ public class GameBuzzerActivity extends ConnectedActivity {
         }
     }
 
+    private DialogInterface.OnClickListener onQuitEpisode(){
+        return new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                mConnection.gameplaySender().sendQuitGame();
+            }
+        };
+    }
+
     @Override
     public void onBackPressed() {
         if(mConnection.isBuzzerConnected()) {
-            mConnection.gameplaySender().sendQuitGame();
+            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+            dialog = dialogBuilder
+                .setMessage("Are you sure you want to quit this episode?")
+                .setPositiveButton(android.R.string.ok, onQuitEpisode())
+                .setCancelable(true)
+                .show();
         } else {
             super.onBackPressed();
         }
     }
+
+
 
 }

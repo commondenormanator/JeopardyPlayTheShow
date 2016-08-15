@@ -54,25 +54,6 @@ public class EpisodeSelectActivity extends BuzzerActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-
-//        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-//        dialog = dialogBuilder
-//                .setMessage(R.string.start_episode_prompt)
-//                .setPositiveButton(R.string.ok, onEpisodeStart())
-//                .setCancelable(false)
-//                .setOnCancelListener(onCancel())
-//                .setOnKeyListener(new DialogInterface.OnKeyListener() {
-//                    @Override
-//                    public boolean onKey(DialogInterface dialogInterface, int i, KeyEvent keyEvent) {
-//                        return false;
-//                    }
-//                })
-//                .show();
-    }
-
-    @Override
     protected void onPause() {
         if (dialog != null) {
             dialog.dismiss();
