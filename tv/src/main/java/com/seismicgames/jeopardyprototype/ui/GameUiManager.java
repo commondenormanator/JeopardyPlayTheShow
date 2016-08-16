@@ -38,6 +38,9 @@ public class GameUiManager implements ScoreChangeListener{
     @BindView(R.id.videoContainer)
     public View videoContainer;
 
+
+    @BindView(R.id.userAnswerLayout)
+    public View userAnswerLayout;
     @BindView(R.id.userAnswer)
     public TextView userAnswer;
 
@@ -189,7 +192,7 @@ public class GameUiManager implements ScoreChangeListener{
     }
 
     public void showUserAnswer(boolean show){
-        userAnswer.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
+        userAnswerLayout.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
     }
 
     public void setUserAnswer(String s){

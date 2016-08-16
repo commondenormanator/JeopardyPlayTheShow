@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
 
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/main_bg">
@@ -48,8 +49,8 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:layout_margin="24dp"
-        android:visibility="invisible"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:visibility="invisible">
 
         <com.seismicgames.jeopardyprototype.ui.view.game.PlayerView
             android:id="@+id/player1"
@@ -85,37 +86,45 @@
         android:layout_alignParentBottom="true"
         android:visibility="invisible" />
 
-    <android.widget.TextView
-        android:id="@+id/userAnswer"
+    <FrameLayout
+        android:id="@+id/userAnswerLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@id/podiumTimer"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="8dp"
         android:background="@drawable/voice_text_bg"
-        android:ellipsize="start"
-        android:gravity="center_horizontal"
-        android:lines="1"
+        android:clipToPadding="false"
         android:maxWidth="800dp"
-        android:shadowColor="@color/black_opaque"
-        android:shadowDx="5"
-        android:shadowDy="5"
-        android:shadowRadius="5.0"
-        android:textColor="@color/white"
-        android:textSize="40sp"
-        android:visibility="invisible" />
+        android:paddingLeft="60dp"
+        android:visibility="invisible">
 
-    <ImageView
-        android:id="@+id/micIcon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/userAnswer"
-        android:layout_alignLeft="@id/userAnswer"
-        android:layout_alignTop="@id/userAnswer"
-        android:scaleType="fitStart"
-        android:src="@drawable/voice_ready_icn"
-        android:visibility="invisible" />
+        <android.widget.TextView
+            android:id="@+id/userAnswer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="bottom|center"
+            android:inputType="textMultiLine"
+            android:maxLines="2"
+            android:maxWidth="600dp"
+            android:shadowColor="@color/black_opaque"
+            android:shadowDx="5"
+            android:shadowDy="5"
+            android:shadowRadius="5.0"
+            android:textColor="@color/white"
+            android:textSize="24sp"
+            tools:text="ergb ewrjbwdcijb wlkq djcbn lkqwjdbclk wjdbc ljqwhbdc     kj wokjfvowkenfvgb" />
 
+        <ImageView
+            android:id="@+id/micIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginLeft="-61dp"
+            android:scaleType="fitStart"
+            android:src="@drawable/voice_ready_icn"
+            android:visibility="invisible" />
+    </FrameLayout>
 
     <include
         android:id="@+id/wager_layout"
@@ -127,10 +136,10 @@
 
     <ImageView
         android:id="@+id/homePlayerSplash"
-        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:scaleType="centerCrop"
         android:src="@drawable/home_player_splash"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:visibility="gone" />
 
 </RelativeLayout>
