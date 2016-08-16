@@ -167,7 +167,7 @@ public class GameBuzzerActivity extends ConnectedActivity {
                             Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
                             intent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                intent.putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, true);
+                                intent.putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, false);
                             }
                             speechRecognizer.setRecognitionListener(recognitionListener);
                             speechRecognizer.startListening(intent);
