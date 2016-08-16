@@ -15,7 +15,6 @@ import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,9 +22,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import com.seismicgames.jeopardyprototype.buzzer.BuzzerScene;
 import com.seismicgames.jeopardyprototype.buzzer.client.BuzzerConnectionManager;
 import com.seismicgames.jeopardyprototype.buzzer.client.listeners.GameplayEventListener;
@@ -35,7 +31,6 @@ import com.seismicgames.jeopardyprototype.buzzer.message.VoiceCaptureState;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -223,6 +218,24 @@ public class GameBuzzerActivity extends ConnectedActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
+        menu.add("Pause")
+                .setIcon(android.R.drawable.ic_media_pause)
+                .setOnMenuItemClickListener(
+                        new MenuItem.OnMenuItemClickListener() {
+
+                            private boolean pause = true;
+
+                            @Override
+                            public boolean onMenuItemClick(MenuItem menuItem) {
+                                mConnection.gameplaySender().sendPauseGame(pause);
+                                pause = !pause;
+                                menuItem.setIcon(pause ? android.R.drawable.ic_media_pause : android.R.drawable.ic_media_play);
+                                return true;
+                            }
+                        }
+                ).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+
+
         for (int i = 0; mEpisodeMarkers != null && i < mEpisodeMarkers.markers.size(); i++) {
             final int index = i;
             menu.add("Jump To: " + mEpisodeMarkers.markers.get(i))

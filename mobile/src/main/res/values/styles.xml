@@ -28,7 +28,7 @@
     </style>
 
     <style name="FullscreenActionBarStyle" parent="android:Widget.ActionBar">
-        <item name="android:background">@android:color/transparent</item>
+        <item name="android:background">@color/black_overlay</item>
         <item name="android:displayOptions">none</item>
         <item name="android:divider">@null</item>
 

@@ -162,29 +162,6 @@ public class WagerActivity extends ConnectedActivity {
         ButterKnife.bind(this);
         mConnection = BuzzerConnectionManager.getInstance(getApplication());
 
-        mConnection.addListener(new ConnectionEventListener() {
-            @Override
-            public void onBuzzerConnectivityChange(final boolean isConnected) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (isConnected) {
-                            showConnectedUI();
-                        } else {
-                            showScanUI();
-                        }
-                    }
-                });
-            }
-        });
-
-        if (mConnection.isBuzzerConnected()) {
-            showConnectedUI();
-        } else {
-            showScanUI();
-        }
-
-
         mConnection.addListener(new GameplayEventListener() {
             @Override
             public void onBuzzInResponse(BuzzInResponse response) {
@@ -229,18 +206,14 @@ public class WagerActivity extends ConnectedActivity {
 
             }
         });
+
+        setButtonEnabled(true);
     }
 
     @OnClick(R.id.dummy_button)
     protected void onButtonClick() {
         mConnection.gameplaySender().sendBuzzInRequest();
     }
-
-    @OnClick(R.id.restartButton)
-    protected void onRestartClick() {
-        mConnection.gameplaySender().sendBuzzInRequest();
-    }
-
 
     @Override
     protected void onStart() {
@@ -265,22 +238,6 @@ public class WagerActivity extends ConnectedActivity {
         mHandler.removeCallbacks(stopSpeechRunnable);
 
         super.onStop();
-    }
-
-    private void showScanUI(){
-//        if(hostScanner.scanForHost(this)){
-            textView.setText("searching");
-            setButtonEnabled(false);
-//        } else {
-//            textView.setText("unable to connect");
-//        }
-    }
-
-    private void showConnectedUI(){
-        setButtonEnabled(true);
-
-        textView.setText("connected");
-
     }
 
     private void setButtonEnabled(boolean isEnabled){

@@ -15,5 +15,6 @@ public interface GameplayMessageSender {
     void sendWagerRequest(int wager);
     void sendMarkerRequest();
     void sendUserJumpToMarker(int markerIndex);
+    void sendPauseGame(boolean pause);
     void sendQuitGame();
 }

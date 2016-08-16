@@ -1,7 +1,6 @@
 package com.seismicgames.jeopardyprototype.gameplay;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Looper;
@@ -20,6 +19,7 @@ import com.seismicgames.jeopardyprototype.buzzer.BuzzerScene;
 import com.seismicgames.jeopardyprototype.buzzer.listeners.ConnectionEventListener;
 import com.seismicgames.jeopardyprototype.buzzer.listeners.GameplayEventListener;
 import com.seismicgames.jeopardyprototype.buzzer.message.AnswerRequest;
+import com.seismicgames.jeopardyprototype.buzzer.message.PauseGameRequest;
 import com.seismicgames.jeopardyprototype.buzzer.message.VoiceCaptureState;
 import com.seismicgames.jeopardyprototype.buzzer.message.WagerRequest;
 import com.seismicgames.jeopardyprototype.episode.EpisodeDetails;
@@ -63,6 +63,8 @@ public class GameState {
         USER_WAGER_REQUEST,
 
         VOICE_CAPTURE_STATE,
+
+        USER_PAUSE,
 
         USER_RESTART,
         USER_JUMP_TO_MARKER,
@@ -371,6 +373,20 @@ public class GameState {
         activity.sendSceneInfo();
     }
 
+    @MainThread
+    private void onUserPause(PauseGameRequest request) {
+        if (request.shouldPause) {
+            if (mState != State.USER_PAUSED) {
+                mState = State.USER_PAUSED;
+                pauseGame();
+            }
+        } else {
+            if (mState == State.USER_PAUSED) {
+                resumeGame();
+            }
+        }
+    }
+
 
     private void resumeGame(){
 
@@ -473,6 +489,9 @@ public class GameState {
             case HOME_PLAYER_INTRO_TIMEOUT:
                 onHomePlayerIntroEnd();
                 break;
+            case USER_PAUSE:
+                onUserPause((PauseGameRequest) message.obj);
+                break;
             default:
                 Log.w("GAME_EVENT_HANDLER", type.name() + " was not handled.");
         }
@@ -546,6 +565,11 @@ public class GameState {
         @Override
         public void onUserWager(WagerRequest request) {
             handler.sendMessage(handler.obtainMessage(HandlerMessageType.USER_WAGER_REQUEST.ordinal(), request));
+        }
+
+        @Override
+        public void onPauseGameRequest(PauseGameRequest request) {
+            handler.sendMessage(handler.obtainMessage(HandlerMessageType.USER_PAUSE.ordinal(), request));
         }
 
         @Override
