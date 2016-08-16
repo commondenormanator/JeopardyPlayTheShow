@@ -100,7 +100,7 @@ public class PlayerView extends RelativeLayout {
         if(animate) {
             TransitionDrawable drawable = score >= mScore ? rightDrawable : wrongDrawable;
             playerBanner.setImageDrawable(drawable);
-            drawable.startTransition(2000);
+            drawable.startTransition(3000);
         } else {
             playerBanner.setImageResource(R.drawable.player_panel);
         }
