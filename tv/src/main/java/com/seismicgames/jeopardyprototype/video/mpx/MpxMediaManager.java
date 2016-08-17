@@ -3,12 +3,16 @@ package com.seismicgames.jeopardyprototype.video.mpx;
 import android.app.Activity;
 import android.view.ViewGroup;
 
-import com.seismicgames.jeopardyprototype.episode.EpisodeDetails;
+import com.seismicgames.jeopardyprototype.util.file.ExternalFileUtil;
 import com.seismicgames.jeopardyprototype.video.MediaPlayerControlMediaManager;
 import com.theplatform.adk.Player;
 import com.theplatform.adk.player.event.api.data.MediaEndEvent;
 import com.theplatform.adk.player.event.api.data.PlayerEventListener;
 
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -22,18 +26,30 @@ public class MpxMediaManager extends MediaPlayerControlMediaManager {
     private URL url;
     private boolean playbackStarted = false;
 
-    public static MpxMediaManager getInstance(ViewGroup videoContainer) {
+    public static MpxMediaManager getInstance(ViewGroup videoContainer, File episodeDir) {
         Player player = new Player(videoContainer);
-        return new MpxMediaManager(player);
+
+        File videoUrlFile = ExternalFileUtil.getFile(videoContainer.getContext(), new File(episodeDir, ExternalFileUtil.VideoUrlFileName).getPath());
+
+        String url = null;
+        if(videoUrlFile.exists()){
+            try {
+                url = FileUtils.readFileToString(videoUrlFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return new MpxMediaManager(player, url);
     }
 
-    public MpxMediaManager(Player player) {
+    public MpxMediaManager(Player player, String url) {
         super(player.asMediaPlayerControl());
         mPlayer = player;
 
         try {
-            url = new URL("http://link.theplatform.com/s/spe/media/MXha0q_JklY_");
-            mPlayer.loadReleaseUrl(url);
+            this.url = new URL(url);
+            mPlayer.loadReleaseUrl(this.url);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }

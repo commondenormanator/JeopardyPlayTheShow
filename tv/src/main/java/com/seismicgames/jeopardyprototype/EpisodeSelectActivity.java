@@ -22,6 +22,8 @@ import com.seismicgames.jeopardyprototype.buzzer.BuzzerScene;
 import com.seismicgames.jeopardyprototype.util.file.ExternalFileUtil;
 
 import java.io.File;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.Inflater;
@@ -64,12 +66,12 @@ public class EpisodeSelectActivity extends BuzzerActivity {
 
     @OnItemClick(R.id.episodeList)
     protected void onItemClick(int position) {
-        File dir = (File) episodeList.getAdapter().getItem(position);
+        EpisodeSelection ep = (EpisodeSelection) episodeList.getAdapter().getItem(position);
 
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         dialog = dialogBuilder
                 .setMessage(R.string.start_episode_prompt)
-                .setPositiveButton(R.string.ok, onEpisodeStart(dir))
+                .setPositiveButton(R.string.ok, onEpisodeStart(ep))
                 .setCancelable(true)
                 .setOnKeyListener(new DialogInterface.OnKeyListener() {
                     @Override
@@ -97,11 +99,11 @@ public class EpisodeSelectActivity extends BuzzerActivity {
     }
 
 
-    private DialogInterface.OnClickListener onEpisodeStart(final File episodePath) {
+    private DialogInterface.OnClickListener onEpisodeStart(final EpisodeSelection episode) {
         return new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                GameActivity.show(EpisodeSelectActivity.this, episodePath);
+                GameActivity.show(EpisodeSelectActivity.this, episode.dir, episode.streaming);
             }
         };
     }
@@ -122,23 +124,29 @@ public class EpisodeSelectActivity extends BuzzerActivity {
 
     private static class EpisodeListAdapter extends BaseAdapter{
 
-        private final List<File> files;
+        private final List<EpisodeSelection> episodes = new ArrayList<>();
 
         private LayoutInflater mInflater;
 
         private EpisodeListAdapter(Context context, List<File> files) {
-            this.files = files;
+            for(File f : files){
+                if(ExternalFileUtil.isLocalVideoDir(f))
+                    episodes.add(new EpisodeSelection(f, false));
+                if(ExternalFileUtil.isStreamingVideoDir(f))
+                    episodes.add(new EpisodeSelection(f, true));
+            }
+
             mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
 
         @Override
         public int getCount() {
-            return files.size();
+            return episodes.size();
         }
 
         @Override
-        public Object getItem(int i) {
-            return files.get(i);
+        public EpisodeSelection getItem(int i) {
+            return episodes.get(i);
         }
 
         @Override
@@ -148,10 +156,24 @@ public class EpisodeSelectActivity extends BuzzerActivity {
 
         @Override
         public View getView(int i, View view, ViewGroup parent) {
-            View v = mInflater.inflate(android.R.layout.simple_list_item_1, parent, false);
-            ((TextView)v.findViewById(android.R.id.text1)).setText(files.get(i).getName());
+            if(view == null) {
+                view = mInflater.inflate(android.R.layout.simple_list_item_1, parent, false);
+            }
+            ((TextView)view.findViewById(android.R.id.text1)).setText(episodes.get(i).dir.getName()
+            + (episodes.get(i).streaming ? "*" : ""));
 
-            return v;
+            return view;
+        }
+    }
+
+
+    private static class EpisodeSelection implements Serializable{
+        public final File dir;
+        public final boolean streaming;
+
+        private EpisodeSelection(File dir, boolean streaming) {
+            this.dir = dir;
+            this.streaming = streaming;
         }
     }
 

@@ -291,6 +291,8 @@ public class GameUiManager implements ScoreChangeListener{
                 int horizontalPadding = (((Integer) valueAnimator.getAnimatedValue() * 16) / 9) /2;
                 videoContainer.setPadding(horizontalPadding, vertical, horizontalPadding, vertical);
                 videoContainer.setTranslationY(-vertical);
+
+                playerLayout.getParent().requestTransparentRegion(playerLayout);
             }
         });
         animator.setDuration(300);

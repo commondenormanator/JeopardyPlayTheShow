@@ -4,15 +4,13 @@ import android.content.Context;
 import android.os.Build;
 import android.support.annotation.WorkerThread;
 
-import com.theplatform.pdk.smil.api.shared.data.Meta;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
-import org.apache.commons.io.filefilter.FileFileFilter;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,6 +22,7 @@ import java.util.List;
 public class ExternalFileUtil {
 
     public static final String VideoFileName = "video.mp4";
+    public static final String VideoUrlFileName = "video_url.txt";
     public static final String GameFileName = "game.csv";
     public static final String MetaFileName = "meta.csv";
     public static final String MarkerFileName = "marker.csv";
@@ -46,6 +45,24 @@ public class ExternalFileUtil {
         return episodeDirs;
     }
 
+    public static boolean isStreamingVideoDir(File directory) {
+        return directory.list(new FilenameFilter() {
+            @Override
+            public boolean accept(File file, String name) {
+                return name.equals(VideoUrlFileName);
+            }
+        }).length > 0;
+    }
+
+    public static boolean isLocalVideoDir(File directory) {
+        return directory.list(new FilenameFilter() {
+            @Override
+            public boolean accept(File file, String name) {
+                return name.equals(VideoFileName);
+            }
+        }).length > 0;
+    }
+
     private static List<File> getEpisodeList(File directory){
         if(!directory.isDirectory()) return Collections.emptyList();
 
@@ -63,6 +80,7 @@ public class ExternalFileUtil {
 
         for (File f : dir.listFiles()) {
             if(f.getName().equals(VideoFileName)) hasVideo = true;
+            if(f.getName().equals(VideoUrlFileName)) hasVideo = true;
             if(f.getName().equals(GameFileName)) hasGame = true;
             if(f.getName().equals(MetaFileName)) hasMeta = true;
         }
