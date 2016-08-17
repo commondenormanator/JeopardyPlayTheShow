@@ -84,6 +84,11 @@ public class MpxMediaManager extends MediaPlayerControlMediaManager {
         mPlayer.getLifecycle().destroy();
     }
 
+    @Override
+    protected boolean shouldSeekOnPause() {
+        return true;
+    }
+
     private class MediaCompleteListener implements PlayerEventListener<MediaEndEvent> {
         @Override
         public void onPlayerEvent(MediaEndEvent mediaEndEvent) {

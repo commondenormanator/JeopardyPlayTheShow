@@ -124,6 +124,10 @@ public class MediaPlayerControlMediaManager implements GameState.MediaManager {
         }
     }
 
+    protected boolean shouldSeekOnPause(){
+        return false;
+    }
+
     private boolean handleEpisodeEvent(int eventIndex){
         EpisodeEvent event = mDetails.events.get(eventIndex);
         EpisodeEvent nextEvent = null;
@@ -151,7 +155,7 @@ public class MediaPlayerControlMediaManager implements GameState.MediaManager {
                 Log.w(TAG, "should pause at " + event.timestamp);
                 Log.w(TAG, "paused at " + mPlayer.getCurrentPosition());
                 if(mListener.onQuestionAsked((QuestionAskedEvent) event)) {
-                    mPlayer.pause();
+                    pauseForEvent(event);
                     Log.w(TAG, "lag was " + (mPlayer.getCurrentPosition() - event.timestamp));
                 }
                 break;
@@ -159,11 +163,11 @@ public class MediaPlayerControlMediaManager implements GameState.MediaManager {
                 mListener.onAnswerRead((AnswerReadEvent)event);
                 break;
             case Wager:
-                mPlayer.pause();
+                pauseForEvent(event);
                 mListener.onWager((WagerEvent) event);
                 break;
             case HomePlayerIntro:
-                mPlayer.pause();
+                pauseForEvent(event);
                 mListener.onHomePlayerIntro();
                 break;
         }
@@ -171,5 +175,11 @@ public class MediaPlayerControlMediaManager implements GameState.MediaManager {
         return true;
     }
 
+    private void pauseForEvent(EpisodeEvent event){
+        if(shouldSeekOnPause()) {
+            mPlayer.seekTo(event.timestamp);
+        }
+        mPlayer.pause();
+    }
 
 }
