@@ -323,7 +323,7 @@ public class GameState {
     @MainThread
     private void onBuzzIn(){
 
-        if(mState == State.WAIT_FOR_BUZZ_IN ){
+        if(mState == State.WAIT_FOR_BUZZ_IN ) {
             mBuzzerManager.gameplaySender().sendBuzzInResponse(true);
             mState = State.WAIT_FOR_USER_ANSWER;
 
@@ -337,7 +337,8 @@ public class GameState {
 
 
             mGameUiManager.player1.setState(PlayerView.State.BuzzedIn);
-
+        }else if(mState == State.WAIT_FOR_USER_ANSWER){
+            mBuzzerManager.gameplaySender().sendBuzzInResponse(true);
         }else if(mState == State.WAIT_FOR_WAGER_BUZZ_IN){
             mBuzzerManager.gameplaySender().sendBuzzInResponse(true);
             mState = State.WAIT_FOR_USER_WAGER;
@@ -350,7 +351,8 @@ public class GameState {
             judge.setUserBuzzedIn();
 
             mGameUiManager.player1.setState(PlayerView.State.BuzzedIn);
-
+        }else if(mState == State.WAIT_FOR_USER_WAGER){
+            mBuzzerManager.gameplaySender().sendBuzzInResponse(true);
         }else {
             mBuzzerManager.gameplaySender().sendBuzzInResponse(false);
 
