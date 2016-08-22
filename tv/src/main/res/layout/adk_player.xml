@@ -11,36 +11,64 @@
     <RelativeLayout
         android:id="@+id/videoContainer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent" >
 
-    <include
-        android:id="@+id/wagerPrompt"
-        layout="@layout/wager_prompt"
+        <include
+            android:id="@+id/wager_layout"
+            layout="@layout/wager_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="invisible"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true" />
+
+        <include
+            android:id="@+id/clueLayout"
+            layout="@layout/clue_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="invisible"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true" />
+
+        <include
+            android:id="@+id/wagerPrompt"
+            layout="@layout/wager_prompt"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="invisible"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/buzzerLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="invisible" />
+        android:layout_centerHorizontal="true">
 
-    <include
-        android:id="@+id/clueLayout"
-        layout="@layout/clue_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="invisible" />
+        <android.widget.ProgressBar xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/buzzerTimer"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/timer_height"
+            android:layout_alignParentBottom="true"
+            android:background="@color/black"
+            android:indeterminate="false"
+            android:indeterminateOnly="false"
+            android:padding="22dp"
+            android:progress="60"
+            android:progressDrawable="@drawable/center_pivot_progress"
+            android:visibility="invisible" />
 
+        <ImageView
+            android:id="@+id/phoneReadyIcon"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/timer_height"
+            android:layout_above="@id/buzzerTimer"
+            android:src="@drawable/phone_icon_speech_ready"
+            android:visibility="invisible" />
 
-    <android.widget.ProgressBar xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/buzzerTimer"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/timer_height"
-        android:layout_alignParentBottom="true"
-        android:background="@color/black"
-        android:indeterminate="false"
-        android:indeterminateOnly="false"
-        android:padding="22dp"
-        android:progress="60"
-        android:progressDrawable="@drawable/center_pivot_progress"
-        android:visibility="invisible" />
-
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/playerLayout"
@@ -125,13 +153,6 @@
             android:src="@drawable/voice_ready_icn"
             android:visibility="invisible" />
     </FrameLayout>
-
-    <include
-        android:id="@+id/wager_layout"
-        layout="@layout/wager_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="invisible" />
 
 
     <ImageView

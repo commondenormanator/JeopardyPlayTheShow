@@ -5,10 +5,12 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -27,7 +29,7 @@ import butterknife.ButterKnife;
 /**
  * Created by jduffy on 7/6/16.
  */
-public class GameUiManager implements ScoreChangeListener{
+public class  GameUiManager implements ScoreChangeListener{
 
     @BindView(R.id.buzzerTimer)
     public ProgressBar buzzerTimer;
@@ -46,6 +48,8 @@ public class GameUiManager implements ScoreChangeListener{
 
     @BindView(R.id.micIcon)
     public ImageView micIcon;
+    @BindView(R.id.phoneReadyIcon)
+    public ImageView phoneReadyIcon;
 
 
     @BindView(R.id.wager_layout)
@@ -73,7 +77,6 @@ public class GameUiManager implements ScoreChangeListener{
     @BindView(R.id.player3)
     public PlayerView player3;
 
-
     @BindView(R.id.homePlayerSplash)
     public View homePlayerSplash;
 
@@ -82,6 +85,7 @@ public class GameUiManager implements ScoreChangeListener{
     public GameUiManager(Activity view) {
         ButterKnife.bind(this, view);
         buzzerTimer.setVisibility(View.INVISIBLE);
+        phoneReadyIcon.setVisibility(View.INVISIBLE);
         Typeface tf = Typeface.createFromAsset(view.getAssets(), "fonts/clue.ttf");
         clueText.setTypeface(tf);
         clueShadow.setTypeface(tf);
@@ -89,7 +93,6 @@ public class GameUiManager implements ScoreChangeListener{
         applause = MediaPlayer.create(view, R.raw.applause);
         applause.setLooping(true);
     }
-
 
     public void showBuzzTimer(int duration) {
         showBuzzTimer(buzzerTimer, duration);
@@ -103,6 +106,11 @@ public class GameUiManager implements ScoreChangeListener{
         stopAnim(buzzerTimer);
 
         buzzerTimer.setVisibility(View.VISIBLE);
+        phoneReadyIcon.setVisibility(View.VISIBLE);
+
+        android.view.animation.Animation phonePulse = AnimationUtils.loadAnimation(phoneReadyIcon.getContext(), R.anim.phone_pulse_anim);
+        phoneReadyIcon.startAnimation(phonePulse);
+
         buzzerTimer.getParent().requestTransparentRegion(buzzerTimer);
 
         ((ViewGroup)buzzerTimer.getParent()).invalidate();
@@ -122,6 +130,8 @@ public class GameUiManager implements ScoreChangeListener{
         stopAnim(buzzerTimer);
 
         buzzerTimer.setVisibility(View.INVISIBLE);
+        phoneReadyIcon.setVisibility(View.INVISIBLE);
+        phoneReadyIcon.clearAnimation();
     }
 
     public void showWagerBuzzIn(int duration) {
