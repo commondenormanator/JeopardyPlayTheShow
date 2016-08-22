@@ -184,6 +184,7 @@ public class GameBuzzerActivity extends ConnectedActivity {
                 @Override
                 public void run() {
                     if(speechRecognizer != null) {
+                        textView.setText("");
                         speechRecognizer.cancel();
                         speechRecognizer.setRecognitionListener(null); //maybe this resets it?
                     }
